@@ -1,16 +1,19 @@
 {
+    "UpgradeLoanerDeckToOwnedAltArts": true,
+    "RandomiseLEChapterBattlefield": true,
+    "UsePlayerBattlefieldForLEChapter": false,
     "BaseIP": "localhost",
     "BasePort": 4989,
     "SessionServerPort": 4988,
     "SessionServerIP": "{BaseIP}",
     "MultiplayerPvpClientConnectIP": "{SessionServerIP}",
-    "MultiplayerPvpClientConnectPort": 0,// A value of 0 will use SessionServerPort
+    "MultiplayerPvpClientConnectPort": 0, // A value of 0 will use SessionServerPort
     "BindIP": "http://{BaseIP}:{BasePort}/",
-    "MultiplayerEnabled": false,// [WARNING] Only use if you know what you're doing
+    "MultiplayerEnabled": true, // [WARNING] Only use if you know what you're doing
     "MultiplayerAllowUserSpecifiedPlayerCode": true,
     "MultiplayerTokenPrefixSecret": "",
     "MultiplayerMaxTokensPerIP": 6,
-    "MultiplayerMaxTokensPerIPEx": null,// { "1.1.1.1": 10, "1.1.1.2": 15, }
+    "MultiplayerMaxTokensPerIPEx": null, // { "1.1.1.1": 10, "1.1.1.2": 15, }
     "MultiplayerReleaseTokenIPInHours": 200,
     "MultiplayerPingTimeoutInSeconds": 90,
     "MultiplayerPingInSeconds": 20,
@@ -23,30 +26,26 @@
     "MultiplayerPvpClientKeepConsoleAlive": false,
     "MultiplayerPvpClientSysActSleepInMilliseconds": 10,
     "MultiplayerPvpClientSysActCallsPerSleep": 5,
-    "MultiplayerPvpClientDoCommandUserOffset": 15616,
-    "MultiplayerPvpClientRunDialogUserOffset": 15512,
-    "MultiplayerPvpClientDuelDllSize": 19118592,
+    "MultiplayerPvpClientDoCommandUserOffset": 15500,
+    "MultiplayerPvpClientRunDialogUserOffset": 15396,
     "DisableDeckValidation": false,
     "DontUpdateDeckEditTime": false,
-    "DeckListAlphabetical": false,
-    "DeckListByBoxThenAlphabetical": false,
+    "DeckListAlphabetical": true,
     "ShowTopics": true,
     "DeckSlots": 999,
-    "BookmarkLimit": 999,
-    "UnlockAllCards": false,// 3x of every card (STYLE: Normal)
-    "UnlockAllCardsShine": false,// 3x of every card (STYLE: Shine)
-    "UnlockAllCardsHighestRarity": false,// 3x of every card (STYLE: N/R = Shine, UR/SR = Royal)
-    "UnlockAllItems": false,// Gives every item in ItemID.json
-    "UnlockAllSoloChapters": false,// Sets every solo chapter to complete
+    "UnlockAllCards": false, // 3x of every card (STYLE: Normal)
+    "UnlockAllCardsShine": false, // 3x of every card (STYLE: Shine)
+    "UnlockAllCardsHighestRarity": false, // 3x of every card (STYLE: N/R = Shine, UR/SR = Royal)
+    "UnlockAllItems": false, // Gives every item in ItemID.json
+    "UnlockAllSoloChapters": false, // Sets every solo chapter to complete
     "SoloDisableNoShuffle": false,
     "SoloShowGateClearForAllSecretPacks": false,
-    "SoloRewardsInDuelResult": false,
+    "SoloRewardsInDuelResult": true,
     "SoloRewardsInDuelResultAreRare": false,
-    "SoloRegulationName": null,// e.g. "IDS_REGULATION_FUSION" (null = default / "IDS_CARDMENU_REGULATION_NORMAL")
     "CardCraftableAll": false,
     "DisableNoDismantle": false,
-    "DisableBanList": false,
-    "ProgressiveCardList": false,
+    "DisableBanList": true,
+    "ProgressiveCardList": true,
     "ProgressiveCardRarities": false,
     "FriendSearchLimit": 100,
     "FriendOfflineInSeconds": 300,
@@ -57,7 +56,7 @@
     "DuelRoomCommentTimeoutInSeconds": 7,
     "DuelRoomTableMatchingTimeoutInSeconds": 30,
     "DuelRoomPvpClientSetupTimeoutInSeconds": 30,
-    "DuelRoomSpectatorCardVisibility": "AllClose",// AllClose, FrontOpen, AllOpen
+    "DuelRoomSpectatorCardVisibility": "AllClose", // AllClose, FrontOpen, AllOpen
     "DuelRoomDefaultTimeIndex": 1,
     "DuelRoomTimes": [
         {
@@ -89,7 +88,10 @@
             "Time": 0
         }
     ],
-    "DuelReplaySaveForGameModes": [ "SoloSingle", "Room" ],
+    "DuelReplaySaveForGameModes": [
+        "SoloSingle",
+        "Room"
+    ],
     "DuelReplaySaveFileLimit": 50,
     "DuelReplayMakePublicByDefault": false,
     "DuelReplayCardVisibility": "FrontOpen",
@@ -97,22 +99,26 @@
     "TradeAllowOtherPlayerToRemoveYourCards": true,
     "TradeEnterRoomRequestDelayInSeconds": 1.5,
     "EmoteMaxLength": 1000,
-    "DefaultGems": 2000,
+    "DefaultGems": 0,
     "DefaultCraftPoints": {
-        "3":0,// Normal
-        "4":0,// Rare
-        "5":0,// SuperRare
-        "6":0,// UltraRare
+        "3": 0, // Normal
+        "4": 0, // Rare
+        "5": 0, // SuperRare
+        "6": 0 // UltraRare
     },
     "DefaultItems": [
-        1000001,// Rescue Rabbit (AVATAR)
-        1010001,// Duelist (ICON)
-        1030001,// ICON_FRAME01
-        1070001,// Yu-Gi-Oh! Trading Card Game (PROTECTOR)
-        1080001,// Duelist Card Case Red (DECK_CASE)
-        1090001,// Forest (FIELD)
-        1130001,// Blue-Eyes Alternative White Dragon (WALLPAPER)
-        1180001,// Blue-Eyes Alternative White Dragon (COIN)
+        1000001, // Rescue Rabbit (AVATAR)
+        1010001, // Duelist (ICON)
+        1030001, // ICON_FRAME01
+        1070001, // Yu-Gi-Oh! Trading Card Game (PROTECTOR)
+        1080001, // Duelist Card Case Red (DECK_CASE)
+        1090001, // Forest (FIELD)
+        1130001, // Blue-Eyes Alternative White Dragon (WALLPAPER)
+        1129001, // Starter Deck: Basic (STRUCTURE)
+        1129002, // Starter Deck: Fusion (STRUCTURE)
+        1129003, // Starter Deck: Synchro (STRUCTURE)
+        1129004, // Starter Deck: Xyz (STRUCTURE)
+        1129005 // Starter Deck: Pendulum (STRUCTURE)
         //1120001,// Starting Deck (STRUCTURE)
     ],
     "Craft": {
@@ -146,33 +152,37 @@
         "CraftStyleRarity": {
             // Shine/royal chance when crafting (delete to disable this)
             "Normal": {
-                "Normal": 90,
-                "Shine": 10
+                "Normal": 87.40,
+                "Shine": 9.20,
+                "Royal": 3.40
             },
             "Rare": {
-                "Normal": 90,
-                "Shine": 10
+                "Normal": 75.00,
+                "Shine": 17.65,
+                "Royal": 7.35
             },
             "SuperRare": {
-                "Normal": 90,
-                "Shine": 9,
-                "Royal": 1
+                "Normal": 56.76,
+                "Shine": 28.38,
+                "Royal": 14.86
             },
             "UltraRare": {
-                "Normal": 90,
-                "Shine": 9,
-                "Royal": 1
+                "Normal": 42.85,
+                "Shine": 34.29,
+                "Royal": 22.86
             }
         },
         "Dismantle": {
             // Rewards for dismantling cards
             "Normal": {
                 "Normal": 10,
-                "Shine": 15
+                "Shine": 15,
+                "Royal": 30
             },
             "Rare": {
                 "Normal": 10,
-                "Shine": 15
+                "Shine": 15,
+                "Royal": 30
             },
             "SuperRare": {
                 "Normal": 10,
@@ -188,179 +198,370 @@
     },
     "DuelRewards": {
         "ChapterStatusChangedMultiplier": 1.0,
-        "ChapterStatusChangedNoRewards": true,
+        "ChapterStatusChangedNoRewards": false,
         "win": [
             {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
-            },
-            {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
-            },
-            {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
+                "type": "Gem",
+                "min": 1,
+                "max": 10,
+                "rate": 100.0
             },
             {
                 "type": "Gem",
-                "value": 200,
-                "rate": 0.01,
+                "min": 5,
+                "max": 15,
+                "rate": 75.0
+            },
+            {
+                "type": "Gem",
+                "min": 5,
+                "max": 15,
+                "rate": 75.0
+            },
+            {
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 50.0
+            },
+            {
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 50.0
+            },
+            {
+                "type": "Gem",
+                "min": 25,
+                "max": 75,
+                "rate": 25.0
+            },
+            {
+                "type": "Gem",
+                "min": 25,
+                "max": 75,
+                "rate": 25.0
+            },
+            {
+                "type": "Gem",
+                "min": 50,
+                "max": 150,
+                "rate": 10.0
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    3
+                ], // CP-N
+                "value": 5,
+                "rate": 67.5
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    3
+                ], // CP-N
+                "value": 30,
+                "rate": 6.75
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    3
+                ], // CP-N
+                "value": 90,
+                "rate": 1.35
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    4
+                ], // CP-R
+                "value": 5,
+                "rate": 22.5
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    4
+                ], // CP-R
+                "value": 30,
+                "rate": 2.25
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    4
+                ], // CP-R
+                "value": 90,
+                "rate": 0.45
+            },
+            {
+                "type": "Gem",
+                "min": 150,
+                "max": 450,
+                "rate": 5.0,
                 "rare": true
             },
             {
                 "type": "Gem",
-                "min": 70,
-                "max": 120,
-                "rate": 100
+                "min": 500,
+                "max": 1500,
+                "rate": 3.0,
+                "rare": true
             },
             {
                 "type": "Gem",
-                "value": 15,
-                "rate": 15
+                "min": 1000,
+                "max": 3000,
+                "rate": 2.0,
+                "rare": true
             },
             {
                 "type": "Gem",
-                "value": 10,
-                "rate": 10
+                "min": 1500,
+                "max": 4500,
+                "rate": 1.0,
+                "rare": true
             },
             {
                 "type": "Gem",
+                "min": 3000,
+                "max": 9000,
+                "rate": 0.5,
+                "rare": true
+            },
+            {
+                "type": "Gem",
+                "min": 5000,
+                "max": 15000,
+                "rate": 0.3,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    5
+                ], // CP-SR
                 "value": 5,
-                "rate": 5
+                "rate": 7.5,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    5
+                ], // CP-SR
+                "value": 30,
+                "rate": 0.75,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    5
+                ], // CP-SR
+                "value": 90,
+                "rate": 0.15,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    6
+                ], // CP-UR
+                "value": 5,
+                "rate": 2.5,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    6
+                ], // CP-UR
+                "value": 30,
+                "rate": 0.25,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    6
+                ], // CP-UR
+                "value": 90,
+                "rate": 0.05,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "rate": 10.0,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "rate": 10.0,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "rate": 10.0,
+                "rare": true
+            }
+        ],
+        "draw": [
+            {
+                "type": "Gem",
+                "min": 1,
+                "max": 10,
+                "rate": 100.0
             },
             {
                 "type": "Gem",
-                "value": 99,
-                "rate": 0.1
+                "min": 5,
+                "max": 15,
+                "rate": 75.0
             },
             {
-                "type": "Card",
-                "cardRate": [90,10],
-                "rate": 50
+                "type": "Gem",
+                "min": 5,
+                "max": 15,
+                "rate": 75.0
             },
             {
-                "type": "Card",
-                "cardRate": [85,14,0.7,0.1],
-                "cardRare": [false,false,true,true],
-                "rate": 10
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 50.0
             },
             {
-                "type": "Card",
-                "cardRate": [60,37,2.5,0.5],
-                "cardRare": [false,false,true,true],
-                "rate": 5
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 50.0
             },
+            {
+                "type": "Gem",
+                "min": 25,
+                "max": 75,
+                "rate": 25.0
+            },
+            {
+                "type": "Gem",
+                "min": 25,
+                "max": 75,
+                "rate": 25.0
+            },
+            {
+                "type": "Gem",
+                "min": 50,
+                "max": 150,
+                "rate": 10.0
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    3
+                ], // CP-N
+                "value": 5,
+                "rate": 67.5
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    4
+                ], // CP-R
+                "value": 5,
+                "rate": 22.5
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    5
+                ], // CP-SR
+                "value": 5,
+                "rate": 7.5,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    6
+                ], // CP-UR
+                "value": 5,
+                "rate": 2.5,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "rate": 10.0,
+                "rare": true
+            },
+            {
+                "type": "Item",
+                "rate": 10.0,
+                "rare": true
+            }
         ],
         "lose": [
             {
                 "type": "Gem",
-                "min": 5,
-                "max": 20,
-                "rate": 100
+                "min": 1,
+                "max": 10,
+                "rate": 50.0
             },
             {
                 "type": "Gem",
-                "value": 8,
-                "rate": 10
+                "min": 5,
+                "max": 15,
+                "rate": 37.5
             },
             {
-                "type": "Card",
-                "cardRate": [90,9,0.7,0.1],
-                "rate": 10
+                "type": "Gem",
+                "min": 5,
+                "max": 15,
+                "rate": 37.5
             },
+            {
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 25.0
+            },
+            {
+                "type": "Gem",
+                "min": 10,
+                "max": 40,
+                "rate": 25.0
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    3
+                ], // CP-N
+                "value": 5,
+                "rate": 33.75
+            },
+            {
+                "type": "Item",
+                "ids": [
+                    4
+                ], // CP-R
+                "value": 5,
+                "rate": 11.25
+            },
+            {
+                "type": "Item",
+                "rate": 5.0,
+                "rare": true
+            }
         ]
     },
     "DuelRoomRewards": {
         "MinimumTurnsForSurrenderRewardsWin": 0,
         "MinimumTurnsForSurrenderRewardsLose": 0,
         "MinimumTurnsForSurrenderRewardsDraw": 0,
-        "win": [
-            {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
-            },
-            {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
-            },
-            {
-                "type": "Item",
-                "rate": 0.1,
-                "rare": true,
-            },
-            {
-                "type": "Gem",
-                "value": 200,
-                "rate": 0.01,
-                "rare": true
-            },
-            {
-                "type": "Gem",
-                "min": 70,
-                "max": 120,
-                "rate": 100
-            },
-            {
-                "type": "Gem",
-                "value": 15,
-                "rate": 15
-            },
-            {
-                "type": "Gem",
-                "value": 10,
-                "rate": 10
-            },
-            {
-                "type": "Gem",
-                "value": 5,
-                "rate": 5
-            },
-            {
-                "type": "Gem",
-                "value": 99,
-                "rate": 0.1
-            },
-            {
-                "type": "Card",
-                "cardRate": [90,10],
-                "rate": 50
-            },
-            {
-                "type": "Card",
-                "cardRate": [85,14,0.7,0.1],
-                "cardRare": [false,false,true,true],
-                "rate": 10
-            },
-            {
-                "type": "Card",
-                "cardRate": [60,37,2.5,0.5],
-                "cardRare": [false,false,true,true],
-                "rate": 5
-            },
-        ],
-        "lose": [
-            {
-                "type": "Gem",
-                "min": 5,
-                "max": 20,
-                "rate": 100
-            },
-            {
-                "type": "Gem",
-                "value": 8,
-                "rate": 10
-            },
-            {
-                "type": "Card",
-                "cardRate": [90,9,0.7,0.1],
-                "rate": 10
-            },
-        ]
+        "win": [],
+        "draw": [],
+        "lose": []
     }
 }

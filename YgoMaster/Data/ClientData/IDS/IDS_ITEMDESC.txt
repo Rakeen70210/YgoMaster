@@ -1,0 +1,10 @@
+[IDS_ITEMDESC.ID1129001]
+Tribute Summon "Alector, Sovereign of Birds" and "Gravi-Crush Dragon" to deal with your opponent's monsters!
+[IDS_ITEMDESC.ID1129002]
+Fusion Summon strong monsters like "First of the Dragons" that cannot be destroyed by battle, and "Blaze Fenix, the Burning Bombardment Bird" that can deal damage to your opponent directly!
+[IDS_ITEMDESC.ID1129003]
+Synchro summon "Giganticastle" to crush your opponents with raw power, or punish them for playing Spells and Traps with "Blood Mefist"!
+[IDS_ITEMDESC.ID1129004]
+This deck features many Xyz Monsters, each with unique effects that give you an option for every situation!
+[IDS_ITEMDESC.ID1129005]
+"Dragon Horn Hunter" and "Lancephorhynchus" buffs your Normal Monsters while in the Pendulum Zone, and lets you Pendulum Summon multiple Effect Monsters to take over the duel!

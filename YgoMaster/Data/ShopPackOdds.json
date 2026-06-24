@@ -1,4 +1,288 @@
 [
     {"packTypes":[3],"gachaType":3,"cardRateList":[{"start_num":1,"end_num":4,"standard":true,"rate":{"4":{"num":693,"rate":"2.50"},"3":{"num":1508,"rate":"7.50"},"2":{"num":1957,"rate":"35.00"},"1":{"num":2592,"rate":"55.00"}}},{"start_num":5,"end_num":7,"standard":false,"rate":{"4":{"num":5,"rate":"2.50"},"3":{"num":8,"rate":"7.50"},"2":{"num":10,"rate":"35.00"},"1":{"num":14,"rate":"55.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":2,"settle_rare_max":4,"rate":{"4":{"num":5,"rate":"2.50"},"3":{"num":8,"rate":"7.50"},"2":{"num":10,"rate":"90.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":3,"settle_rare_max":4,"rate":{"4":{"num":5,"rate":"20.00"},"3":{"num":8,"rate":"80.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":4,"settle_rare_max":4,"rate":{"4":{"num":5,"rate":"100.00"}}}],"premiereRateList":[{"rare":[4,3],"rate":{"3":"1.00","2":"9.00","1":"90.00"}},{"rare":[2,1],"rate":{"2":"10.00","1":"90.00"}}]},
-    {"packTypes":[1,2,4],"gachaType":1,"cardRateList":[{"start_num":1,"end_num":7,"standard":false,"rate":{"4":{"num":693,"rate":"2.50"},"3":{"num":1508,"rate":"7.50"},"2":{"num":1957,"rate":"35.00"},"1":{"num":2592,"rate":"55.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":2,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"2.50"},"3":{"num":1508,"rate":"7.50"},"2":{"num":1957,"rate":"90.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":3,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"20.00"},"3":{"num":1508,"rate":"80.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":4,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"100.00"}}}],"premiereRateList":[{"rare":[4,3],"rate":{"3":"1.00","2":"9.00","1":"90.00"}},{"rare":[2,1],"rate":{"2":"10.00","1":"90.00"}}]}
+    {"packTypes":[1,2,4],"gachaType":1,"cardRateList":[{"start_num":1,"end_num":7,"standard":false,"rate":{"4":{"num":693,"rate":"2.50"},"3":{"num":1508,"rate":"7.50"},"2":{"num":1957,"rate":"35.00"},"1":{"num":2592,"rate":"55.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":2,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"2.50"},"3":{"num":1508,"rate":"7.50"},"2":{"num":1957,"rate":"90.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":3,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"20.00"},"3":{"num":1508,"rate":"80.00"}}},{"start_num":8,"end_num":8,"standard":false,"settle_rare_min":4,"settle_rare_max":4,"rate":{"4":{"num":693,"rate":"100.00"}}}],"premiereRateList":[{"rare":[4,3],"rate":{"3":"1.00","2":"9.00","1":"90.00"}},{"rare":[2,1],"rate":{"2":"10.00","1":"90.00"}}]},
+    {
+        "name": "default",
+        "cardRateList": [
+            {
+                "start_num": 1,
+                "end_num": 7,
+                "standard": false,
+                "rate": {
+                    "4": { "rate": 2.50 },
+                    "3": { "rate": 7.50 },
+                    "2": { "rate": 22.50 },
+                    "1": { "rate": 67.50 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 2,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 2.50 },
+                    "3": { "rate": 7.50 },
+                    "2": { "rate": 90.00 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 3,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 20.00 },
+                    "3": { "rate": 80.00 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 4,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 100.00 }
+                }
+            }
+        ],
+        "premiereRateList":[
+            {
+                "rare":[4],
+                "rate":{
+                    "3": 2.00,
+                    "2": 18.00,
+                    "1": 80.00
+                }
+            },
+            {
+                "rare":[3],
+                "rate":{
+                    "3": 1.60,
+                    "2": 14.40,
+                    "1": 84.00
+                }
+            },
+            {
+                "rare":[2],
+                "rate":{
+                    "3": 1.20,
+                    "2": 10.80,
+                    "1": 88.00
+                }
+            },
+            {
+                "rare":[1],
+                "rate":{
+                    "3": 0.80,
+                    "2": 7.20,
+                    "1": 92.00
+                }
+            }
+        ],
+        "minPackRate": {
+            "rarity": {
+                "4": 0.158,
+                "3": 0.274,
+                "2": 0.474
+            },
+            "style": {
+                "3": 0.099,
+                "2": 0.297
+            },
+            "upgradeOtherType": 10.0
+        },
+        "altArtRate": 20.0
+    },
+    {
+        "name": "secret",
+        "cardRateList": [
+            {
+                "start_num": 1,
+                "end_num": 4,
+                "standard": true,
+                "rate": {
+                    "4": { "rate": 2.50 },
+                    "3": { "rate": 7.50 },
+                    "2": { "rate": 22.50 },
+                    "1": { "rate": 67.50 }
+                }
+            },
+            {
+                "start_num": 5,
+                "end_num": 7,
+                "standard": false,
+                "rate": {
+                    "4": { "rate": 2.50 },
+                    "3": { "rate": 7.50 },
+                    "2": { "rate": 22.50 },
+                    "1": { "rate": 67.50 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 2,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 2.50 },
+                    "3": { "rate": 7.50 },
+                    "2": { "rate": 90.00 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 3,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 20.00 },
+                    "3": { "rate": 80.00 }
+                }
+            },
+            {
+                "start_num": 8,
+                "end_num": 8,
+                "standard": false,
+                "settle_rare_min": 4,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 100.00 }
+                }
+            }
+        ],
+        "premiereRateList":[
+            {
+                "rare":[4],
+                "rate":{
+                    "3": 2.00,
+                    "2": 18.00,
+                    "1": 80.00
+                }
+            },
+            {
+                "rare":[3],
+                "rate":{
+                    "3": 1.60,
+                    "2": 14.40,
+                    "1": 84.00
+                }
+            },
+            {
+                "rare":[2],
+                "rate":{
+                    "3": 1.20,
+                    "2": 10.80,
+                    "1": 88.00
+                }
+            },
+            {
+                "rare":[1],
+                "rate":{
+                    "3": 0.80,
+                    "2": 7.20,
+                    "1": 92.00
+                }
+            }
+        ],
+        "minPackRate": {
+            "rarity": {
+                "4": 0.158,
+                "3": 0.274,
+                "2": 0.474
+            },
+            "style": {
+                "3": 0.099,
+                "2": 0.297
+            },
+            "upgradeOtherType": 10.0
+        },
+        "altArtRate": 20.0
+    },
+    {
+        "name": "premium",
+        "cardRateList": [
+            {
+                "start_num": 1,
+                "end_num": 4,
+                "standard": false,
+                "rate": {
+                    "4": { "rate": 10.00 },
+                    "3": { "rate": 20.00 },
+                    "2": { "rate": 30.00 },
+                    "1": { "rate": 40.00 }
+                }
+            },
+            {
+                "start_num": 5,
+                "end_num": 5,
+                "standard": false,
+                "settle_rare_min": 2,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 10.00 },
+                    "3": { "rate": 20.00 },
+                    "2": { "rate": 70.00 }
+                }
+            },
+            {
+                "start_num": 5,
+                "end_num": 5,
+                "standard": false,
+                "settle_rare_min": 3,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 25.00 },
+                    "3": { "rate": 75.00 }
+                }
+            },
+            {
+                "start_num": 5,
+                "end_num": 5,
+                "standard": false,
+                "settle_rare_min": 4,
+                "settle_rare_max": 4,
+                "rate": {
+                    "4": { "rate": 100.00 }
+                }
+            },
+            {
+                "start_num": 6,
+                "end_num": 8,
+                "standard": false,
+                "rate": {
+                    "4": { "rate": 10.00 },
+                    "3": { "rate": 20.00 },
+                    "2": { "rate": 30.00 },
+                    "1": { "rate": 40.00 }
+                }
+            }
+        ],
+        "premiereRateList":[
+            {
+                "rare":[4,3,2,1],
+                "rate":{
+                    "3": 10.00,
+                    "2": 90.00
+                }
+            }
+        ],
+        "minPackRate": {
+            "rarity": {
+                "4": 0.316,
+                "3": 0.447,
+                "2": 0.548
+            },
+            "style": {
+                "3": 0.316
+            },
+            "upgradeOtherType": 10.0
+        },
+        "altArtRate": 20.0
+    }
 ]

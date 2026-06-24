@@ -52,8 +52,6 @@
     "CustomTextDuelStarterHand2": "Hand2",
     "CustomTextDuelStarterSleeve1": "Sleeve1",
     "CustomTextDuelStarterSleeve2": "Sleeve2",
-    "CustomTextDuelStarterExSleeve1": "Sleeve1 (EX)",
-    "CustomTextDuelStarterExSleeve2": "Sleeve2 (EX)",
     "CustomTextDuelStarterField1": "Field1",
     "CustomTextDuelStarterField2": "Field2",
     "CustomTextDuelStarterFieldPart1": "FieldPart1",
@@ -110,12 +108,12 @@
     "CustomTextCardStatsOwned3x": "[Owned cards (up to 3x)]",
     "CustomTextCardStatsOwned3xEx": "[Extra cards (over 3x)]",
     "CustomTextCardStatsNormal": "Normal: ",
-    "CustomTextCardStatsShine": "Shine: ",
+    "CustomTextCardStatsShine": "Glossy: ",
     "CustomTextCardStatsRoyal": "Royal: ",
-    "CustomTextCardStatsRarity1x": "[Rarity (1x)]",
-    "CustomTextCardStatsRarity3x": "[Rarity (up to 3x)]",
-    "CustomTextCardStatsRarity3xEx": "[Rarity (over 3x)]",
-    "CustomTextCardStatsIndex": "======== Index ========\n- \"Card pool\" is all cards in the game\n- \"Owned cards (1x)\" is all cards you own capped to 1x per card\n- \"Owned cards (up to 3x)\" is all cards you own capped to 3x per card\n- \"Extra cards (over 3x)\" is all cards you own over 3x (excludes the first 3x)\n- \"Rarity (1x)\" is all rarities you own capped to 1x per card\n- \"Rarity (up to 3x)\" is all rarities you own capped to 3x per card\n- \"Rarity (over 3x)\" is all rarities you own over 3x (excludes the first 3x)",
+    "CustomTextCardStatsRarity1x": "[Finishes (1x)]",
+    "CustomTextCardStatsRarity3x": "[Finishes (up to 3x)]",
+    "CustomTextCardStatsRarity3xEx": "[Finishes (over 3x)]",
+    "CustomTextCardStatsIndex": "======== Index ========\n- \"Card pool\" is all cards in the game.\n- \"Owned cards (1x)\" is all cards you own capped to 1x per card.\n- \"Owned cards (up to 3x)\" is all cards you own capped to 3x per card.\n- \"Extra cards (over 3x)\" is all cards you own over 3x (excludes the first 3x).\n- \"Finishes (1x)\" is all finishes you own capped to 1x per card.\n- \"Finishes (up to 3x)\" is all finishes you own capped to 3x per card.\n- \"Finishes (over 3x)\" is all finishes you own over 3x (excludes the first 3x).",
     
     "CustomTextProfileTradeButton": "Trade",
     "CustomTextTradeBannerAlreadyTrading": "{name} ({code}) is in another trading room",
@@ -144,5 +142,5 @@
     "CustomTextFileLoadErrorEx": "How to fix this error:\ngithub.com/pixeltris/YgoMaster/blob/master/Docs/FileLoadError.md\n\n",
 
     "CustomTextVisualNovelNext": "Next",
-    "CustomTextVisualNovelSkip": "Skip",
+    "CustomTextVisualNovelSkip": "Skip"
 }

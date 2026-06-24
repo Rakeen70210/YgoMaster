@@ -6,7 +6,7 @@
     "SessionServerIP": "{BaseIP}",
     "ServerUrl": "http://localhost:{ProxyPort}/ygo",
     "ServerPollUrl": "http://localhost:{ProxyPort}/ygo/poll",
-    "MultiplayerToken": "",// [WARNING] Only use this if you know what you're doing
+    "MultiplayerToken": "8ce1a5f9890932bf7fcb2ad0df155eff",// [WARNING] Only use this if you know what you're doing
     "MultiplayerPingTimeoutInSeconds": 90,
     "MultiplayerConnectDelayInSeconds": 10,
     "MultiplayerNoDelay": true,
@@ -73,7 +73,7 @@
     "HomeDisableUnusedHeaders": true,
     "HomeDisableUnusedBanners": true,
     "HomeDisableUnusedTopics": true,
-    "DontAutoRunServerExe": false,
+    "DontAutoRunServerExe": true,
     "ReflectionValidatorDump": false,
     "ReflectionValidatorValidate": false,
     "DisableSoloVisualNovel": false,

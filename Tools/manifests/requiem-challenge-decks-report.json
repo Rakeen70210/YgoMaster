@@ -1,0 +1,622 @@
+{
+  "added_count": 59,
+  "added": [
+    {
+      "deck_id": 626,
+      "chapter_id": 11110025,
+      "gate": 1111,
+      "title": "Ancient Spirits",
+      "character": "Noah Kaiba",
+      "character_code": "noahkaiba",
+      "deck_file": "requiem81_noah_hard",
+      "source_deck_file": "requiem81_noah_hard"
+    },
+    {
+      "deck_id": 627,
+      "chapter_id": 11110026,
+      "gate": 1111,
+      "title": "Releasing The Chains",
+      "character": "Lumis And Umbra",
+      "character_code": "lumisumbra",
+      "deck_file": "requiem82_lumisumbra_hard",
+      "source_deck_file": "requiem82_lumisumbra_hard"
+    },
+    {
+      "deck_id": 628,
+      "chapter_id": 11110027,
+      "gate": 1111,
+      "title": "Graydle Control",
+      "character": "Joey",
+      "character_code": "joeymindcontrolled",
+      "deck_file": "requiem83_joey_hard",
+      "source_deck_file": "requiem83_joey_hard"
+    },
+    {
+      "deck_id": 629,
+      "chapter_id": 11110028,
+      "gate": 1111,
+      "title": "Blue-Eyes Unleashed",
+      "character": "Seto Kaiba",
+      "character_code": "kaibadsod",
+      "deck_file": "requiem84_kaiba_hard",
+      "source_deck_file": "requiem84_kaiba_hard"
+    },
+    {
+      "deck_id": 630,
+      "chapter_id": 11110029,
+      "gate": 1111,
+      "title": "Time Thief",
+      "character": "Paradox Brothers",
+      "character_code": "paradoxbrothers",
+      "deck_file": "requiem85_paradox_hard",
+      "source_deck_file": "requiem85_paradox_hard"
+    },
+    {
+      "deck_id": 631,
+      "chapter_id": 11150032,
+      "gate": 1115,
+      "title": "Sacred Nephthys",
+      "character": "Grace Tyler",
+      "character_code": "gracetyler",
+      "deck_file": "requiem86_grace_hard",
+      "source_deck_file": "requiem86_grace_hard"
+    },
+    {
+      "deck_id": 632,
+      "chapter_id": 11150033,
+      "gate": 1115,
+      "title": "Magnet Conductors",
+      "character": "Gloria Tyler",
+      "character_code": "gloriatyler",
+      "deck_file": "requiem87_gloria_hard",
+      "source_deck_file": "requiem87_gloria_hard"
+    },
+    {
+      "deck_id": 633,
+      "chapter_id": 11120028,
+      "gate": 1112,
+      "title": "Cyber Angel Squad",
+      "character": "Alexis Rhodes",
+      "character_code": "alexisrhodessol",
+      "deck_file": "requiem88_alexis_hard",
+      "source_deck_file": "requiem88_alexis_hard"
+    },
+    {
+      "deck_id": 634,
+      "chapter_id": 11110030,
+      "gate": 1111,
+      "title": "Heavy Mech",
+      "character": "Duke Devlin",
+      "character_code": "dukedevlin",
+      "deck_file": "requiem89_duke_hard",
+      "source_deck_file": "requiem89_duke_hard"
+    },
+    {
+      "deck_id": 635,
+      "chapter_id": 11110031,
+      "gate": 1111,
+      "title": "Sweet Symphony",
+      "character": "Sera",
+      "character_code": "sera",
+      "deck_file": "requiem90_sera_hard",
+      "source_deck_file": "requiem90_sera_hard"
+    },
+    {
+      "deck_id": 636,
+      "chapter_id": 11110032,
+      "gate": 1111,
+      "title": "Magicians",
+      "character": "Rebecca Hawkins",
+      "character_code": "rebecca",
+      "deck_file": "requiem91_dmg_hard",
+      "source_deck_file": "requiem91_dmg_hard"
+    },
+    {
+      "deck_id": 637,
+      "chapter_id": 11120029,
+      "gate": 1112,
+      "title": "Gentle Fragrance",
+      "character": "Jasmine",
+      "character_code": "jasmine",
+      "deck_file": "requiem92_jasmine_hard",
+      "source_deck_file": "requiem92_jasmine_hard"
+    },
+    {
+      "deck_id": 638,
+      "chapter_id": 11120030,
+      "gate": 1112,
+      "title": "Madolche",
+      "character": "Mindy",
+      "character_code": "mindy",
+      "deck_file": "requiem93_mindy_hard",
+      "source_deck_file": "requiem93_mindy_hard"
+    },
+    {
+      "deck_id": 639,
+      "chapter_id": 11120031,
+      "gate": 1112,
+      "title": "CyberDarkWave",
+      "character": "Zane Truesdale",
+      "character_code": "darkzane",
+      "deck_file": "requiem94_darkzane_hard",
+      "source_deck_file": "requiem94_darkzane_hard"
+    },
+    {
+      "deck_id": 640,
+      "chapter_id": 11130030,
+      "gate": 1113,
+      "title": "Oblivion",
+      "character": "Mina Simington",
+      "character_code": "minasimington",
+      "deck_file": "requiem95_mina_hard",
+      "source_deck_file": "requiem95_mina_hard"
+    },
+    {
+      "deck_id": 641,
+      "chapter_id": 11120032,
+      "gate": 1112,
+      "title": "Masked Heroes",
+      "character": "Jaden Yuki",
+      "character_code": "jadenyuki2",
+      "deck_file": "requiem96_jaden_hard",
+      "source_deck_file": "requiem96_jaden_hard"
+    },
+    {
+      "deck_id": 642,
+      "chapter_id": 11130031,
+      "gate": 1113,
+      "title": "Powered Up Machina",
+      "character": "Blister",
+      "character_code": "blister",
+      "deck_file": "requiem97_blister_hard",
+      "source_deck_file": "requiem97_blister_hard"
+    },
+    {
+      "deck_id": 643,
+      "chapter_id": 11120033,
+      "gate": 1112,
+      "title": "World Chalice",
+      "character": "Sarina",
+      "character_code": "sarina",
+      "deck_file": "requiem98_sarina_hard",
+      "source_deck_file": "requiem98_sarina_hard"
+    },
+    {
+      "deck_id": 644,
+      "chapter_id": 11120034,
+      "gate": 1112,
+      "title": "Evil Heroes Return",
+      "character": "Supreme King",
+      "character_code": "supremeking",
+      "deck_file": "requiem99_supremeking_hard",
+      "source_deck_file": "requiem99_supremeking_hard"
+    },
+    {
+      "deck_id": 645,
+      "chapter_id": 11120035,
+      "gate": 1112,
+      "title": "Regal Birds",
+      "character": "Fonda Fontaine",
+      "character_code": "fonda",
+      "deck_file": "requiem100_fonda_hard",
+      "source_deck_file": "requiem100_fonda_hard"
+    },
+    {
+      "deck_id": 646,
+      "chapter_id": 11130032,
+      "gate": 1113,
+      "title": "Ways Of The Shiranui",
+      "character": "Paradox",
+      "character_code": "paradox",
+      "deck_file": "requiem101_paradox_hard",
+      "source_deck_file": "requiem101_paradox_hard"
+    },
+    {
+      "deck_id": 647,
+      "chapter_id": 11110033,
+      "gate": 1111,
+      "title": "Mecha Beasts",
+      "character": "Anubis",
+      "character_code": "anubis",
+      "deck_file": "requiem102_anubis_hard",
+      "source_deck_file": "requiem102_anubis_hard"
+    },
+    {
+      "deck_id": 648,
+      "chapter_id": 11130033,
+      "gate": 1113,
+      "title": "Reptilianne Swarm",
+      "character": "Misty Tredwell",
+      "character_code": "mistyver2",
+      "deck_file": "requiem103_misty_hard",
+      "source_deck_file": "requiem103_misty_hard"
+    },
+    {
+      "deck_id": 649,
+      "chapter_id": 11130034,
+      "gate": 1113,
+      "title": "Whispers Of Death",
+      "character": "Dark Signer Misty",
+      "character_code": "darksignermistyver2",
+      "deck_file": "requiem104_misty2_hard",
+      "source_deck_file": "requiem104_misty2_hard"
+    },
+    {
+      "deck_id": 650,
+      "chapter_id": 11130035,
+      "gate": 1113,
+      "title": "Daily Horoscope",
+      "character": "Carly Carmine",
+      "character_code": "carlyver2",
+      "deck_file": "requiem105_carly_hard",
+      "source_deck_file": "requiem105_carly_hard"
+    },
+    {
+      "deck_id": 651,
+      "chapter_id": 11130036,
+      "gate": 1113,
+      "title": "Witchcraft",
+      "character": "Dark Signer Carly",
+      "character_code": "darksignercarlyver2",
+      "deck_file": "requiem106_carly2_hard",
+      "source_deck_file": "requiem106_carly2_hard"
+    },
+    {
+      "deck_id": 652,
+      "chapter_id": 11110034,
+      "gate": 1111,
+      "title": "Folly Of Youth",
+      "character": "Espa Roba",
+      "character_code": "esparoba",
+      "deck_file": "requiem107_espa_hard",
+      "source_deck_file": "requiem107_espa_hard"
+    },
+    {
+      "deck_id": 653,
+      "chapter_id": 11110035,
+      "gate": 1111,
+      "title": "World Legacy",
+      "character": "Zigfried von Schroeder",
+      "character_code": "zigfried",
+      "deck_file": "requiem108_zigfried_hard",
+      "source_deck_file": "requiem108_zigfried_hard"
+    },
+    {
+      "deck_id": 654,
+      "chapter_id": 11110036,
+      "gate": 1111,
+      "title": "Quantum Affinity",
+      "character": "Leon von Schroeder",
+      "character_code": "leon",
+      "deck_file": "requiem109_leon_hard",
+      "source_deck_file": "requiem109_leon_hard"
+    },
+    {
+      "deck_id": 655,
+      "chapter_id": 11120036,
+      "gate": 1112,
+      "title": "Malice Of The Evilswarm",
+      "character": "Yusuke",
+      "character_code": "yusuke",
+      "deck_file": "requiem110_yusuke_hard",
+      "source_deck_file": "requiem110_yusuke_hard"
+    },
+    {
+      "deck_id": 656,
+      "chapter_id": 11140029,
+      "gate": 1114,
+      "title": "Friggin' Bees!",
+      "character": "Lotus",
+      "character_code": "lotus",
+      "deck_file": "requiem111_lotus_hard",
+      "source_deck_file": "requiem111_lotus_hard"
+    },
+    {
+      "deck_id": 657,
+      "chapter_id": 11110037,
+      "gate": 1111,
+      "title": "Fly My Pretties",
+      "character": "Mai Valentine",
+      "character_code": "maivalentine_alternate",
+      "deck_file": "requiem112_mai_hard",
+      "source_deck_file": "requiem112_mai_hard"
+    },
+    {
+      "deck_id": 658,
+      "chapter_id": 11130037,
+      "gate": 1113,
+      "title": "Ghosttrick",
+      "character": "Carly Carmine",
+      "character_code": "carlycarmine_glasses",
+      "deck_file": "requiem113_carlyglasses_hard",
+      "source_deck_file": "requiem113_carlyglasses_hard"
+    },
+    {
+      "deck_id": 659,
+      "chapter_id": 11160020,
+      "gate": 1116,
+      "title": "The Summoned Skull",
+      "character": "The Vagrant",
+      "character_code": "vagrant",
+      "deck_file": "requiem114_vagrant_hard",
+      "source_deck_file": "requiem114_vagrant_hard"
+    },
+    {
+      "deck_id": 660,
+      "chapter_id": 11110038,
+      "gate": 1111,
+      "title": "Spell It Out",
+      "character": "Aigami",
+      "character_code": "aigami",
+      "deck_file": "requiem115_aigami_hard",
+      "source_deck_file": "requiem115_aigami_hard"
+    },
+    {
+      "deck_id": 661,
+      "chapter_id": 11130038,
+      "gate": 1113,
+      "title": "The Darklords",
+      "character": "Jakob",
+      "character_code": "jakob",
+      "deck_file": "requiem116_jakob_hard",
+      "source_deck_file": "requiem116_jakob_hard"
+    },
+    {
+      "deck_id": 662,
+      "chapter_id": 11130039,
+      "gate": 1113,
+      "title": "Comic Book",
+      "character": "Lazar",
+      "character_code": "lazar",
+      "deck_file": "requiem117_lazar_hard",
+      "source_deck_file": "requiem117_lazar_hard"
+    },
+    {
+      "deck_id": 663,
+      "chapter_id": 11130040,
+      "gate": 1113,
+      "title": "Household Chores",
+      "character": "Luna",
+      "character_code": "luna",
+      "deck_file": "requiem118_luna_hard",
+      "source_deck_file": "requiem118_luna_hard"
+    },
+    {
+      "deck_id": 664,
+      "chapter_id": 11130041,
+      "gate": 1113,
+      "title": "Genex",
+      "character": "Rally Dawson",
+      "character_code": "rallydawson",
+      "deck_file": "requiem119_rally_hard",
+      "source_deck_file": "requiem119_rally_hard"
+    },
+    {
+      "deck_id": 665,
+      "chapter_id": 11130042,
+      "gate": 1113,
+      "title": "Master Of The Tenyi",
+      "character": "Tenzen Yanagi",
+      "character_code": "tenzenyanagi",
+      "deck_file": "requiem120_tenzen_hard",
+      "source_deck_file": "requiem120_tenzen_hard"
+    },
+    {
+      "deck_id": 666,
+      "chapter_id": 11150034,
+      "gate": 1115,
+      "title": "Hazy Flame",
+      "character": "Leo Akaba (Professor)",
+      "character_code": "leoakaba",
+      "deck_file": "requiem121_leo_hard",
+      "source_deck_file": "requiem121_leo_hard"
+    },
+    {
+      "deck_id": 667,
+      "chapter_id": 11150035,
+      "gate": 1115,
+      "title": "Generaider",
+      "character": "Henrietta Akaba",
+      "character_code": "henriettaakaba",
+      "deck_file": "requiem122_henrietta_hard",
+      "source_deck_file": "requiem122_henrietta_hard"
+    },
+    {
+      "deck_id": 668,
+      "chapter_id": 11150036,
+      "gate": 1115,
+      "title": "Endymion's Lessons",
+      "character": "Ray Akaba",
+      "character_code": "rayakaba",
+      "deck_file": "requiem123_ray_hard",
+      "source_deck_file": "requiem123_ray_hard"
+    },
+    {
+      "deck_id": 669,
+      "chapter_id": 11150037,
+      "gate": 1115,
+      "title": "Ancient Kings",
+      "character": "Riley",
+      "character_code": "rileyakaba",
+      "deck_file": "requiem124_riley_hard",
+      "source_deck_file": "requiem124_riley_hard"
+    },
+    {
+      "deck_id": 670,
+      "chapter_id": 11110039,
+      "gate": 1111,
+      "title": "Stepping Out Of His Shadow",
+      "character": "Mokuba Kaiba",
+      "character_code": "mokubakaiba",
+      "deck_file": "requiem125_mokuba_hard",
+      "source_deck_file": "requiem125_mokuba_hard"
+    },
+    {
+      "deck_id": 671,
+      "chapter_id": 11110040,
+      "gate": 1111,
+      "title": "Secrets Of The Mayakashi",
+      "character": "Shadi",
+      "character_code": "shadi",
+      "deck_file": "requiem126_shadi_hard",
+      "source_deck_file": "requiem126_shadi_hard"
+    },
+    {
+      "deck_id": 672,
+      "chapter_id": 11110041,
+      "gate": 1111,
+      "title": "Danger Nearby",
+      "character": "Solomon Muto",
+      "character_code": "solomonmuto",
+      "deck_file": "requiem127_grandpa_hard",
+      "source_deck_file": "requiem127_grandpa_hard"
+    },
+    {
+      "deck_id": 673,
+      "chapter_id": 11110042,
+      "gate": 1111,
+      "title": "Dinowrestling",
+      "character": "Tristan Taylor",
+      "character_code": "tristantaylor",
+      "deck_file": "requiem128_tristan_hard",
+      "source_deck_file": "requiem128_tristan_hard"
+    },
+    {
+      "deck_id": 674,
+      "chapter_id": 11120037,
+      "gate": 1112,
+      "title": "Power Of The Red-Eyes",
+      "character": "Atticus Rhodes",
+      "character_code": "atticusrhodesunmasked",
+      "deck_file": "requiem129_atticus_hard",
+      "source_deck_file": "requiem129_atticus_hard"
+    },
+    {
+      "deck_id": 675,
+      "chapter_id": 11120038,
+      "gate": 1112,
+      "title": "Magical Musketeers",
+      "character": "Vice Chancellor Bonaparte",
+      "character_code": "bonaparte",
+      "deck_file": "requiem130_bonaparte_hard",
+      "source_deck_file": "requiem130_bonaparte_hard"
+    },
+    {
+      "deck_id": 676,
+      "chapter_id": 11120039,
+      "gate": 1112,
+      "title": "Today's Math Lesson",
+      "character": "Prof. Lyman Banner",
+      "character_code": "professorbanner",
+      "deck_file": "requiem131_banner_hard",
+      "source_deck_file": "requiem131_banner_hard"
+    },
+    {
+      "deck_id": 677,
+      "chapter_id": 11120040,
+      "gate": 1112,
+      "title": "Kuriboh Chaos",
+      "character": "Winged Kuriboh",
+      "character_code": "wingedkuriboh",
+      "deck_file": "requiem132_kuriboh_hard",
+      "source_deck_file": "requiem132_kuriboh_hard"
+    },
+    {
+      "deck_id": 678,
+      "chapter_id": 11130043,
+      "gate": 1113,
+      "title": "Monarchs",
+      "character": "The Vagabond",
+      "character_code": "in4m8",
+      "deck_file": "requiem133_vagabond_hard",
+      "source_deck_file": "requiem133_vagabond_hard"
+    },
+    {
+      "deck_id": 679,
+      "chapter_id": 11160021,
+      "gate": 1116,
+      "title": "Evil Eyes",
+      "character": "Tour Guide",
+      "character_code": "infn8",
+      "deck_file": "requiem134_tourguide_hard",
+      "source_deck_file": "requiem134_tourguide_hard"
+    },
+    {
+      "deck_id": 680,
+      "chapter_id": 11140030,
+      "gate": 1114,
+      "title": "Aquaactresses",
+      "character": "Marin",
+      "character_code": "marin",
+      "deck_file": "requiem135_marin_hard",
+      "source_deck_file": "requiem135_marin_hard"
+    },
+    {
+      "deck_id": 681,
+      "chapter_id": 11140031,
+      "gate": 1114,
+      "title": "Naturia's Blessings",
+      "character": "Tori Meadows",
+      "character_code": "torimeadows",
+      "deck_file": "requiem136_tori_hard",
+      "source_deck_file": "requiem136_tori_hard"
+    },
+    {
+      "deck_id": 682,
+      "chapter_id": 11120041,
+      "gate": 1112,
+      "title": "Chazz It Up!",
+      "character": "Chazz",
+      "character_code": "chazzsol",
+      "deck_file": "requiem137_chazz_hard",
+      "source_deck_file": "requiem136_chazz_hard"
+    },
+    {
+      "deck_id": 683,
+      "chapter_id": 11120042,
+      "gate": 1112,
+      "title": "Megaliths",
+      "character": "Abidos the Third",
+      "character_code": "shadowrider",
+      "deck_file": "requiem137_abidos_hard",
+      "source_deck_file": "requiem137_abidos_hard"
+    },
+    {
+      "deck_id": 684,
+      "chapter_id": 11120043,
+      "gate": 1112,
+      "title": "The Don",
+      "character": "Don Zaloog",
+      "character_code": "donzaloog",
+      "deck_file": "requiem138_don_hard",
+      "source_deck_file": "requiem138_don_hard"
+    }
+  ],
+  "missing_cards": [],
+  "substitutions": [
+    {
+      "deck_id": 629,
+      "chapter_id": 11110028,
+      "deck_file": "requiem84_kaiba_hard",
+      "source_deck_file": "requiem84_kaiba_hard",
+      "from_passcode": 43228023,
+      "to_passcode": 23995346
+    },
+    {
+      "deck_id": 674,
+      "chapter_id": 11120037,
+      "deck_file": "requiem129_atticus_hard",
+      "source_deck_file": "requiem129_atticus_hard",
+      "from_passcode": 18491580,
+      "to_passcode": 88264978
+    },
+    {
+      "deck_id": 683,
+      "chapter_id": 11120042,
+      "deck_file": "requiem137_abidos_hard",
+      "source_deck_file": "requiem137_abidos_hard",
+      "from_passcode": 79613121,
+      "to_passcode": 30208479
+    }
+  ]
+}

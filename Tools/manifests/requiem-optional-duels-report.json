@@ -1,0 +1,1368 @@
+{
+  "added_count": 40,
+  "added": [
+    {
+      "requiem_duel_id": 186,
+      "chapter_id": 11010065,
+      "gate": 1101,
+      "anchor_id": 11010006,
+      "title": "Everything's Relative",
+      "matchup": "Yami Yugi vs. Mokuba Kaiba",
+      "pdeck": "requiem1_yugi",
+      "odeck": "requiem2_mokuba",
+      "story_display": 6,
+      "story_anchor_id": 11010006,
+      "guide_order": 1,
+      "archive_display": 6,
+      "archive_duel_name": "Bonus- Everything's Relative",
+      "parent_after_reconcile": 11010006,
+      "parent_after_cycle_fix": 11010006,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 187,
+      "chapter_id": 11010066,
+      "gate": 1101,
+      "anchor_id": 11010011,
+      "title": "Double Trouble Duel",
+      "matchup": "Yami Yugi vs. Paradox Brothers",
+      "pdeck": "requiem3_yugijoey",
+      "odeck": "requiem4_paradoxbrothers",
+      "story_display": 11,
+      "story_anchor_id": 11010011,
+      "guide_order": 2,
+      "archive_display": 11,
+      "archive_duel_name": "Bonus- Double Trouble Duel",
+      "parent_after_reconcile": 11010011,
+      "parent_after_cycle_fix": 11010011,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 188,
+      "chapter_id": 11010067,
+      "gate": 1101,
+      "anchor_id": 11010019,
+      "title": "Dungeon Dice Monsters",
+      "matchup": "Duke Devlin vs. Joey Wheeler",
+      "pdeck": "requiem5_duke",
+      "odeck": "requiem6_joey",
+      "story_display": 19,
+      "story_anchor_id": 11010019,
+      "guide_order": 3,
+      "archive_display": 19,
+      "archive_duel_name": "Bonus- Dungeon Dice Monsters",
+      "parent_after_reconcile": 11010019,
+      "parent_after_cycle_fix": 11010019,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 189,
+      "chapter_id": 11010068,
+      "gate": 1101,
+      "anchor_id": 11010022,
+      "title": "The ESP Duelist",
+      "matchup": "Joey Wheeler vs. Espa Roba",
+      "pdeck": "requiem7_joey",
+      "odeck": "requiem8_espa",
+      "story_display": 22,
+      "story_anchor_id": 11010022,
+      "guide_order": 4,
+      "archive_display": 22,
+      "archive_duel_name": "Bonus- The ESP Duelist",
+      "parent_after_reconcile": 11010022,
+      "parent_after_cycle_fix": 11010022,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 190,
+      "chapter_id": 11010069,
+      "gate": 1101,
+      "anchor_id": 11010026,
+      "title": "Double Duel",
+      "matchup": "Yami Yugi vs. Lumis And Umbra",
+      "pdeck": "requiem9_yugikaiba",
+      "odeck": "requiem10_lumisumbra",
+      "story_display": 26,
+      "story_anchor_id": 11010026,
+      "guide_order": 5,
+      "archive_display": 26,
+      "archive_duel_name": "Bonus- Double Duel",
+      "parent_after_reconcile": 11010026,
+      "parent_after_cycle_fix": 11010026,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 191,
+      "chapter_id": 11010070,
+      "gate": 1101,
+      "anchor_id": 11010027,
+      "title": "Friends 'Til The End",
+      "matchup": "Yugi Muto vs. Joey",
+      "pdeck": "requiem11_yugi",
+      "odeck": "requiem12_joey",
+      "story_display": 27,
+      "story_anchor_id": 11010027,
+      "guide_order": 6,
+      "archive_display": 27,
+      "archive_duel_name": "Bonus- Friends 'Til The End",
+      "parent_after_reconcile": 11010027,
+      "parent_after_cycle_fix": 11010027,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 192,
+      "chapter_id": 11010071,
+      "gate": 1101,
+      "anchor_id": 11010030,
+      "title": "Mind Game",
+      "matchup": "Yami Marik vs. Mai Valentine",
+      "pdeck": "requiem13_marik",
+      "odeck": "requiem14_mai",
+      "story_display": 30,
+      "story_anchor_id": 11010030,
+      "guide_order": 7,
+      "archive_display": 30,
+      "archive_duel_name": "Bonus- Mind Game",
+      "parent_after_reconcile": 11010030,
+      "parent_after_cycle_fix": 11010030,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 193,
+      "chapter_id": 11010072,
+      "gate": 1101,
+      "anchor_id": 11010032,
+      "title": "Showdown In The Shadows",
+      "matchup": "Yami Marik vs. Yami Bakura",
+      "pdeck": "requiem15_marik",
+      "odeck": "requiem16_bakura",
+      "story_display": 32,
+      "story_anchor_id": 11010032,
+      "guide_order": 8,
+      "archive_display": 32,
+      "archive_duel_name": "Bonus- Showdown In The Shadows",
+      "parent_after_reconcile": 11010032,
+      "parent_after_cycle_fix": 11010032,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 194,
+      "chapter_id": 11010073,
+      "gate": 1101,
+      "anchor_id": 11010033,
+      "title": "Noah's Final Threat",
+      "matchup": "Yami Yugi vs. Noah Kaiba",
+      "pdeck": "requiem17_yugi",
+      "odeck": "requiem18_noah",
+      "story_display": 33,
+      "story_anchor_id": 11010033,
+      "guide_order": 9,
+      "archive_display": 33,
+      "archive_duel_name": "Bonus- Noah's Final Threat",
+      "parent_after_reconcile": 11010033,
+      "parent_after_cycle_fix": 11010033,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 195,
+      "chapter_id": 11010074,
+      "gate": 1101,
+      "anchor_id": 11010034,
+      "title": "The Darkness Returns",
+      "matchup": "Yami Marik vs. Joey Wheeler",
+      "pdeck": "requiem19_marik",
+      "odeck": "requiem20_joey",
+      "story_display": 34,
+      "story_anchor_id": 11010034,
+      "guide_order": 10,
+      "archive_display": 34,
+      "archive_duel_name": "Bonus- The Darkness Returns",
+      "parent_after_reconcile": 11010034,
+      "parent_after_cycle_fix": 11010034,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 196,
+      "chapter_id": 11010075,
+      "gate": 1101,
+      "anchor_id": 11010042,
+      "title": "One Step Ahead",
+      "matchup": "Seto Kaiba vs. Zigfried von Schroeder",
+      "pdeck": "requiem21_kaiba",
+      "odeck": "requiem22_zigfried",
+      "story_display": 42,
+      "story_anchor_id": 11010042,
+      "guide_order": 11,
+      "archive_display": 42,
+      "archive_duel_name": "Bonus- One Step Ahead",
+      "parent_after_reconcile": 11010042,
+      "parent_after_cycle_fix": 11010042,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 197,
+      "chapter_id": 11010076,
+      "gate": 1101,
+      "anchor_id": 11010043,
+      "title": "Sinister Secrets",
+      "matchup": "Yami Yugi vs. Leon von Schroeder",
+      "pdeck": "requiem23_yugi",
+      "odeck": "requiem24_leon",
+      "story_display": 43,
+      "story_anchor_id": 11010043,
+      "guide_order": 12,
+      "archive_display": 43,
+      "archive_duel_name": "Bonus- Sinister Secrets",
+      "parent_after_reconcile": 11010043,
+      "parent_after_cycle_fix": 11010043,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 199,
+      "chapter_id": 11010077,
+      "gate": 1101,
+      "anchor_id": 11010045,
+      "title": "Dark Side of Dimensions Pt. 1",
+      "matchup": "Yami Yugi vs. Aigami",
+      "pdeck": "requiem27_yugi",
+      "odeck": "requiem28_aigami",
+      "story_display": 45,
+      "story_anchor_id": 11010045,
+      "guide_order": 14,
+      "archive_display": 45,
+      "archive_duel_name": "Bonus- Dark Side of Dimensions Pt. 1",
+      "parent_after_reconcile": 11010045,
+      "parent_after_cycle_fix": 11010045,
+      "dm_afterstory_tail": true,
+      "parent_after_dm_tail": 11010081,
+      "display_after_chapter": null,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 200,
+      "chapter_id": 11010078,
+      "gate": 1101,
+      "anchor_id": 11010046,
+      "title": "Dark Side of Dimensions Pt. 2",
+      "matchup": "Yami Yugi vs. Seto Kaiba",
+      "pdeck": "requiem29_yugi",
+      "odeck": "requiem30_kaiba",
+      "story_display": 46,
+      "story_anchor_id": 11010046,
+      "guide_order": 15,
+      "archive_display": 46,
+      "archive_duel_name": "Bonus- Dark Side of Dimensions Pt. 2",
+      "parent_after_reconcile": 11010046,
+      "parent_after_cycle_fix": 11010046,
+      "dm_afterstory_tail": true,
+      "parent_after_dm_tail": 11010077,
+      "display_after_chapter": null,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 201,
+      "chapter_id": 11010079,
+      "gate": 1101,
+      "anchor_id": 11010047,
+      "title": "Shadi Vs. Grandpa",
+      "matchup": "Shadi vs. Solomon Muto",
+      "pdeck": "requiem31_shadi",
+      "odeck": "requiem32_grandpa",
+      "story_display": 47,
+      "story_anchor_id": 11010047,
+      "guide_order": 16,
+      "archive_display": 47,
+      "archive_duel_name": "Bonus- Shadi Vs. Grandpa",
+      "parent_after_reconcile": 11010047,
+      "parent_after_cycle_fix": 11010047,
+      "dm_afterstory_tail": true,
+      "parent_after_dm_tail": 11010078,
+      "display_after_chapter": null,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 202,
+      "chapter_id": 11010080,
+      "gate": 1101,
+      "anchor_id": 11010048,
+      "title": "Rebecca Vs Tristan",
+      "matchup": "Rebecca Hawkins vs. Tristan Taylor",
+      "pdeck": "requiem47_dmg",
+      "odeck": "requiem34_tristan",
+      "story_display": 48,
+      "story_anchor_id": 11010048,
+      "guide_order": 17,
+      "archive_display": 48,
+      "archive_duel_name": "Bonus- Rebecca Vs Tristan",
+      "parent_after_reconcile": 11010048,
+      "parent_after_cycle_fix": 11010048,
+      "dm_afterstory_tail": true,
+      "parent_after_dm_tail": 11010079,
+      "display_after_chapter": null,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 198,
+      "chapter_id": 11010081,
+      "gate": 1101,
+      "anchor_id": 11010049,
+      "title": "Sera vs Anubis",
+      "matchup": "Sera vs. Anubis",
+      "pdeck": "requiem33_sera",
+      "odeck": "requiem26_anubis",
+      "story_display": 49,
+      "story_anchor_id": 11010043,
+      "guide_order": 13,
+      "archive_display": 49,
+      "archive_duel_name": "Bonus- Sera vs Anubis",
+      "parent_after_reconcile": 11010076,
+      "parent_after_cycle_fix": 11010076,
+      "dm_afterstory_tail": true,
+      "parent_after_dm_tail": 11010064,
+      "display_after_chapter": 11010064,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 204,
+      "chapter_id": 11020065,
+      "gate": 1102,
+      "anchor_id": 11020015,
+      "title": "Dormitory Demolition",
+      "matchup": "Dr. Vellian Crowler vs. Vice Chancellor Bonaparte",
+      "pdeck": "requiem37_crowler",
+      "odeck": "requiem38_bonaparte",
+      "story_display": 15,
+      "story_anchor_id": 11020015,
+      "guide_order": 19,
+      "archive_display": 15,
+      "archive_duel_name": "Bonus- Dormitory Demolition",
+      "parent_after_reconcile": 11020015,
+      "parent_after_cycle_fix": 11020015,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 207,
+      "chapter_id": 11020066,
+      "gate": 1102,
+      "anchor_id": 11020030,
+      "title": "What Lies Beneath",
+      "matchup": "Supreme King vs. Axel Brodie",
+      "pdeck": "requiem43_supremeking",
+      "odeck": "requiem44_axel",
+      "story_display": 30,
+      "story_anchor_id": 11020030,
+      "guide_order": 22,
+      "archive_display": 30,
+      "archive_duel_name": "Bonus- What Lies Beneath",
+      "parent_after_reconcile": 11020030,
+      "parent_after_cycle_fix": 11020030,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 208,
+      "chapter_id": 11020067,
+      "gate": 1102,
+      "anchor_id": 11020033,
+      "title": "The Invasion of Darkness",
+      "matchup": "Yusuke vs. Atticus Rhodes",
+      "pdeck": "requiem45_yusuke",
+      "odeck": "requiem46_atticus",
+      "story_display": 33,
+      "story_anchor_id": 11020033,
+      "guide_order": 23,
+      "archive_display": 33,
+      "archive_duel_name": "Bonus- The Invasion of Darkness",
+      "parent_after_reconcile": 11020033,
+      "parent_after_cycle_fix": 11020033,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 205,
+      "chapter_id": 11020068,
+      "gate": 1102,
+      "anchor_id": 11020036,
+      "title": "Fonda vs Sarina",
+      "matchup": "Fonda Fontaine vs. Sarina",
+      "pdeck": "requiem42_fonda",
+      "odeck": "requiem40_sarina",
+      "story_display": 36,
+      "story_anchor_id": 11020015,
+      "guide_order": 20,
+      "archive_display": 36,
+      "archive_duel_name": "Bonus- Fonda vs Sarina",
+      "parent_after_reconcile": 11020065,
+      "parent_after_cycle_fix": 11020065,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 212,
+      "chapter_id": 11020069,
+      "gate": 1102,
+      "anchor_id": 11020037,
+      "title": "Kuriboh Vs Banner",
+      "matchup": "Winged Kuriboh vs. Prof. Lyman Banner",
+      "pdeck": "requiem53_kuriboh",
+      "odeck": "requiem54_banner",
+      "story_display": 37,
+      "story_anchor_id": 11020038,
+      "guide_order": 27,
+      "archive_display": 37,
+      "archive_duel_name": "Bonus- Kuriboh Vs Banner",
+      "parent_after_reconcile": 11020070,
+      "parent_after_cycle_fix": 11020070,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 210,
+      "chapter_id": 11020070,
+      "gate": 1102,
+      "anchor_id": 11020038,
+      "title": "Obelisk Girl's Battle",
+      "matchup": "Jasmine vs. Mindy",
+      "pdeck": "requiem49_jasmine",
+      "odeck": "requiem50_mindy",
+      "story_display": 38,
+      "story_anchor_id": 11020038,
+      "guide_order": 25,
+      "archive_display": 38,
+      "archive_duel_name": "Bonus- Obelisk Girl's Battle",
+      "parent_after_reconcile": 11020038,
+      "parent_after_cycle_fix": 11020038,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 206,
+      "chapter_id": 11020071,
+      "gate": 1102,
+      "anchor_id": 11020039,
+      "title": "Shadow Rider Duel",
+      "matchup": "Don Zaloog vs. Abidos the Third",
+      "pdeck": "requiem41_jaden",
+      "odeck": "requiem39_jaden",
+      "story_display": 39,
+      "story_anchor_id": 11020033,
+      "guide_order": 24,
+      "archive_display": 39,
+      "archive_duel_name": "Bonus- Shadow Rider Duel",
+      "parent_after_reconcile": 11020067,
+      "parent_after_cycle_fix": 11020067,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 211,
+      "chapter_id": 11030065,
+      "gate": 1103,
+      "anchor_id": 11030011,
+      "title": "Good Cop, Bad Cop",
+      "matchup": "Carly Carmine vs. Tetsu Trudge",
+      "pdeck": "requiem51_carly",
+      "odeck": "requiem52_trudge",
+      "story_display": 11,
+      "story_anchor_id": 11030011,
+      "guide_order": 26,
+      "archive_display": 11,
+      "archive_duel_name": "Bonus- Good Cop, Bad Cop",
+      "parent_after_reconcile": 11030011,
+      "parent_after_cycle_fix": 11030011,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 213,
+      "chapter_id": 11030066,
+      "gate": 1103,
+      "anchor_id": 11030014,
+      "title": "Surely You Jest",
+      "matchup": "Crow Hogan vs. Lazar",
+      "pdeck": "requiem55_crow",
+      "odeck": "requiem56_lazar",
+      "story_display": 14,
+      "story_anchor_id": 11030014,
+      "guide_order": 28,
+      "archive_display": 14,
+      "archive_duel_name": "Bonus- Surely You Jest",
+      "parent_after_reconcile": 11030014,
+      "parent_after_cycle_fix": 11030014,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 214,
+      "chapter_id": 11030067,
+      "gate": 1103,
+      "anchor_id": 11030023,
+      "title": "Dawn of the Duel Board",
+      "matchup": "Lester vs. Luna",
+      "pdeck": "requiem57_lester",
+      "odeck": "requiem58_luna",
+      "story_display": 23,
+      "story_anchor_id": 11030023,
+      "guide_order": 29,
+      "archive_display": 23,
+      "archive_duel_name": "Bonus- Dawn of the Duel Board",
+      "parent_after_reconcile": 11030023,
+      "parent_after_cycle_fix": 11030023,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 215,
+      "chapter_id": 11030068,
+      "gate": 1103,
+      "anchor_id": 11030032,
+      "title": "Against All Odds",
+      "matchup": "Jakob vs. Crow Hogan",
+      "pdeck": "requiem59_jakob",
+      "odeck": "requiem60_crow",
+      "story_display": 32,
+      "story_anchor_id": 11030032,
+      "guide_order": 30,
+      "archive_display": 32,
+      "archive_duel_name": "Bonus- Against All Odds",
+      "parent_after_reconcile": 11030032,
+      "parent_after_cycle_fix": 11030032,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 216,
+      "chapter_id": 11030069,
+      "gate": 1103,
+      "anchor_id": 11030037,
+      "title": "Hanging Out in New Domino City",
+      "matchup": "Mina Simington vs. Blister",
+      "pdeck": "requiem61_mina",
+      "odeck": "requiem62_blister",
+      "story_display": 37,
+      "story_anchor_id": 11030037,
+      "guide_order": 31,
+      "archive_display": 37,
+      "archive_duel_name": "Bonus- Hanging Out in New Domino City",
+      "parent_after_reconcile": 11030037,
+      "parent_after_cycle_fix": 11030037,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 217,
+      "chapter_id": 11030070,
+      "gate": 1103,
+      "anchor_id": 11030038,
+      "title": "No One Remembers Us",
+      "matchup": "Rally Dawson vs. Tenzen Yanagi",
+      "pdeck": "requiem63_rally",
+      "odeck": "requiem64_tenzan",
+      "story_display": 38,
+      "story_anchor_id": 11030038,
+      "guide_order": 32,
+      "archive_display": 38,
+      "archive_duel_name": "Bonus- No One Remembers Us",
+      "parent_after_reconcile": 11030038,
+      "parent_after_cycle_fix": 11030038,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 209,
+      "chapter_id": 11030071,
+      "gate": 1103,
+      "anchor_id": 11030039,
+      "title": "Bonds Beyond Time",
+      "matchup": "The Vagabond vs. Paradox",
+      "pdeck": "requiem48_mc",
+      "odeck": "requiem25_paradox",
+      "story_display": 39,
+      "story_anchor_id": 11030039,
+      "guide_order": 33,
+      "archive_display": 39,
+      "archive_duel_name": "Bonus- Bonds Beyond Time",
+      "parent_after_reconcile": 11030039,
+      "parent_after_cycle_fix": 11030039,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 218,
+      "chapter_id": 11030072,
+      "gate": 1103,
+      "anchor_id": 11030040,
+      "title": "Death's Favorites, Pt. 1",
+      "matchup": "Misty Tredwell vs. Carly Carmine",
+      "pdeck": "requiem65_misty",
+      "odeck": "requiem66_carly",
+      "story_display": 40,
+      "story_anchor_id": 11030040,
+      "guide_order": 34,
+      "archive_display": 40,
+      "archive_duel_name": "Bonus- Death's Favorites, Pt. 1",
+      "parent_after_reconcile": 11030040,
+      "parent_after_cycle_fix": 11030040,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 219,
+      "chapter_id": 11030073,
+      "gate": 1103,
+      "anchor_id": 11030041,
+      "title": "Death's Favorites, Pt. 2",
+      "matchup": "Dark Signer Misty vs. Dark Signer Carly",
+      "pdeck": "requiem67_misty",
+      "odeck": "requiem68_carly",
+      "story_display": 41,
+      "story_anchor_id": 11030041,
+      "guide_order": 35,
+      "archive_display": 41,
+      "archive_duel_name": "Bonus- Death's Favorites, Pt. 2",
+      "parent_after_reconcile": 11030041,
+      "parent_after_cycle_fix": 11030041,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 220,
+      "chapter_id": 11040053,
+      "gate": 1104,
+      "anchor_id": 11040015,
+      "title": "Doom In Bloom",
+      "matchup": "Rio Kastle vs. Lotus",
+      "pdeck": "requiem69_rio",
+      "odeck": "requiem70_lotus",
+      "story_display": 15,
+      "story_anchor_id": 11040015,
+      "guide_order": 35,
+      "archive_display": 15,
+      "archive_duel_name": "Bonus- Doom In Bloom",
+      "parent_after_reconcile": 11040015,
+      "parent_after_cycle_fix": 11040015,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 221,
+      "chapter_id": 11040054,
+      "gate": 1104,
+      "anchor_id": 11040016,
+      "title": "The Friendship Games",
+      "matchup": "Rio Kastle vs. Tori Meadows",
+      "pdeck": "requiem71_rio",
+      "odeck": "requiem72_tori",
+      "story_display": 16,
+      "story_anchor_id": 11040016,
+      "guide_order": 36,
+      "archive_display": 16,
+      "archive_duel_name": "Bonus- The Friendship Games",
+      "parent_after_reconcile": 11040016,
+      "parent_after_cycle_fix": 11040016,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 222,
+      "chapter_id": 11040055,
+      "gate": 1104,
+      "anchor_id": 11040025,
+      "title": "Battle With The Barians",
+      "matchup": "Marin vs. Bronk Stone",
+      "pdeck": "requiem73_marin",
+      "odeck": "requiem74_bronk",
+      "story_display": 25,
+      "story_anchor_id": 11040025,
+      "guide_order": 37,
+      "archive_display": 25,
+      "archive_duel_name": "Bonus- Battle With The Barians",
+      "parent_after_reconcile": 11040025,
+      "parent_after_cycle_fix": 11040025,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 223,
+      "chapter_id": 11050067,
+      "gate": 1105,
+      "anchor_id": 11050034,
+      "title": "Who Gets The Kids?",
+      "matchup": "Henrietta Akaba vs. Leo Akaba (Professor)",
+      "pdeck": "requiem75_henrietta",
+      "odeck": "requiem76_leo",
+      "story_display": 34,
+      "story_anchor_id": 11050034,
+      "guide_order": 38,
+      "archive_display": 34,
+      "archive_duel_name": "Bonus- Who Gets The Kids?",
+      "parent_after_reconcile": 11050034,
+      "parent_after_cycle_fix": 11050034,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 224,
+      "chapter_id": 11050068,
+      "gate": 1105,
+      "anchor_id": 11050035,
+      "title": "Riley Vs Ray",
+      "matchup": "Ray Akaba vs. Riley",
+      "pdeck": "requiem77_ray",
+      "odeck": "requiem78_riley",
+      "story_display": 35,
+      "story_anchor_id": 11050035,
+      "guide_order": 39,
+      "archive_display": 35,
+      "archive_duel_name": "Bonus- Riley Vs Ray",
+      "parent_after_reconcile": 11050035,
+      "parent_after_cycle_fix": 11050035,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 225,
+      "chapter_id": 11050069,
+      "gate": 1105,
+      "anchor_id": 11050036,
+      "title": "Dueling Sisters",
+      "matchup": "Grace Tyler vs. Gloria Tyler",
+      "pdeck": "requiem79_gloria",
+      "odeck": "requiem80_grace",
+      "story_display": 36,
+      "story_anchor_id": 11050036,
+      "guide_order": 40,
+      "archive_display": 36,
+      "archive_duel_name": "Bonus- Dueling Sisters",
+      "parent_after_reconcile": 11050036,
+      "parent_after_cycle_fix": 11050036,
+      "layout_mode": "main_story_spine"
+    },
+    {
+      "requiem_duel_id": 203,
+      "chapter_id": 11060057,
+      "gate": 1106,
+      "anchor_id": 11060031,
+      "title": "Final Battle",
+      "matchup": "Tour Guide vs. The Vagrant",
+      "pdeck": "requiem35_tour",
+      "odeck": "requiem36_vagrant",
+      "story_display": 31,
+      "story_anchor_id": 11060031,
+      "guide_order": 18,
+      "archive_display": 31,
+      "archive_duel_name": "Bonus- Final Battle",
+      "parent_after_reconcile": 11060031,
+      "parent_after_cycle_fix": 11060031,
+      "layout_mode": "main_story_spine"
+    }
+  ],
+  "missing_cards": [],
+  "missing_portraits": [],
+  "substitutions": [
+    {
+      "duel_id": 186,
+      "chapter_id": 11010065,
+      "role": "player",
+      "deck_file": "requiem1_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 186,
+      "chapter_id": 11010065,
+      "role": "opponent",
+      "deck_file": "requiem2_mokuba",
+      "from_passcode": 58074572,
+      "to_passcode": 84257639
+    },
+    {
+      "duel_id": 187,
+      "chapter_id": 11010066,
+      "role": "player",
+      "deck_file": "requiem3_yugijoey",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 187,
+      "chapter_id": 11010066,
+      "role": "player",
+      "deck_file": "requiem3_yugijoey",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 189,
+      "chapter_id": 11010068,
+      "role": "player",
+      "deck_file": "requiem7_joey",
+      "from_passcode": 38723936,
+      "to_passcode": 43434803
+    },
+    {
+      "duel_id": 190,
+      "chapter_id": 11010069,
+      "role": "opponent",
+      "deck_file": "requiem10_lumisumbra",
+      "from_passcode": 7165085,
+      "to_passcode": 17449108
+    },
+    {
+      "duel_id": 191,
+      "chapter_id": 11010070,
+      "role": "player",
+      "deck_file": "requiem11_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 191,
+      "chapter_id": 11010070,
+      "role": "player",
+      "deck_file": "requiem11_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 191,
+      "chapter_id": 11010070,
+      "role": "player",
+      "deck_file": "requiem11_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 191,
+      "chapter_id": 11010070,
+      "role": "player",
+      "deck_file": "requiem11_yugi",
+      "from_passcode": 24096228,
+      "to_passcode": 29228529
+    },
+    {
+      "duel_id": 194,
+      "chapter_id": 11010073,
+      "role": "player",
+      "deck_file": "requiem17_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 195,
+      "chapter_id": 11010074,
+      "role": "opponent",
+      "deck_file": "requiem20_joey",
+      "from_passcode": 38723936,
+      "to_passcode": 43434803
+    },
+    {
+      "duel_id": 197,
+      "chapter_id": 11010076,
+      "role": "player",
+      "deck_file": "requiem23_yugi",
+      "from_passcode": 18807108,
+      "to_passcode": 29267084
+    },
+    {
+      "duel_id": 219,
+      "chapter_id": 11030073,
+      "role": "player",
+      "deck_file": "requiem67_misty",
+      "from_passcode": 62966332,
+      "to_passcode": 7153114
+    }
+  ],
+  "placement": "reconciled_guide_order_with_dm_afterstory_tail",
+  "placement_note": "Requiem guide numbering controls inserted order and final archive duel rows supply actual duel data. Original campaign parent links are preserved to avoid route cycles. As a targeted Duel Monsters exception, the late/movie entries Sera vs Anubis, Dark Side of Dimensions Pt. 1, Dark Side of Dimensions Pt. 2, Shadi Vs. Grandpa, and Rebecca Vs Tristan are chained after chapter 11010064 so the DM campaign continues past Yugi vs Atem instead of showing those duels as earlier side branches.",
+  "imported_portraits": [
+    {
+      "code": "paradoxbrothers",
+      "name": "Paradox Brothers"
+    },
+    {
+      "code": "dukedevlin",
+      "name": "Duke Devlin"
+    },
+    {
+      "code": "esparoba",
+      "name": "Espa Roba"
+    },
+    {
+      "code": "lumisumbra",
+      "name": "Lumis And Umbra"
+    },
+    {
+      "code": "joeymindcontrolled",
+      "name": "Joey"
+    },
+    {
+      "code": "noahkaiba",
+      "name": "Noah Kaiba"
+    },
+    {
+      "code": "zigfried",
+      "name": "Zigfried von Schroeder"
+    },
+    {
+      "code": "leon",
+      "name": "Leon von Schroeder"
+    },
+    {
+      "code": "aigami",
+      "name": "Aigami"
+    },
+    {
+      "code": "kaibadsod",
+      "name": "Seto Kaiba"
+    },
+    {
+      "code": "rebecca",
+      "name": "Rebecca Hawkins"
+    },
+    {
+      "code": "sera",
+      "name": "Sera"
+    },
+    {
+      "code": "anubis",
+      "name": "Anubis"
+    },
+    {
+      "code": "supremeking",
+      "name": "Supreme King"
+    },
+    {
+      "code": "yusuke",
+      "name": "Yusuke"
+    },
+    {
+      "code": "fonda",
+      "name": "Fonda Fontaine"
+    },
+    {
+      "code": "sarina",
+      "name": "Sarina"
+    },
+    {
+      "code": "jasmine",
+      "name": "Jasmine"
+    },
+    {
+      "code": "mindy",
+      "name": "Mindy"
+    },
+    {
+      "code": "donzaloog",
+      "name": "Don Zaloog"
+    },
+    {
+      "code": "shadowrider",
+      "name": "Abidos the Third"
+    },
+    {
+      "code": "carlycarmine_glasses",
+      "name": "Carly Carmine"
+    },
+    {
+      "code": "minasimington",
+      "name": "Mina Simington"
+    },
+    {
+      "code": "blister",
+      "name": "Blister"
+    },
+    {
+      "code": "paradox",
+      "name": "Paradox"
+    },
+    {
+      "code": "mistyver2",
+      "name": "Misty Tredwell"
+    },
+    {
+      "code": "carlyver2",
+      "name": "Carly Carmine"
+    },
+    {
+      "code": "darksignermistyver2",
+      "name": "Dark Signer Misty"
+    },
+    {
+      "code": "darksignercarlyver2",
+      "name": "Dark Signer Carly"
+    },
+    {
+      "code": "lotus",
+      "name": "Lotus"
+    },
+    {
+      "code": "gracetyler",
+      "name": "Grace Tyler"
+    },
+    {
+      "code": "gloriatyler",
+      "name": "Gloria Tyler"
+    },
+    {
+      "code": "vagrant",
+      "name": "The Vagrant"
+    }
+  ],
+  "portrait_note": "Previously missing Requiem portrait keys were extracted from pdui/dialog_chars neutral PNGs and appended to chars.png/chars.dfymoo/CharNames.json.",
+  "guide_order_source": "MoonlitDeath Requiem Mod Guide local text plus final Requiem archive /tmp/requiem-parsed.json.",
+  "guide_order_overrides": [
+    {
+      "requiem_duel_id": 198,
+      "reason": "Guide slot 13 old text says Paradox vs Anubis; final archive row is Sera vs Anubis and changelog says Anubis moved to DM to duel Sera."
+    },
+    {
+      "requiem_duel_id": 205,
+      "reason": "Final archive combines older Sarina/Fonda guide slots into Fonda vs Sarina."
+    },
+    {
+      "requiem_duel_id": 206,
+      "reason": "Final archive adds Shadow Rider Duel in the freed GX guide slot."
+    },
+    {
+      "requiem_duel_id": 212,
+      "reason": "Kuriboh vs Banner is guide-numbered after Jasmine/Mindy despite GX archive display ordering."
+    }
+  ],
+  "dm_afterstory_tail": {
+    "reason": "User observed Duel Monsters still visually ended at Yugi vs Atem; these late/movie Requiem entries were previously side branches.",
+    "gate_clear_chapter": 11010080,
+    "chain": [
+      11010064,
+      11010081,
+      11010077,
+      11010078,
+      11010079,
+      11010080
+    ],
+    "backup": "Data/Backups/requiem-dm-afterstory-before-20260621-222105/"
+  },
+  "dm_reverse_duels": [
+    {
+      "forward_chapter_id": 11010065,
+      "reverse_chapter_id": 11010100,
+      "gate": 1101,
+      "guide_order": 1,
+      "title": "Everything's Relative",
+      "matchup": "Mokuba Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010065
+    },
+    {
+      "forward_chapter_id": 11010066,
+      "reverse_chapter_id": 11010101,
+      "gate": 1101,
+      "guide_order": 2,
+      "title": "Double Trouble Duel",
+      "matchup": "Paradox Brothers vs. Yami Yugi",
+      "parent_chapter": 11010066
+    },
+    {
+      "forward_chapter_id": 11010067,
+      "reverse_chapter_id": 11010102,
+      "gate": 1101,
+      "guide_order": 3,
+      "title": "Dungeon Dice Monsters",
+      "matchup": "Joey Wheeler vs. Duke Devlin",
+      "parent_chapter": 11010067
+    },
+    {
+      "forward_chapter_id": 11010068,
+      "reverse_chapter_id": 11010103,
+      "gate": 1101,
+      "guide_order": 4,
+      "title": "The ESP Duelist",
+      "matchup": "Espa Roba vs. Joey Wheeler",
+      "parent_chapter": 11010068
+    },
+    {
+      "forward_chapter_id": 11010069,
+      "reverse_chapter_id": 11010104,
+      "gate": 1101,
+      "guide_order": 5,
+      "title": "Double Duel",
+      "matchup": "Lumis And Umbra vs. Yami Yugi",
+      "parent_chapter": 11010069
+    },
+    {
+      "forward_chapter_id": 11010070,
+      "reverse_chapter_id": 11010105,
+      "gate": 1101,
+      "guide_order": 6,
+      "title": "Friends 'Til The End",
+      "matchup": "Joey vs. Yugi Muto",
+      "parent_chapter": 11010070
+    },
+    {
+      "forward_chapter_id": 11010071,
+      "reverse_chapter_id": 11010106,
+      "gate": 1101,
+      "guide_order": 7,
+      "title": "Mind Game",
+      "matchup": "Mai Valentine vs. Yami Marik",
+      "parent_chapter": 11010071
+    },
+    {
+      "forward_chapter_id": 11010072,
+      "reverse_chapter_id": 11010107,
+      "gate": 1101,
+      "guide_order": 8,
+      "title": "Showdown In The Shadows",
+      "matchup": "Yami Bakura vs. Yami Marik",
+      "parent_chapter": 11010072
+    },
+    {
+      "forward_chapter_id": 11010073,
+      "reverse_chapter_id": 11010108,
+      "gate": 1101,
+      "guide_order": 9,
+      "title": "Noah's Final Threat",
+      "matchup": "Noah Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010073
+    },
+    {
+      "forward_chapter_id": 11010074,
+      "reverse_chapter_id": 11010109,
+      "gate": 1101,
+      "guide_order": 10,
+      "title": "The Darkness Returns",
+      "matchup": "Joey Wheeler vs. Yami Marik",
+      "parent_chapter": 11010074
+    },
+    {
+      "forward_chapter_id": 11010075,
+      "reverse_chapter_id": 11010110,
+      "gate": 1101,
+      "guide_order": 11,
+      "title": "One Step Ahead",
+      "matchup": "Zigfried von Schroeder vs. Seto Kaiba",
+      "parent_chapter": 11010075
+    },
+    {
+      "forward_chapter_id": 11010076,
+      "reverse_chapter_id": 11010111,
+      "gate": 1101,
+      "guide_order": 12,
+      "title": "Sinister Secrets",
+      "matchup": "Leon von Schroeder vs. Yami Yugi",
+      "parent_chapter": 11010076
+    },
+    {
+      "forward_chapter_id": 11010081,
+      "reverse_chapter_id": 11010112,
+      "gate": 1101,
+      "guide_order": 13,
+      "title": "Sera vs Anubis",
+      "matchup": "Anubis vs. Sera",
+      "parent_chapter": 11010081
+    },
+    {
+      "forward_chapter_id": 11010077,
+      "reverse_chapter_id": 11010113,
+      "gate": 1101,
+      "guide_order": 14,
+      "title": "Dark Side of Dimensions Pt. 1",
+      "matchup": "Aigami vs. Yami Yugi",
+      "parent_chapter": 11010077
+    },
+    {
+      "forward_chapter_id": 11010078,
+      "reverse_chapter_id": 11010114,
+      "gate": 1101,
+      "guide_order": 15,
+      "title": "Dark Side of Dimensions Pt. 2",
+      "matchup": "Seto Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010078
+    },
+    {
+      "forward_chapter_id": 11010079,
+      "reverse_chapter_id": 11010115,
+      "gate": 1101,
+      "guide_order": 16,
+      "title": "Shadi Vs. Grandpa",
+      "matchup": "Solomon Muto vs. Shadi",
+      "parent_chapter": 11010079
+    },
+    {
+      "forward_chapter_id": 11010080,
+      "reverse_chapter_id": 11010116,
+      "gate": 1101,
+      "guide_order": 17,
+      "title": "Rebecca Vs Tristan",
+      "matchup": "Tristan Taylor vs. Rebecca Hawkins",
+      "parent_chapter": 11010080
+    }
+  ],
+  "dm_reverse_note": "Added optional reverse chapters 11010100-11010116 for every Duel Monsters Requiem story duel. Each reverse chapter parents to its forward duel and swaps p1/p2 portraits, duel names, and loaner decks.",
+  "non_dm_reverse_duels": [
+    {
+      "forward_chapter_id": 11020065,
+      "reverse_chapter_id": 11020100,
+      "gate": 1102,
+      "title": "Dormitory Demolition",
+      "matchup": "Vice Chancellor Bonaparte vs. Dr. Vellian Crowler",
+      "parent_chapter": 11020065
+    },
+    {
+      "forward_chapter_id": 11020068,
+      "reverse_chapter_id": 11020101,
+      "gate": 1102,
+      "title": "Fonda vs Sarina",
+      "matchup": "Sarina vs. Fonda Fontaine",
+      "parent_chapter": 11020068
+    },
+    {
+      "forward_chapter_id": 11020070,
+      "reverse_chapter_id": 11020102,
+      "gate": 1102,
+      "title": "Obelisk Girl's Battle",
+      "matchup": "Mindy vs. Jasmine",
+      "parent_chapter": 11020070
+    },
+    {
+      "forward_chapter_id": 11020066,
+      "reverse_chapter_id": 11020103,
+      "gate": 1102,
+      "title": "What Lies Beneath",
+      "matchup": "Axel Brodie vs. Supreme King",
+      "parent_chapter": 11020066
+    },
+    {
+      "forward_chapter_id": 11020069,
+      "reverse_chapter_id": 11020104,
+      "gate": 1102,
+      "title": "Kuriboh Vs Banner",
+      "matchup": "Prof. Lyman Banner vs. Winged Kuriboh",
+      "parent_chapter": 11020069
+    },
+    {
+      "forward_chapter_id": 11020067,
+      "reverse_chapter_id": 11020105,
+      "gate": 1102,
+      "title": "The Invasion of Darkness",
+      "matchup": "Atticus Rhodes vs. Yusuke",
+      "parent_chapter": 11020067
+    },
+    {
+      "forward_chapter_id": 11020071,
+      "reverse_chapter_id": 11020106,
+      "gate": 1102,
+      "title": "Shadow Rider Duel",
+      "matchup": "Abidos the Third vs. Don Zaloog",
+      "parent_chapter": 11020071
+    },
+    {
+      "forward_chapter_id": 11030065,
+      "reverse_chapter_id": 11030100,
+      "gate": 1103,
+      "title": "Good Cop, Bad Cop",
+      "matchup": "Tetsu Trudge vs. Carly Carmine",
+      "parent_chapter": 11030065
+    },
+    {
+      "forward_chapter_id": 11030066,
+      "reverse_chapter_id": 11030101,
+      "gate": 1103,
+      "title": "Surely You Jest",
+      "matchup": "Lazar vs. Crow Hogan",
+      "parent_chapter": 11030066
+    },
+    {
+      "forward_chapter_id": 11030067,
+      "reverse_chapter_id": 11030102,
+      "gate": 1103,
+      "title": "Dawn of the Duel Board",
+      "matchup": "Luna vs. Lester",
+      "parent_chapter": 11030067
+    },
+    {
+      "forward_chapter_id": 11030069,
+      "reverse_chapter_id": 11030103,
+      "gate": 1103,
+      "title": "Hanging Out in New Domino City",
+      "matchup": "Blister vs. Mina Simington",
+      "parent_chapter": 11030069
+    },
+    {
+      "forward_chapter_id": 11030070,
+      "reverse_chapter_id": 11030104,
+      "gate": 1103,
+      "title": "No One Remembers Us",
+      "matchup": "Tenzen Yanagi vs. Rally Dawson",
+      "parent_chapter": 11030070
+    },
+    {
+      "forward_chapter_id": 11030071,
+      "reverse_chapter_id": 11030105,
+      "gate": 1103,
+      "title": "Bonds Beyond Time",
+      "matchup": "Paradox vs. The Vagabond",
+      "parent_chapter": 11030071
+    },
+    {
+      "forward_chapter_id": 11030072,
+      "reverse_chapter_id": 11030106,
+      "gate": 1103,
+      "title": "Death's Favorites, Pt. 1",
+      "matchup": "Carly Carmine vs. Misty Tredwell",
+      "parent_chapter": 11030072
+    },
+    {
+      "forward_chapter_id": 11030073,
+      "reverse_chapter_id": 11030107,
+      "gate": 1103,
+      "title": "Death's Favorites, Pt. 2",
+      "matchup": "Dark Signer Carly vs. Dark Signer Misty",
+      "parent_chapter": 11030073
+    },
+    {
+      "forward_chapter_id": 11030068,
+      "reverse_chapter_id": 11030108,
+      "gate": 1103,
+      "title": "Against All Odds",
+      "matchup": "Crow Hogan vs. Jakob",
+      "parent_chapter": 11030068
+    },
+    {
+      "forward_chapter_id": 11040053,
+      "reverse_chapter_id": 11040100,
+      "gate": 1104,
+      "title": "Doom In Bloom",
+      "matchup": "Lotus vs. Rio Kastle",
+      "parent_chapter": 11040053
+    },
+    {
+      "forward_chapter_id": 11040054,
+      "reverse_chapter_id": 11040101,
+      "gate": 1104,
+      "title": "The Friendship Games",
+      "matchup": "Tori Meadows vs. Rio Kastle",
+      "parent_chapter": 11040054
+    },
+    {
+      "forward_chapter_id": 11040055,
+      "reverse_chapter_id": 11040102,
+      "gate": 1104,
+      "title": "Battle With The Barians",
+      "matchup": "Bronk Stone vs. Marin",
+      "parent_chapter": 11040055
+    },
+    {
+      "forward_chapter_id": 11050069,
+      "reverse_chapter_id": 11050100,
+      "gate": 1105,
+      "title": "Dueling Sisters",
+      "matchup": "Gloria Tyler vs. Grace Tyler",
+      "parent_chapter": 11050069
+    },
+    {
+      "forward_chapter_id": 11050067,
+      "reverse_chapter_id": 11050101,
+      "gate": 1105,
+      "title": "Who Gets The Kids?",
+      "matchup": "Leo Akaba (Professor) vs. Henrietta Akaba",
+      "parent_chapter": 11050067
+    },
+    {
+      "forward_chapter_id": 11050068,
+      "reverse_chapter_id": 11050102,
+      "gate": 1105,
+      "title": "Riley Vs Ray",
+      "matchup": "Riley vs. Ray Akaba",
+      "parent_chapter": 11050068
+    },
+    {
+      "forward_chapter_id": 11060057,
+      "reverse_chapter_id": 11060100,
+      "gate": 1106,
+      "title": "Final Battle",
+      "matchup": "The Vagrant vs. Tour Guide",
+      "parent_chapter": 11060057
+    }
+  ],
+  "non_dm_reverse_note": "Added optional reverse chapters for Requiem story duels in GX, 5D's, ZEXAL, ARC-V, and VRAINS. Each reverse chapter parents to its forward duel and swaps p1/p2 portraits, duel names, and loaner decks."
+}

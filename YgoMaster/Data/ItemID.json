@@ -47,14 +47,7 @@
     1000032,//Elemental HERO Flame Wingman
     1000033,//Blue-Eyes Chaos MAX Dragon
     1000034,//Scareclaw Light-Heart
-    1000035,//Diabellstar the Black Witch
-    1000036,//Aleister the Invoker
-    1000037,//Dingirsu, the Orcust of the Evening Star
-    1000038,//I:P Masquerena
-    1000039,//S:P Little Knight
     1000041,//Number 41: Bagooska the Terribly Tired Tapir
-    1000042,//Yummy★Snatchy
-    1000043,//Dinowrestler Pankratops
     1001001,//Instant Fusion
     1001002,//Noble Arms - Caliburn
     1001003,//Book of Moon
@@ -87,13 +80,6 @@
     1001030,//Blaze Accelerator
     1001031,//Ryko, Lightsworn Hunter
     1001032,//King's Sarcophagus
-    1001034,//Dark Resonator
-    1001036,//Ghost Belle & Haunted Mansion
-    1001037,//Gem-Turtle
-    1001038,//Fabled Lurrie
-    1001039,//Ally of Justice Catastor
-    1001040,//Gimmick Puppet Egg Head
-    1001041,//Book of Taiyou
     1002001,//Soccer Ball
     1002002,//Basketball
     1002003,//Record Player
@@ -106,14 +92,10 @@
     1002010,//Inline Skates
     1002011,//Darts
     1002012,//Bicycle
-    1002014,//Beach Chair & Parasol
     1003001,//Gaia The Fierce Knight
     1003002,//Tri-Brigade Shuraig the Ominous Omen
     1003003,//Sky Striker Ace - Raye
     1003004,//Fiendsmith Engraver
-    1003005,//I:P Masquerena & S-Force Rappa Chiyomaru
-    1003006,//Fallen of Albaz
-    1005001,//Rescue Rabbit
   ],
   "ICON": [
     1010001,//Duelist
@@ -218,47 +200,8 @@
     1010101,//P.U.N.K. JAM FEVER!
     1010102,//The Fallen & The Virtuous
     1010103,//Red Supernova Dragon
-    1010104,//Maliss in the Mirror
-    1010105,//Go! - D/D/D Divine Zero King Rage
     1010107,//Aluber the Jester of Despia
     1010108,//Blazing Cartesia, the Virtuous
-    1010109,//A Bao A Qu, the Lightless Shadow
-    1010110,//Six Samurai
-    1010111,//Exodia the Forbidden One (WCS2025)
-    1010113,//Aleister the Invoker
-    1010114,//Kurikurinku @Ignister
-    1010115,//Avance, Swordsman of the Nekroz
-    1010116,//Block Dragon
-    1010117,//Enlilgirsu, the Orcust Mekk-Knight
-    1010118,//Spore the Fairy Seed
-    1010119,//Morgana the Witch of Eyes
-    1010120,//Cupsy☆Yummy
-    1010121,//Diabellstar the Black Witch
-    1010122,//Valiant Knight
-    1010123,//K9-17 Izuna
-    1010124,//Ohime the Manifested Mikanko
-    1010125,//Medius the Pure
-    1010126,//Dracotail Faimena
-    1010127,//The Man with the Mark
-    1010128,//Gagagaga Girl
-    1010129,//Santa Claws
-    1010130,//Miracle Raven
-    1010131,//Gagaga Academy Emergency Network
-    1010132,//Artmage Graflare
-    1010133,//Radiant Typhoon Meghala
-    1010134,//Destiny HERO - Plasma
-    1010135,//Kewl Tune Reco
-    1010136,//Cow
-    1010137,//Red Blossoms from Underroot
-    1010138,//Dark Magician
-    1010139,//Sangan
-    1010140,//Elfnote Lucina
-    1010141,//Dragunity Quirinus
-    1010142,//Exosister Mikailis
-    1010145,//Artmage Non-Finito
-    1010146,//Number C101: Silent Honor DARK
-    1010147,//Fallen of the White Dragon
-    1010148,//Tri-Brigade Springans Kitt
     1011001,//Soccer Ball
     1011002,//Trophy
     1011003,//Diamond
@@ -307,29 +250,6 @@
     1011046,//DC 2025 MAR Gold Finalist
     1011047,//DC 2025 MAR Silver Finalist
     1011048,//DC 2025 MAR Bronze Finalist
-    1011049,//WCS 2025 Qualifiers Gold Finalist
-    1011050,//WCS 2025 Qualifiers Silver Finalist
-    1011051,//WCS 2025 Qualifiers Bronze Finalist
-    1011052,//Synchro Cup Gold Finalist
-    1011053,//Synchro Cup Silver Finalist
-    1011054,//Synchro Cup Bronze Finalist
-    1011055,//Synchro Cup Champion
-    1011056,//WCS 2025 Champion
-    1011057,//WCS 2025 Finalist
-    1011058,//WCS 2025 Top 4
-    1011059,//WCS 2025 Top 12
-    1011060,//DC 2025 SEP Gold Finalist
-    1011061,//DC 2025 SEP Silver Finalist
-    1011062,//DC 2025 SEP Bronze Finalist
-    1011063,//DC 2025 DEC Gold Finalist
-    1011064,//DC 2025 DEC Silver Finalist
-    1011065,//DC 2025 DEC Bronze Finalist
-    1011066,//DC 2026 MAR Gold Finalist
-    1011067,//DC 2026 MAR Silver Finalist
-    1011068,//DC 2026 MAR Bronze Finalist
-    1011069,//WCS 2026 Qualifiers Gold Finalist
-    1011070,//WCS 2026 Qualifiers Silver Finalist
-    1011071,//WCS 2026 Qualifiers Bronze Finalist
     1012001,//X-Krawler Synaphysis
     1012002,//Mekk-Knight Spectrum Supreme
     1012003,//Knightmare Gryphon
@@ -388,8 +308,6 @@
     1012056,//Naturia Leodrake
     1012057,//Ally of Justice Field Marshal
     1012058,//Fabled Leviathan
-    1012059,//Worm Zero
-    1012060,//Worm King
     1012061,//Cyber Dragon
     1012062,//Evil★Twins Ki-sikil & Lil-la
     1012063,//Eldlixir of White Destiny
@@ -402,28 +320,10 @@
     1012070,//Sky Striker Ace - Shizuku
     1012071,//Rescue-ACE Impulse
     1012072,//Exosister Elis
-    1012073,//Flamvell Baby
-    1012074,//Poseidra, the Atlantean Dragon
-    1012075,//Fire King High Avatar Garunix
-    1012076,//Good Goblin Housekeeping
-    1012077,//I:P Masquerena
-    1012078,//S-Force Rappa Chiyomaru
-    1012079,//Spright Starter
-    1012080,//EM:P Meowmine
     1013001,//PawaPuro
     1013002,//Memories of Intersecting Duels
     1013003,//Yu-Gi-Oh! CARD GAME THE CHRONICLES
     1013004,//Sky Striker Ace - Kagari
-    1013005,//Dogmatika Fleurdelis, the Knighted
-    1013006,//Tri-Brigade Shuraig the Ominous Omen
-    1013007,//Spirit Charmers
-    1013008,//Duelist Black & Blue
-    1013009,//Duelist White & Blue
-    1013010,//eFootball™
-    1013011,//Selene, Queen of the Master Magicians
-    1013012,//Rescue Hedgehog
-    1013013,//Aleister the Invoker
-    1013015,//Wumpus
   ],
   "PROFILE_TAG": [
     1020001,//Beginner Duelist
@@ -583,70 +483,8 @@
     1020156,//Apocalyptic Fire Driven by the Wind
     1020157,//Berserker
     1020158,//All or Nothing
-    1020159,//WCS 2025 Qualifiers Top 10
-    1020160,//WCS 2025 Qualifiers Top 100
-    1020161,//WCS 2025 Qualifiers Top 500
-    1020162,//WCS 2025 Qualifiers Top 1000
-    1020163,//WCS 2025 Qualifiers Top 10000
-    1020164,//WCS 2025 Qualifiers DLv. MAX
-    1020165,//Five Star
-    1020166,//Blue-Purple-Clad Assassin
-    1020167,//Overlord of Purest Silver
-    1020168,//Synchro Cup Top 10
-    1020169,//Synchro Cup Top 100
-    1020170,//Synchro Cup Top 500
-    1020171,//Synchro Cup Top 1000
-    1020172,//Synchro Cup Top 10000
-    1020173,//Synchro Cup 2nd Stage Duelist
-    1020174,//WCS 2025 Champion
-    1020175,//WCS 2025 Finalist
-    1020176,//WCS 2025 Top 4
-    1020177,//WCS 2025 Top 12
-    1020178,//Fantasista
-    1020179,//Bushido
-    1020180,//DC 2025 SEP Top 10
-    1020181,//DC 2025 SEP Top 100
-    1020182,//DC 2025 SEP Top 500
-    1020183,//DC 2025 SEP Top 1000
-    1020184,//DC 2025 SEP Top 10000
-    1020185,//DC 2025 SEP 2nd Stage Duelist
-    1020186,//Violet Warrior of Fusing
-    1020187,//Obsidian Warrior of Stacking
-    1020188,//Azure Warrior of Linking
-    1020189,//DC 2025 DEC Top 10
-    1020190,//DC 2025 DEC Top 100
-    1020191,//DC 2025 DEC Top 500
-    1020192,//DC 2025 DEC Top 1000
-    1020193,//DC 2025 DEC Top 10000
-    1020194,//DC 2025 DEC 2nd Stage Duelist
-    1020195,//Psychic Duelist
-    1020196,//CEO
-    1020197,//Jack of All Trades
-    1020198,//Spright Starter
-    1020199,//Forge Ahead
-    1020200,//F Vortex
-    1020201,//S Overdrive
-    1020202,//L Code Nexus
-    1020203,//Tri-Edge
-    1020204,//DC 2026 MAR Top 10
-    1020205,//DC 2026 MAR Top 100
-    1020206,//DC 2026 MAR Top 500
-    1020207,//DC 2026 MAR Top 1000
-    1020208,//DC 2026 MAR Top 10000
-    1020209,//DC 2026 MAR 2nd Stage Duelist
-    1020210,//WCS 2026 Qualifiers Top 10
-    1020211,//WCS 2026 Qualifiers Top 100
-    1020212,//WCS 2026 Qualifiers Top 500
-    1020213,//WCS 2026 Qualifiers Top 1000
-    1020214,//WCS 2026 Qualifiers Top 10000
-    1020215,//WCS 2026 Qualifiers DLv. MAX
-    1020216,//Lightning Storm
-    1020217,//Luck of the Roll
     1021001,//Starting Out
     1021002,//Top Performer
-    1022001,//High School Tournament 2026 Champion
-    1022002,//High School Tournament 2026 Grand Finalist
-    1022003,//High School Tournament 2026 Finalist
   ],
   "ICON_FRAME": [
     1030001,//Beginner's Frame
@@ -683,15 +521,6 @@
     1030032,//White Frame
     1030033,//Yellow & Lime Frame
     1030034,//Blue & Purple Frame
-    1030035,//Rekindling
-    1030036,//Purple & Yellow Frame
-    1030037,//Yellow & Blue Frame
-    1030038,//Diabellstar the Black Witch
-    1030039,//Gem-Knight Fusion
-    1030040,//Blue & White Frame
-    1030041,//Red & White Frame
-    1030042,//Mimighoul Flower
-    1030043,//Yellow & Black Frame
     1031001,//The Path of the Blue Sky Striker
     1031002,//The Path of the Red Sky Striker
     1031003,//Magic Cylinder
@@ -706,17 +535,6 @@
     1031012,//Sky Striker Ace - Raye
     1031013,//Mirror Force
     1031014,//Detonating Kuriboh
-    1031015,//Maliss
-    1031016,//Overlay Unit β
-    1031017,//A.I. Love Fusion
-    1031018,//Orcust
-    1031019,//K9-17 Izuna
-    1031020,//P.U.N.K. JAM FEVER!
-    1031021,//Mystical Space Typhoon
-    1031022,//Mask Change II
-    1031023,//Black Rose Garden
-    1031024,//Elfnote
-    1031025,//Albion the Shrouded Dragon
     1032001,//Festive Ornament
     1032002,//Celebration of Spring Breeze
     1032003,//Tropical Seaside
@@ -726,13 +544,9 @@
     1032007,//Neon Sign
     1032008,//Maple Maiden
     1032009,//Rikka
-    1032010,//Swimming Ring
-    1032011,//The Weather Rainy Canvas
     1033001,//WCS 2023 Party Favor
     1033002,//WCS 2024 Party Favor
     1033003,//Overlay Unit
-    1033004,//Synchro Ring
-    1033005,//WCS 2025 Party Favor
   ],
   "PROTECTOR": [
     1070001,//Yu-Gi-Oh! Trading Card Game
@@ -850,61 +664,6 @@
     1070113,//Dark Supremacy
     1070114,//Double Wild
     1070115,//The Fallen & The Virtuous
-    1070116,//Materiactor Exagard
-    1070117,//Crystron Quariongandrax
-    1070118,//Arcana Force XXI - The World
-    1070119,//Gladiator Beast Gyzarus
-    1070120,//Arc Rebellion Xyz Dragon
-    1070121,//Borreload Furious Dragon
-    1070122,//Maliss in the Mirror
-    1070123,//Clear Wing Synchro Dragon
-    1070124,//Ryzeal Detonator
-    1070125,//Accesscode Talker
-    1070126,//Regenesis Lord
-    1070127,//Ame no Murakumo no Mitsurugi
-    1070128,//Here There Be Dragons
-    1070129,//Chef's Special Recipe
-    1070130,//Exodia the Forbidden One (WCS2025)
-    1070131,//House Dragonmaid
-    1070132,//Diabellstar the Black Witch
-    1070133,//Lady Labrynth of the Silver Castle
-    1070134,//Lady Labrynth of the Silver Castle
-    1070135,//Pot of Extravagance
-    1070137,//Hu-Li the Jewel Mikanko
-    1070138,//Sky Striker Ace = Zero
-    1070139,//Dracotail Arthalion
-    1070140,//Number F0: Utopic Future Zexal
-    1070141,//Anubis the Last Judge
-    1070142,//Eldlixir of the Glorious Golden Land
-    1070143,//Lunalight Liger Dancer
-    1070144,//Otoshidamashi
-    1070145,//THE Star Ham
-    1070146,//D/D/D/D Dimensional King Arc Crisis
-    1070147,//Infinite Impermanence
-    1070148,//Psychic End Punisher
-    1070149,//Gradius
-    1070150,//W:P Fancy Ball
-    1070151,//K9-ØØ Lupis
-    1070152,//Secrets of Dark Magic
-    1070153,//Spright Elf
-    1070154,//Mystical Space Typhoon
-    1070155,//Fusion Destiny
-    1070156,// Kewl Tune RS
-    1070157,//Live☆Twin Lil-la Sweet
-    1070158,//Junk Warrior Extreme
-    1070159,//Emperor Tanuki's Critter Count
-    1070160,//Assault Mode Activate
-    1070161,//Masked HERO Atomic
-    1070162,//Master Peace, the True Dracoverlord
-    1070163,//R.B. The Brute Blues
-    1070164,//Ultimate Slayer
-    1070165,//Elfnote Regina
-    1070166,//Dragunity Knight - Areus
-    1070167,//Exosister Karmael
-    1070171,//Hecahands Jauzah
-    1070172,//Archfiend Emperor
-    1070173,//Archfiend Matriarch
-    1070178,//Mokomoko
     1071001,//Crusadia Maximus
     1071002,//Longirsu, the Orcust Orchestrator
     1071003,//Dream Mirror Phantasms
@@ -938,23 +697,11 @@
     1071031,//Mist Valley Apex Avian
     1071032,//Skull Servant
     1071033,//Sky Striker Ace - Raye
-    1071034,//Flamvell Uruquizas
-    1071035,//Fire King High Avatar Garunix
-    1071036,//Poseidra, the Atlantean Dragon
-    1071037,//That Grass Looks Greener
-    1071038,//I:P Masquerena
-    1071039,//Worm Zero
-    1071040,//Obedience Schooled
     1072001,//Sky Striker Conversion: Flaming Wings of Destruction
     1072002,//Chaos Xyz Evolution －Galactic Gathering of Dragons－
     1072003,//Sky Striker Armor - Black Flash Raiment
     1072004,//Hallo & Ween
     1072005,//Evil★Twin
-    1072006,//The Orcust Mekk-Knight & Automaton
-    1072007,//Maliss ＜Q＞
-    1072008,//Yummy
-    1072009,//Albaz the Shrouded & Ecclesia the Exiled
-    1072010,//Enneacraft
     1073001,//WCS 2023 Party Favor
     1073002,//WCS 2023 Celebration
     1073003,//DC 2023 OCT Celebration
@@ -967,23 +714,8 @@
     1073010,//DC 2024 SEP Celebration
     1073011,//DC 2024 DEC Celebration
     1073012,//DC 2025 MAR Celebration
-    1073013,//WCS 2025 Qualifiers Celebration
-    1073014,//Synchro Cup Celebration
-    1073015,//WCS 2025 Celebration
-    1073016,//WCS 2025 Party Favor
-    1073017,//DC 2025 SEP Celebration
-    1073018,//DC 2025 DEC Celebration
-    1073019,//DC 2026 MAR Celebration
-    1073020,//WCS 2026 Qualifiers Celebration
     1075001,//Yu-Gi-Oh! CARD GAME THE CHRONICLES
     1075002,//THE CHRONICLES: Sky Striker Ace
-    1075003,//White & Blue
-    1075004,//eFootball™
-    1075005,//Neymar
-    1075006,//THE CHRONICLES: The Fallen & The Virtuous
-    1075007,//THE CHRONICLES: The Fallen & The Virtuous2
-    1075008,//THE CHRONICLES: Spirit Charmers
-    1075009,//THE CHRONICLES: Magistus
   ],
   "DECK_CASE": [
     1080001,//Duelist Card Case Red
@@ -1014,10 +746,6 @@
     1080027,//Heroes' Union
     1080028,//Blaze of Albaz
     1080029,//Crimson Powerforce
-    1080030,//Reunion of Raiders
-    1080031,//Dark Magical Blast
-    1080032,//Gigantic Sparkle
-    1080033,//Rage of Deep Blue
     1082001,//Xyz Black
     1082002,//The Millennium Puzzle
     1082003,//Duelist Card Case Blue
@@ -1039,17 +767,6 @@
     1082019,//Sky Striker Ace - Raye
     1082020,//Sky Striker Ace - Roze
     1082021,//Abyssal Land
-    1082022,//Orcust
-    1082023,//Yum☆Yum☆Yummys
-    1082024,//Diabellstar the Black Witch
-    1082025,//Labrynth
-    1082026,//"A Case for K9"
-    1082027,//Clock Tower Prison
-    1082028,//Kewl Tune
-    1082029,//Elfnote
-    1082030,//Dragon Ravine
-    1082032,//Exosister
-    1083001,//White & Blue
   ],
   "FIELD": [
     1090001,//Forest
@@ -1078,23 +795,14 @@
     1090024,//Ursarctic Big Dipper
     1090025,//Blue-Eyes Mausoleum
     1090026,//Forest of Cherry Pink
-    1090027,//Forest of Autumnal Splendor
     1090028,//Forest of Endless White
     1090030,//Forest of the Traptrix
     1090031,//Ruins of the Sinful Spoils
-    1090032,//Lost World
     1090033,//Evil★Twin
     1090034,//Striking Stratagem Simulation Area
-    1090035,//Graveyard of Myriad Souls
     1090036,//Despia, Theater of the Branded
-    1090037,//Labrynth Labyrinth
-    1090039,//"A Case for K9"
-    1090040,//Football Stadium
-    1090041,//Neon-Lit Cyber City
-    1090042,//Fairy Realm - Oratorio Garden
     1092001,//Colosseum
     1092002,//WCS
-    1092004,//Japan High School Championship
   ],
   "FIELD_OBJ": [
     1100001,//Forest
@@ -1123,20 +831,12 @@
     1100024,//Ursarctic Big Dipper
     1100025,//Blue-Eyes Mausoleum
     1100026,//Forest of Cherry Pink
-    1100027,//Forest of Autumnal Splendor
     1100028,//Forest of Endless White
     1100030,//Forest of the Traptrix
     1100031,//Ruins of the Sinful Spoils
-    1100032,//Lost World
     1100033,//Evil★Twin
     1100034,//Striking Stratagem Simulation Area
-    1100035,//Graveyard of Myriad Souls
     1100036,//Despia, Theater of the Branded
-    1100037,//Labrynth Labyrinth
-    1100039,//"A Case for K9"
-    1100040,//Football Stadium
-    1100041,//Neon-Lit Cyber City
-    1100042,//Fairy Realm - Oratorio Garden
     1101001,//Trap Hole
     1101002,//Magical Hats
     1101003,//Summon Limit
@@ -1153,25 +853,15 @@
     1101014,//Soul-Absorbing Bone Tower
     1101016,//Magical Thorn
     1101017,//Time Machine
-    1101018,//Eater of Millions
     1101019,//Dragon Capture Jar
     1101020,//Opening of the Spirit Gates
-    1101022,//Scrap Recycler & Garbage Collector
     1101023,//Back to Square One
     1101025,//Fire King Sanctuary
-    1101026,//Supreme King Gate Infinity
-    1101030,//Emergency Provisions
-    1101031,//Ragnaraika the Evil Seed
     1101032,//Centur-Ion Emeth VI
     1101034,//Kochobo's Hinamatsuri
     1101035,//Floral Crown
-    1101036,//Swimming Ring
-    1101040,//Halloween Ghost
-    1101041,//Wreath
-    1101045,// WAKE CUP!
     1102001,//Colosseum
     1102002,//WCS
-    1102004,//Japan High School Championship
   ],
   "AVATAR_HOME": [
     1110001,//Forest
@@ -1200,20 +890,12 @@
     1110024,//Ursarctic Big Dipper
     1110025,//Blue-Eyes Mausoleum
     1110026,//Forest of Cherry Pink
-    1110027,//Forest of Autumnal Splendor
     1110028,//Forest of Endless White
     1110030,//Forest of the Traptrix
     1110031,//Ruins of the Sinful Spoils
-    1110032,//Lost World
     1110033,//Evil★Twin
     1110034,//Striking Stratagem Simulation Area
-    1110035,//Graveyard of Myriad Souls
     1110036,//Despia, Theater of the Branded
-    1110037,//Labrynth Labyrinth
-    1110039,//"A Case for K9"
-    1110040,//Football Stadium
-    1110041,//Neon-Lit Cyber City
-    1110042,//Fairy Realm - Oratorio Garden
     1111001,//Destiny Board
     1111002,//Bug Matrix
     1111003,//Shien's Dojo
@@ -1234,47 +916,25 @@
     1111019,//Polymerization
     1111021,//Green Stone of Magic
     1111022,//Summer Trace of the Thunder God
-    1111023,//Vehicroid Connection Zone
     1111024,//Limiter Removal
-    1111025,//Gishki Aquamirror
     1111026,//Treasured Tree Stump
     1111032,//Xyz Monster Card
-    1111037,//Effect Monster Card
     1111038,//Rikka
     1111039,//Barrier of the Voiceless Voice
     1111040,//Gunkan Sushipyard Seaside Supper Spot
     1111041,//Shrine of Mist Valley
     1111042,//Depresspard
     1111043,//Tales of the White Forest
-    1111044,//R-Genex Turing
     1111045,//Madolche Chickolates
     1111047,//DARK
     1111048,//LIGHT
-    1111049,//EARTH
     1111050,//WATER
-    1111051,//FIRE
-    1111052,//WIND
-    1111054,//Spell
     1111056,//Legend of the Sovereign Seas
     1111057,//Shield of the Millennium Dynasty
-    1111058,//Divine Power of a Deserted Island
-    1111061,//Mimighoul Room
-    1111062,//Flamvell, the Scarlet Warriors
-    1111064,//Mulcharmy Pink
-    1111066,//Magical Meltdown
-    1111068,//Yummy
-    1111071,//Dracotail
-    1111072,//Live☆Twin Lil-la Sweet
-    1111074,//Bramble Rose Dragon
-    1111077,//Dominus Spiral
-    1111080,//Borrel
     1112001,//Colosseum
     1112002,//WCS
-    1112004,//Japan High School Championship
     1113001,//WCS 2023 Party Favor
     1113002,//WCS 2024 Party Favor
-    1113003,//WCS 2025 Party Favor
-    1115001,//eFootball™
   ],
   "STRUCTURE": [
     1120001,//Starting Deck
@@ -1306,10 +966,6 @@
     1120027,//Heroes' Union
     1120028,//Blaze of Albaz
     1120029,//Crimson Powerforce
-    1120030,//Reunion of Raiders
-    1120031,//Dark Magical Blast
-    1120032,//Gigantic Sparkle
-    1120033,//Rage of Deep Blue
   ],
   "WALLPAPER": [
     1130001,//Blue-Eyes Alternative White Dragon
@@ -1373,7 +1029,6 @@
     1130059,//Varudras, the Final Bringer of the End Times
     1130060,//The Unstoppable Exodia Incarnate
     1130061,//Sky Striker Ace - Raye
-    1130062,//Reinforcement of the Army 
     1130063,//Dogmatika Encounter
     1130064,//Majesty of the White Dragons
     1130065,//Varar, Vaalmonican Concord
@@ -1387,63 +1042,8 @@
     1130073,//Argostars
     1130074,//Firestorms Over Atlantis
     1130075,//The Fallen & The Virtuous
-    1130076,//Maliss in Underground
-    1130077,//Liberator Eto
-    1130078,//Sunset Beat
-    1130079,//Tenyi Spirit - Suruya
-    1130080,//Shateki
     1130081,//Aluber the Jester of Despia
     1130082,//Blazing Cartesia, the Virtuous
-    1130083,//Medallion of the Ice Barrier
-    1130084,//Black Rose Dragon
-    1130085,//A Bao A Qu, the Lightless Shadow
-    1130086,//Exodia the Forbidden One (WCS2025)
-    1130088,//Invoked Magistus Omega
-    1130089,//Allied Code Talker @Ignister
-    1130090,//Lacrima the Crimson Tears
-    1130091,//Galatea-I, the Orcust Automaton
-    1130092,//Dragonmaid Hospitality
-    1130094,//Lollipo★Yummy Way
-    1130095,//Diabellstar the Black Witch
-    1130096,//Lady Labrynth of the Silver Castle
-    1130097,//Archfiend's Ghastly Glitch
-    1130098,//Eldlich the Golden Lord
-    1130099,//K9-X "Werewolf"
-    1130100,//Ohime the Manifested Mikanko
-    1130101,//Mikanko Shinbu - Noble Twins
-    1130103,//Ketu Dracotail
-    1130104,//First of the Dragonlords 
-    1130105,//Diabellze the Original Sinkeeper
-    1130106,//Megalith Anastasis
-    1130107,//Solfachord Symphony
-    1130108,//W:P Fancy Ball
-    1130109,//I:P Masquerena
-    1130110,//S:P Little Knight
-    1130111,//I:P Masquerena
-    1130112,//S:P Little Knight
-    1130113,//Spright Gamma Burst
-    1130114,//Nightwinged Cleric
-    1130115,//Radiant Typhoon Fonix, the Great Flame
-    1130116,//Destiny HERO - Destroyer Phoenix Enforcer
-    1130117,//Kewl Tune B2B
-    1130118,//Jupiter the Power Patron of Destruction
-    1130119,//Dominus Spiral
-    1130120,//Masked HERO Dark Law
-    1130122,//True King of All Calamities
-    1130124,//I:P Masquerena & S:P Little Knight
-    1130125,//Elfnotes: Aristeia of Trust
-    1130126,//Elfnotes: Welcome Home
-    1130127,//The Virtuous Vestals
-    1130129,//Hecahands Bait
-    1130130,//Junora the Power Patron of Tuning
-    1130131,//Triple Tactics Thrust
-    1130132,//Fusion Deployment
-    1130135,//Gorgon of Zilofthonia
-    1132001,//Rescue Rabbit
-    1132002,//Neymar
-    1132003,//That's 10!
-    1132004,//Endymion, the Mighty Master of Magic
-    1132005,//Emerging Emergency Rescute Rescue
   ],
   "PACK_TICKET": [
     1140001,//Legacy Pack ticket
@@ -1458,47 +1058,5 @@
   ],
   "REPLAY_LIMIT": [
     1160001,//Replay Slots
-  ],
-  "CARD_FILE": [
-    1170001,//Orcust
-    1170002,//Dragonmaid
-    1170003,//Yummy
-    1170004,//Labrynth
-    1170005,//K9
-    1170006,//Mikanko
-    1170007,//(英)1170007
-    1170008,//Sky Striker Ace
-    1170009,//Dark Magician
-    1170010,//Destiny HERO
-    1170011,//Kewl Tune
-    1170012,//Exosister
-    1170013,//Dragunity
-    1170014,//The Fallen & The Virtuous
-  ],
-  "COIN": [
-    1180001,//Blue-Eyes Alternative White Dragon
-    1180002,//Pot of Greed
-    1180003,//Orcust
-    1180004,//The Millennium Puzzle
-    1180005,//Dragonmaid
-    1180006,//Yummy
-    1180007,//Labrynth
-    1180008,//Eldlich the Golden Lord
-    1180010,//Mikanko
-    1180012,//Sky Striker Ace
-    1180013,//Ketu Dracotail
-    1180014,//Winged Kuriboh
-    1180015,//K9
-    1180016,//EM:P Meowmine
-    1180017,//Dark Magician
-    1180018,//Destiny HERO
-    1180019,//Kewl Tune
-    1180020,//Elfnote
-    1180021,//Dragunity
-    1180022,//Exosister
-    1180023,//Fallen of Albaz
-  ],
-  "BOOKMARK_LIMIT": [
-    1190001,//Bookmark Slots
   ],
 }

@@ -1,0 +1,10 @@
+[IDS_ITEM.ID1129001]
+Starter Deck: Basic
+[IDS_ITEM.ID1129002]
+Starter Deck: Fusion
+[IDS_ITEM.ID1129003]
+Starter Deck: Synchro
+[IDS_ITEM.ID1129004]
+Starter Deck: Xyz
+[IDS_ITEM.ID1129005]
+Starter Deck: Pendulum

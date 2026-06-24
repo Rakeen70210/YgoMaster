@@ -1,0 +1,521 @@
+{
+  "status": "passed",
+  "source": "Data/Backups/requiem-optional-duels-report.json plus Data/Solo.json",
+  "story_duel_count": 40,
+  "dm_reverse_duel_count": 17,
+  "fixed_placeholder_portraits": [
+    "joeymindcontrolled",
+    "shadi",
+    "solomonmuto",
+    "tristantaylor"
+  ],
+  "campaigns": {
+    "1101": [
+      {
+        "guide_order": 1,
+        "chapter_id": 11010065,
+        "title": "Everything's Relative",
+        "matchup": "Yami Yugi vs. Mokuba Kaiba",
+        "parent_chapter": 11010006,
+        "reverse_chapter_id": 11010100
+      },
+      {
+        "guide_order": 2,
+        "chapter_id": 11010066,
+        "title": "Double Trouble Duel",
+        "matchup": "Yami Yugi vs. Paradox Brothers",
+        "parent_chapter": 11010011,
+        "reverse_chapter_id": 11010101
+      },
+      {
+        "guide_order": 3,
+        "chapter_id": 11010067,
+        "title": "Dungeon Dice Monsters",
+        "matchup": "Duke Devlin vs. Joey Wheeler",
+        "parent_chapter": 11010019,
+        "reverse_chapter_id": 11010102
+      },
+      {
+        "guide_order": 4,
+        "chapter_id": 11010068,
+        "title": "The ESP Duelist",
+        "matchup": "Joey Wheeler vs. Espa Roba",
+        "parent_chapter": 11010022,
+        "reverse_chapter_id": 11010103
+      },
+      {
+        "guide_order": 5,
+        "chapter_id": 11010069,
+        "title": "Double Duel",
+        "matchup": "Yami Yugi vs. Lumis And Umbra",
+        "parent_chapter": 11010026,
+        "reverse_chapter_id": 11010104
+      },
+      {
+        "guide_order": 6,
+        "chapter_id": 11010070,
+        "title": "Friends 'Til The End",
+        "matchup": "Yugi Muto vs. Joey",
+        "parent_chapter": 11010027,
+        "reverse_chapter_id": 11010105
+      },
+      {
+        "guide_order": 7,
+        "chapter_id": 11010071,
+        "title": "Mind Game",
+        "matchup": "Yami Marik vs. Mai Valentine",
+        "parent_chapter": 11010030,
+        "reverse_chapter_id": 11010106
+      },
+      {
+        "guide_order": 8,
+        "chapter_id": 11010072,
+        "title": "Showdown In The Shadows",
+        "matchup": "Yami Marik vs. Yami Bakura",
+        "parent_chapter": 11010032,
+        "reverse_chapter_id": 11010107
+      },
+      {
+        "guide_order": 9,
+        "chapter_id": 11010073,
+        "title": "Noah's Final Threat",
+        "matchup": "Yami Yugi vs. Noah Kaiba",
+        "parent_chapter": 11010033,
+        "reverse_chapter_id": 11010108
+      },
+      {
+        "guide_order": 10,
+        "chapter_id": 11010074,
+        "title": "The Darkness Returns",
+        "matchup": "Yami Marik vs. Joey Wheeler",
+        "parent_chapter": 11010034,
+        "reverse_chapter_id": 11010109
+      },
+      {
+        "guide_order": 11,
+        "chapter_id": 11010075,
+        "title": "One Step Ahead",
+        "matchup": "Seto Kaiba vs. Zigfried von Schroeder",
+        "parent_chapter": 11010042,
+        "reverse_chapter_id": 11010110
+      },
+      {
+        "guide_order": 12,
+        "chapter_id": 11010076,
+        "title": "Sinister Secrets",
+        "matchup": "Yami Yugi vs. Leon von Schroeder",
+        "parent_chapter": 11010043,
+        "reverse_chapter_id": 11010111
+      },
+      {
+        "guide_order": 13,
+        "chapter_id": 11010081,
+        "title": "Sera vs Anubis",
+        "matchup": "Sera vs. Anubis",
+        "parent_chapter": 11010064,
+        "reverse_chapter_id": 11010112
+      },
+      {
+        "guide_order": 14,
+        "chapter_id": 11010077,
+        "title": "Dark Side of Dimensions Pt. 1",
+        "matchup": "Yami Yugi vs. Aigami",
+        "parent_chapter": 11010081,
+        "reverse_chapter_id": 11010113
+      },
+      {
+        "guide_order": 15,
+        "chapter_id": 11010078,
+        "title": "Dark Side of Dimensions Pt. 2",
+        "matchup": "Yami Yugi vs. Seto Kaiba",
+        "parent_chapter": 11010077,
+        "reverse_chapter_id": 11010114
+      },
+      {
+        "guide_order": 16,
+        "chapter_id": 11010079,
+        "title": "Shadi Vs. Grandpa",
+        "matchup": "Shadi vs. Solomon Muto",
+        "parent_chapter": 11010078,
+        "reverse_chapter_id": 11010115
+      },
+      {
+        "guide_order": 17,
+        "chapter_id": 11010080,
+        "title": "Rebecca Vs Tristan",
+        "matchup": "Rebecca Hawkins vs. Tristan Taylor",
+        "parent_chapter": 11010079,
+        "reverse_chapter_id": 11010116
+      }
+    ],
+    "1102": [
+      {
+        "guide_order": 19,
+        "chapter_id": 11020065,
+        "title": "Dormitory Demolition",
+        "matchup": "Dr. Vellian Crowler vs. Vice Chancellor Bonaparte",
+        "parent_chapter": 11020015,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 20,
+        "chapter_id": 11020068,
+        "title": "Fonda vs Sarina",
+        "matchup": "Fonda Fontaine vs. Sarina",
+        "parent_chapter": 11020065,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 22,
+        "chapter_id": 11020066,
+        "title": "What Lies Beneath",
+        "matchup": "Supreme King vs. Axel Brodie",
+        "parent_chapter": 11020030,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 23,
+        "chapter_id": 11020067,
+        "title": "The Invasion of Darkness",
+        "matchup": "Yusuke vs. Atticus Rhodes",
+        "parent_chapter": 11020033,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 24,
+        "chapter_id": 11020071,
+        "title": "Shadow Rider Duel",
+        "matchup": "Don Zaloog vs. Abidos the Third",
+        "parent_chapter": 11020067,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 25,
+        "chapter_id": 11020070,
+        "title": "Obelisk Girl's Battle",
+        "matchup": "Jasmine vs. Mindy",
+        "parent_chapter": 11020038,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 27,
+        "chapter_id": 11020069,
+        "title": "Kuriboh Vs Banner",
+        "matchup": "Winged Kuriboh vs. Prof. Lyman Banner",
+        "parent_chapter": 11020070,
+        "reverse_chapter_id": null
+      }
+    ],
+    "1103": [
+      {
+        "guide_order": 26,
+        "chapter_id": 11030065,
+        "title": "Good Cop, Bad Cop",
+        "matchup": "Carly Carmine vs. Tetsu Trudge",
+        "parent_chapter": 11030011,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 28,
+        "chapter_id": 11030066,
+        "title": "Surely You Jest",
+        "matchup": "Crow Hogan vs. Lazar",
+        "parent_chapter": 11030014,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 29,
+        "chapter_id": 11030067,
+        "title": "Dawn of the Duel Board",
+        "matchup": "Lester vs. Luna",
+        "parent_chapter": 11030023,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 30,
+        "chapter_id": 11030068,
+        "title": "Against All Odds",
+        "matchup": "Jakob vs. Crow Hogan",
+        "parent_chapter": 11030032,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 31,
+        "chapter_id": 11030069,
+        "title": "Hanging Out in New Domino City",
+        "matchup": "Mina Simington vs. Blister",
+        "parent_chapter": 11030037,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 32,
+        "chapter_id": 11030070,
+        "title": "No One Remembers Us",
+        "matchup": "Rally Dawson vs. Tenzen Yanagi",
+        "parent_chapter": 11030038,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 33,
+        "chapter_id": 11030071,
+        "title": "Bonds Beyond Time",
+        "matchup": "The Vagabond vs. Paradox",
+        "parent_chapter": 11030039,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 34,
+        "chapter_id": 11030072,
+        "title": "Death's Favorites, Pt. 1",
+        "matchup": "Misty Tredwell vs. Carly Carmine",
+        "parent_chapter": 11030040,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 35,
+        "chapter_id": 11030073,
+        "title": "Death's Favorites, Pt. 2",
+        "matchup": "Dark Signer Misty vs. Dark Signer Carly",
+        "parent_chapter": 11030041,
+        "reverse_chapter_id": null
+      }
+    ],
+    "1104": [
+      {
+        "guide_order": 35,
+        "chapter_id": 11040053,
+        "title": "Doom In Bloom",
+        "matchup": "Rio Kastle vs. Lotus",
+        "parent_chapter": 11040015,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 36,
+        "chapter_id": 11040054,
+        "title": "The Friendship Games",
+        "matchup": "Rio Kastle vs. Tori Meadows",
+        "parent_chapter": 11040016,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 37,
+        "chapter_id": 11040055,
+        "title": "Battle With The Barians",
+        "matchup": "Marin vs. Bronk Stone",
+        "parent_chapter": 11040025,
+        "reverse_chapter_id": null
+      }
+    ],
+    "1105": [
+      {
+        "guide_order": 38,
+        "chapter_id": 11050067,
+        "title": "Who Gets The Kids?",
+        "matchup": "Henrietta Akaba vs. Leo Akaba (Professor)",
+        "parent_chapter": 11050034,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 39,
+        "chapter_id": 11050068,
+        "title": "Riley Vs Ray",
+        "matchup": "Ray Akaba vs. Riley",
+        "parent_chapter": 11050035,
+        "reverse_chapter_id": null
+      },
+      {
+        "guide_order": 40,
+        "chapter_id": 11050069,
+        "title": "Dueling Sisters",
+        "matchup": "Grace Tyler vs. Gloria Tyler",
+        "parent_chapter": 11050036,
+        "reverse_chapter_id": null
+      }
+    ],
+    "1106": [
+      {
+        "guide_order": 18,
+        "chapter_id": 11060057,
+        "title": "Final Battle",
+        "matchup": "Tour Guide vs. The Vagrant",
+        "parent_chapter": 11060031,
+        "reverse_chapter_id": null
+      }
+    ]
+  },
+  "checks": [
+    "40 Requiem story duels present in report and Solo.json",
+    "17 Duel Monsters Requiem reverse duels present with swapped names/decks/portraits",
+    "gate counts match expected 17/7/9/3/3/1 distribution",
+    "Requiem story duels are in guide order within each campaign",
+    "documented parent links match Solo.json, including Duel Monsters after-story tail",
+    "all imported story and DM reverse duel files exist under Data/SoloDuels",
+    "all IDS explanation blocks exist",
+    "all p1_img/p2_img portrait keys exist in CharNames.json",
+    "no parent cycles in LE story or challenge gates"
+  ],
+  "dm_reverse_duels": [
+    {
+      "forward_chapter_id": 11010065,
+      "reverse_chapter_id": 11010100,
+      "gate": 1101,
+      "guide_order": 1,
+      "title": "Everything's Relative",
+      "matchup": "Mokuba Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010065
+    },
+    {
+      "forward_chapter_id": 11010066,
+      "reverse_chapter_id": 11010101,
+      "gate": 1101,
+      "guide_order": 2,
+      "title": "Double Trouble Duel",
+      "matchup": "Paradox Brothers vs. Yami Yugi",
+      "parent_chapter": 11010066
+    },
+    {
+      "forward_chapter_id": 11010067,
+      "reverse_chapter_id": 11010102,
+      "gate": 1101,
+      "guide_order": 3,
+      "title": "Dungeon Dice Monsters",
+      "matchup": "Joey Wheeler vs. Duke Devlin",
+      "parent_chapter": 11010067
+    },
+    {
+      "forward_chapter_id": 11010068,
+      "reverse_chapter_id": 11010103,
+      "gate": 1101,
+      "guide_order": 4,
+      "title": "The ESP Duelist",
+      "matchup": "Espa Roba vs. Joey Wheeler",
+      "parent_chapter": 11010068
+    },
+    {
+      "forward_chapter_id": 11010069,
+      "reverse_chapter_id": 11010104,
+      "gate": 1101,
+      "guide_order": 5,
+      "title": "Double Duel",
+      "matchup": "Lumis And Umbra vs. Yami Yugi",
+      "parent_chapter": 11010069
+    },
+    {
+      "forward_chapter_id": 11010070,
+      "reverse_chapter_id": 11010105,
+      "gate": 1101,
+      "guide_order": 6,
+      "title": "Friends 'Til The End",
+      "matchup": "Joey vs. Yugi Muto",
+      "parent_chapter": 11010070
+    },
+    {
+      "forward_chapter_id": 11010071,
+      "reverse_chapter_id": 11010106,
+      "gate": 1101,
+      "guide_order": 7,
+      "title": "Mind Game",
+      "matchup": "Mai Valentine vs. Yami Marik",
+      "parent_chapter": 11010071
+    },
+    {
+      "forward_chapter_id": 11010072,
+      "reverse_chapter_id": 11010107,
+      "gate": 1101,
+      "guide_order": 8,
+      "title": "Showdown In The Shadows",
+      "matchup": "Yami Bakura vs. Yami Marik",
+      "parent_chapter": 11010072
+    },
+    {
+      "forward_chapter_id": 11010073,
+      "reverse_chapter_id": 11010108,
+      "gate": 1101,
+      "guide_order": 9,
+      "title": "Noah's Final Threat",
+      "matchup": "Noah Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010073
+    },
+    {
+      "forward_chapter_id": 11010074,
+      "reverse_chapter_id": 11010109,
+      "gate": 1101,
+      "guide_order": 10,
+      "title": "The Darkness Returns",
+      "matchup": "Joey Wheeler vs. Yami Marik",
+      "parent_chapter": 11010074
+    },
+    {
+      "forward_chapter_id": 11010075,
+      "reverse_chapter_id": 11010110,
+      "gate": 1101,
+      "guide_order": 11,
+      "title": "One Step Ahead",
+      "matchup": "Zigfried von Schroeder vs. Seto Kaiba",
+      "parent_chapter": 11010075
+    },
+    {
+      "forward_chapter_id": 11010076,
+      "reverse_chapter_id": 11010111,
+      "gate": 1101,
+      "guide_order": 12,
+      "title": "Sinister Secrets",
+      "matchup": "Leon von Schroeder vs. Yami Yugi",
+      "parent_chapter": 11010076
+    },
+    {
+      "forward_chapter_id": 11010081,
+      "reverse_chapter_id": 11010112,
+      "gate": 1101,
+      "guide_order": 13,
+      "title": "Sera vs Anubis",
+      "matchup": "Anubis vs. Sera",
+      "parent_chapter": 11010081
+    },
+    {
+      "forward_chapter_id": 11010077,
+      "reverse_chapter_id": 11010113,
+      "gate": 1101,
+      "guide_order": 14,
+      "title": "Dark Side of Dimensions Pt. 1",
+      "matchup": "Aigami vs. Yami Yugi",
+      "parent_chapter": 11010077
+    },
+    {
+      "forward_chapter_id": 11010078,
+      "reverse_chapter_id": 11010114,
+      "gate": 1101,
+      "guide_order": 15,
+      "title": "Dark Side of Dimensions Pt. 2",
+      "matchup": "Seto Kaiba vs. Yami Yugi",
+      "parent_chapter": 11010078
+    },
+    {
+      "forward_chapter_id": 11010079,
+      "reverse_chapter_id": 11010115,
+      "gate": 1101,
+      "guide_order": 16,
+      "title": "Shadi Vs. Grandpa",
+      "matchup": "Solomon Muto vs. Shadi",
+      "parent_chapter": 11010079
+    },
+    {
+      "forward_chapter_id": 11010080,
+      "reverse_chapter_id": 11010116,
+      "gate": 1101,
+      "guide_order": 17,
+      "title": "Rebecca Vs Tristan",
+      "matchup": "Tristan Taylor vs. Rebecca Hawkins",
+      "parent_chapter": 11010080
+    }
+  ],
+  "dm_afterstory_chain": [
+    11010064,
+    11010081,
+    11010077,
+    11010078,
+    11010079,
+    11010080
+  ],
+  "dm_clear_chapter": 11010080
+}

@@ -7,6 +7,8 @@ YgoMaster/Data/CardData/*
 YgoMaster/Data/CpuContest/*
 YgoMaster/Data/Decks/*
 YgoMaster/Data/Players/*
+YgoMaster/Data/Backups/*
+YgoMaster/Data/**/*.bak*
 YgoMaster/Data/Player.json
 YgoMaster/*.exe.config
 YgoMaster/*.vshost.*
@@ -29,6 +31,11 @@ masterduel_Data/*
 
 # Mono auto generated files
 mono_crash.*
+
+# Local campaign tooling output
+Tools/__pycache__/
+Tools/**/*.pyc
+scratch/
 
 # Build results
 [Dd]ebug/

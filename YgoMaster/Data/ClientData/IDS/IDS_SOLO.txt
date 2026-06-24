@@ -91,13 +91,19 @@ Play Pendulum Monsters into the Pendulum Zone, then Pendulum Summon many more mo
 [IDS_SOLO.CHAPTER11010001_EXPLANATION]
 The Duelist Kingdom
 
+Yugi and Joey begin their journey to Duelist Kingdom with a friendly duel. It is a chance for Joey to test what Yugi has taught him before the tournament begins.
+
 Yugi Muto vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010002_EXPLANATION]
 The Duelist Kingdom (Reverse Duel)
 
+Relive the opening duel from Joey's side. Use Joey's growing instincts to challenge Yugi before the stakes of Duelist Kingdom rise.
+
 Joey Wheeler vs. Yugi Muto
 [IDS_SOLO.CHAPTER11010003_EXPLANATION]
 The Heart of the Cards
+
+Kaiba corners Yugi's grandfather and claims the rare Blue-Eyes White Dragon. Yugi steps forward with his grandfather's Deck, trusting the heart of the cards against Kaiba's overwhelming power.
 
 Yami Yugi vs. Seto Kaiba
 
@@ -105,9 +111,13 @@ Unlocks the Grandpa Muto pack in the shop.
 [IDS_SOLO.CHAPTER11010004_EXPLANATION]
 The Heart of the Cards (Reverse Duel)
 
+Take Kaiba's role in the first major clash. Command Blue-Eyes White Dragon and prove that raw power can break Yugi's belief in his Deck.
+
 Seto Kaiba vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010005_EXPLANATION]
 The Ultimate Great Moth
+
+On Duelist Kingdom, Weevil throws Yugi into an insect-filled trap and relies on Perfectly Ultimate Great Moth. Yugi must survive the swarm and turn Weevil's own strategy against him.
 
 Yami Yugi vs. Weevil Underwood
 
@@ -115,17 +125,25 @@ Unlocks the Mai Valentine pack in the shop.
 [IDS_SOLO.CHAPTER11010006_EXPLANATION]
 The Ultimate Great Moth (Reverse Duel)
 
+Play as Weevil and force Yugi to answer an evolving insect strategy. Protect your cocoon long enough to unleash your ultimate monster.
+
 Weevil Underwood vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010007_EXPLANATION]
 The Harpie Lady
+
+Joey faces Mai Valentine, a confident duelist who reads the field and pressures him with Harpie Lady. To stay in the tournament, Joey has to trust his friends and find his own dueling style.
 
 Joey Wheeler vs. Mai Valentine
 [IDS_SOLO.CHAPTER11010008_EXPLANATION]
 The Harpie Lady (Reverse Duel)
 
+Take Mai's side and show Joey how dangerous a prepared duelist can be. Use Harpie Lady and sharp reads to keep the rookie off balance.
+
 Mai Valentine vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010009_EXPLANATION]
 Attack from the Deep
+
+Mako Tsunami turns the arena into open water, hiding his sea monsters beneath the waves. Yugi must find a way through the ocean field before Mako's monsters drag him under.
 
 Yami Yugi vs. Mako Tsunami
 
@@ -133,25 +151,37 @@ Unlocks the Bakura pack in the shop.
 [IDS_SOLO.CHAPTER11010010_EXPLANATION]
 Attack from the Deep (Reverse Duel)
 
+Play as Mako and use the sea to control the duel. Keep your monsters hidden, strike from below, and test whether Yugi can adapt to your home field.
+
 Mako Tsunami vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010011_EXPLANATION]
 The Dinosaur Duelist
+
+Rex Raptor challenges Joey, certain that his Dinosaur Deck will crush an amateur. Joey has to prove his earlier win was not luck and earn respect as a real duelist.
 
 Joey Wheeler vs. Rex Raptor
 [IDS_SOLO.CHAPTER11010012_EXPLANATION]
 The Dinosaur Duelist (Reverse Duel)
 
+Command Rex's dinosaurs and overpower Joey before he finds momentum. Use brute force to remind him why Rex was once a regional champion.
+
 Rex Raptor vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010013_EXPLANATION]
 Evil Spirit of the Ring
+
+The Millennium Ring reveals a darker presence inside Bakura, trapping Yugi and his friends in a Shadow Game. Yugi must defeat Bakura's occult strategy to save everyone from the darkness.
 
 Yami Yugi vs. Yami Bakura
 [IDS_SOLO.CHAPTER11010014_EXPLANATION]
 Evil Spirit of the Ring (Reverse Duel)
 
+Play as Yami Bakura and turn the duel into a supernatural trap. Use fiends and spirits to pressure Yugi while the Shadow Game closes in.
+
 Yami Bakura vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010015_EXPLANATION]
 PaniK Attack
+
+After Mai loses her star chips, Yugi confronts the eliminator PaniK. In a duel built on fear and darkness, Yugi must stay calm and expose the monster hiding behind intimidation.
 
 Yami Yugi vs. PaniK
 
@@ -159,43 +189,63 @@ Unlocks the Joey Wheeler pack in the shop.
 [IDS_SOLO.CHAPTER11010016_EXPLANATION]
 PaniK Attack (Reverse Duel)
 
+Take PaniK's side and bury Yugi's field in darkness. Keep the pressure high and prove that fear can be as powerful as any monster.
+
 PaniK vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010017_EXPLANATION]
 Arena of Lost Souls
+
+Joey is lured into the caves by Bonz, one of Bandit Keith's underlings. Surrounded by zombies and traps, Joey has to fight through fear and prove he can win without Yugi dueling for him.
 
 Joey Wheeler vs. Bonz
 [IDS_SOLO.CHAPTER11010018_EXPLANATION]
 Arena of Lost Souls (Reverse Duel)
 
+Take Bonz's side and overwhelm Joey with the undead. Keep the graveyard pressure high and show him why the caves belong to Bandit Keith's crew.
+
 Bonz vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010019_EXPLANATION]
 The Face Off
+
+Kaiba returns to Duelist Kingdom with his brother Mokuba's safety on the line. His rematch with Yugi becomes more than pride, forcing both duelists to confront what victory will cost.
 
 Seto Kaiba vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010020_EXPLANATION]
 The Face Off (Reverse Duel)
 
+Relive the rematch from Yugi's side. Stand against Kaiba's Blue-Eyes assault while the pressure of Pegasus's tournament bears down on both rivals.
+
 Yami Yugi vs. Seto Kaiba
 [IDS_SOLO.CHAPTER11010021_EXPLANATION]
 A Duel of Tears
 
-Téa Gardner vs. Mai Valentine
+Tea duels Mai for the star chips Yugi needs to continue. What begins as an uneven match becomes a test of friendship, courage, and Mai's guarded heart.
+
+Tea Gardner vs. Mai Valentine
 
 Unlocks the Seto Kaiba booster pack in the shop.
 [IDS_SOLO.CHAPTER11010022_EXPLANATION]
 A Duel of Tears (Reverse Duel)
 
-Mai Valentine vs. Téa Gardner
+Play as Mai and challenge Tea's resolve. Use your experience and Harpie strategy while deciding what kind of duelist you want to be.
+
+Mai Valentine vs. Tea Gardner
 [IDS_SOLO.CHAPTER11010023_EXPLANATION]
 Champion vs. Creator
+
+Pegasus forces Kaiba into a duel with Mokuba's soul hanging in the balance. Kaiba brings unmatched power, but Pegasus's Toon World and Millennium Eye make this a duel unlike any other.
 
 Maximillion Pegasus vs. Seto Kaiba
 [IDS_SOLO.CHAPTER11010024_EXPLANATION]
 Creator (Reverse Duel) vs. Champion
 
-Maximillion Pegasus vs. Seto Kaiba
+Take Kaiba's side against Pegasus and his impossible reads. Break through Toon World and prove that even the creator of Duel Monsters can be defeated.
+
+Seto Kaiba vs. Maximillion Pegasus
 [IDS_SOLO.CHAPTER11010025_EXPLANATION]
 Duel Identity
+
+Mai faces Yugi in the tournament finals, determined to prove she can stand alone. Yugi must answer her confidence while holding onto the trust that carried him this far.
 
 Yami Yugi vs. Mai Valentine
 
@@ -203,153 +253,231 @@ Unlocks the Yugi booster pack in the shop.
 [IDS_SOLO.CHAPTER11010026_EXPLANATION]
 Duel Identity (Reverse Duel)
 
+Play as Mai and push Yugi to his limit. Let Harpie Lady lead the attack and show that your strength comes from more than reading marked cards.
+
 Mai Valentine vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010027_EXPLANATION]
 Keith's Machinations
+
+Joey reaches the semifinals, but Bandit Keith has spent the tournament cheating and manipulating others. Joey has to overcome machines, dirty tricks, and his own doubts to earn his place.
 
 Joey Wheeler vs. Bandit Keith
 [IDS_SOLO.CHAPTER11010028_EXPLANATION]
 Keith's Machinations (Reverse Duel)
 
+Command Bandit Keith's Machine Deck and keep Joey under pressure. Use ruthless tactics to show why Keith refuses to lose to an amateur.
+
 Bandit Keith vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010029_EXPLANATION]
 Best Friends, Best Duelists
+
+The finals force Yugi and Joey to duel each other after everything they survived together. Only one can face Pegasus, but both duelists fight to honor their friendship.
 
 Yami Yugi vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010030_EXPLANATION]
 Best Friends, Best Duelists (Reverse Duel)
 
+Take Joey's side in the duel against his best friend. Trust the Deck that brought you this far and prove you belong in the final match.
+
 Joey Wheeler vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010031_EXPLANATION]
 The Match of the Millennium
+
+Yugi finally confronts Pegasus, the mastermind behind Duelist Kingdom. To save the souls Pegasus has taken, Yugi must overcome Toon monsters, mind reading, and the power of the Millennium Eye.
 
 Yami Yugi vs. Maximillion Pegasus
 [IDS_SOLO.CHAPTER11010032_EXPLANATION]
 The Match of the Millennium (Reverse Duel)
 
+Play as Pegasus in the climactic Shadow Game. Use Toon World and perfect information to stop Yugi before he can free his grandfather, Kaiba, and Mokuba.
+
 Maximillion Pegasus vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010033_EXPLANATION]
 The Mystery Duelist
+
+After Duelist Kingdom, a hidden opponent uses Keith's body to challenge Yugi. The duel draws Yugi deeper into the secrets of the Millennium Items and the enemies watching him from the shadows.
 
 Yugi Muto vs. Bandit Keith
 [IDS_SOLO.CHAPTER11010034_EXPLANATION]
 The Mystery Duelist (Reverse Duel)
 
+Take control of the possessed Keith and test Yugi before Battle City begins. Use aggressive tactics to unsettle him and hint at the darker powers closing in.
+
 Bandit Keith vs. Yugi Muto
 [IDS_SOLO.CHAPTER11010035_EXPLANATION]
 Battle City Begins
+
+Battle City begins with rare cards and locator cards on the line. Yugi's first opponent, Seeker, brings a counterfeit Exodia strategy meant to humiliate the King of Games.
 
 Yami Yugi vs. Seeker
 [IDS_SOLO.CHAPTER11010036_EXPLANATION]
 Battle City Begins (Reverse Duel)
 
+Play as Seeker and assemble Exodia before Yugi can expose your tactics. Flood the duel with draw power and make the fake rare hunter's plan succeed.
+
 Seeker vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010037_EXPLANATION]
 The Master of Magicians
+
+Arkana, a stage magician serving Marik, traps Yugi in a deadly duel of Dark Magicians. Yugi must outplay a rival magician while refusing to let fear decide the match.
 
 Yami Yugi vs. Arkana
 [IDS_SOLO.CHAPTER11010038_EXPLANATION]
 The Master of Magicians (Reverse Duel)
 
+Take Arkana's role and prove your Dark Magician is superior. Use theatrical traps and relentless pressure to cut Yugi's escape route away.
+
 Arkana vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010039_EXPLANATION]
 Playing with a Parasite
+
+Weevil returns in Battle City and infects Joey's Deck with Parasite Paracide. Joey has to fight through sabotage and prove he can beat Weevil without losing his temper.
 
 Joey Wheeler vs. Weevil Underwood
 [IDS_SOLO.CHAPTER11010040_EXPLANATION]
 Playing with a Parasite (Reverse Duel)
 
+Play as Weevil and turn Joey's own Deck against him. Spread insects through the field and punish every attempt he makes to regain control.
+
 Weevil Underwood vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010041_EXPLANATION]
 Mime Control
+
+Marik controls Strings from afar and sends him after Yugi with Slifer the Sky Dragon. Yugi must solve the Egyptian God's overwhelming attack before Marik's trap closes.
 
 Yami Yugi vs. Strings
 [IDS_SOLO.CHAPTER11010042_EXPLANATION]
 Mime Control (Reverse Duel)
 
+Command Strings under Marik's control and bring out Slifer the Sky Dragon. Keep Yugi locked down with a strategy built to feed the Egyptian God's power.
+
 Strings vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010043_EXPLANATION]
 The Dark Spirit Revealed
+
+Yugi confronts Yami Bakura again as the Battle City finals approach. The duel reveals how deeply the Millennium Items are tied to Bakura's plans and the ancient darkness behind them.
 
 Yami Yugi vs. Yami Bakura
 [IDS_SOLO.CHAPTER11010044_EXPLANATION]
 The Dark Spirit Revealed (Reverse Duel)
 
+Take Yami Bakura's side and duel with a plan bigger than victory. Use fiends, occult traps, and the Millennium Ring's schemes to drag Yugi toward the past.
+
 Yami Bakura vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010045_EXPLANATION]
 The Awakening of Evil
+
+Joey faces Odion, believing him to be Marik. As the duel pushes both players to their limits, the real danger beneath Battle City starts to awaken.
 
 Joey Wheeler vs. Odion
 [IDS_SOLO.CHAPTER11010046_EXPLANATION]
 The Awakening of Evil (Reverse Duel)
 
+Play as Odion and defend the false identity that protects the Ishtar family secret. Use disciplined traps to stop Joey before the true Marik emerges.
+
 Odion vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010047_EXPLANATION]
 A Duel with Destiny
+
+Ishizu challenges Kaiba with a vision of his defeat and the weight of the past. Kaiba rejects destiny itself, relying on pride, logic, and Obelisk the Tormentor.
 
 Seto Kaiba vs. Ishizu Ishtar
 [IDS_SOLO.CHAPTER11010048_EXPLANATION]
 A Duel with Destiny (Reverse Duel)
 
+Take Ishizu's side and use foresight to corner Kaiba. Guide the duel toward the future you have seen and test whether Kaiba can truly defy fate.
+
 Ishizu Ishtar vs. Seto Kaiba
 [IDS_SOLO.CHAPTER11010049_EXPLANATION]
 Clash in the Colosseum
+
+Yugi and Kaiba meet in the Battle City semifinals with Egyptian Gods on both sides. Their rivalry reaches a new peak as Slifer and Obelisk collide above the city.
 
 Yami Yugi vs. Seto Kaiba
 [IDS_SOLO.CHAPTER11010050_EXPLANATION]
 Clash in the Colosseum (Reverse Duel)
 
+Play as Kaiba in the rematch he has been chasing since Duelist Kingdom. Use Obelisk and Blue-Eyes power to finally surpass Yugi.
+
 Seto Kaiba vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010051_EXPLANATION]
 The Final Face Off
+
+Marik drags Yugi into the final Shadow Game with the fate of their friends at stake. Yugi must overcome The Winged Dragon of Ra and end Marik's cruelty once and for all.
 
 Yami Yugi vs. Yami Marik
 [IDS_SOLO.CHAPTER11010052_EXPLANATION]
 The Final Face Off (Reverse Duel)
 
+Take Yami Marik's side and wield The Winged Dragon of Ra without mercy. Keep Yugi trapped in the Shadow Game and crush the hope his friends placed in him.
+
 Yami Marik vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010053_EXPLANATION]
 A New Evil
+
+The seal of Orichalcos brings a new threat after Battle City. Joey faces Mai, whose pain and pride have made her vulnerable to Dartz's promise of power.
 
 Joey Wheeler vs. Mai Valentine
 [IDS_SOLO.CHAPTER11010054_EXPLANATION]
 A New Evil (Reverse Duel)
 
+Play as Mai under the pull of the Orichalcos. Use her sharpened Harpie strategy to force Joey into a duel neither friend wanted.
+
 Mai Valentine vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010055_EXPLANATION]
 Deja Duel
+
+Alister targets Kaiba for the sins he believes KaibaCorp committed. Kaiba refuses to accept blame, turning the duel into a clash between revenge and denial.
 
 Seto Kaiba vs. Alister
 [IDS_SOLO.CHAPTER11010056_EXPLANATION]
 Deja Duel (Reverse Duel)
 
+Take Alister's side and make Kaiba answer for the past. Use your anger and the Orichalcos to challenge the power of Blue-Eyes.
+
+Alister fights from the pain of losing his brother and believes KaibaCorp helped ruin his family. Push that grudge through the Seal of Orichalcos and see whether Kaiba's pride can withstand it.
+
 Alister vs. Seto Kaiba
 [IDS_SOLO.CHAPTER11010057_EXPLANATION]
 Fighting for a Friend
+
+Valon stands between Joey and Mai, fighting for his own bond with her. Joey has to survive Valon's armor strategy and reach the friend who is slipping away.
 
 Joey Wheeler vs. Valon
 [IDS_SOLO.CHAPTER11010058_EXPLANATION]
 Fighting for a Friend (Reverse Duel)
 
+Play as Valon and protect the future he believes he can share with Mai. Use armored monsters to turn Joey's determination back against him.
+
 Valon vs. Joey Wheeler
 [IDS_SOLO.CHAPTER11010059_EXPLANATION]
 Grappling with a Guardian
+
+Rafael challenges Yugi with a warrior's pride and the Seal of Orichalcos. The duel tests Yugi's trust in his monsters and exposes how dangerous desperation can become.
 
 Yami Yugi vs. Rafael
 [IDS_SOLO.CHAPTER11010060_EXPLANATION]
 Grappling with a Guardian (Reverse Duel)
 
+Take Rafael's side and make Yugi confront the cost of victory. Protect your Guardians and show him why the Orichalcos tempts even strong duelists.
+
 Rafael vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010061_EXPLANATION]
 A Duel with Dartz!
+
+Dartz reveals the true purpose of the Orichalcos and challenges Yugi for the fate of the world. Yugi must stand with his friends' hopes against an ancient power.
 
 Yami Yugi vs. Dartz
 [IDS_SOLO.CHAPTER11010062_EXPLANATION]
 A Duel with Dartz! (Reverse Duel)
 
+Play as Dartz and unleash the Orichalcos at full strength. Overwhelm Yugi with ancient power before the bonds he protects can break your plan.
+
 Dartz vs. Yami Yugi
 [IDS_SOLO.CHAPTER11010063_EXPLANATION]
 The Final Duel
+
+Yugi faces Atem in the Ceremonial Duel, the final test before the Pharaoh can move on. To say goodbye, Yugi must prove he can stand on his own against his other self.
 
 Yugi Muto vs. Yami Yugi
 
@@ -357,9 +485,13 @@ Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11010064_EXPLANATION]
 The Final Duel (Reverse Duel)
 
+Take Atem's side in the farewell duel. Use the power and experience of the Pharaoh to test whether Yugi is ready for the future.
+
 Yami Yugi vs. Yugi Muto
 [IDS_SOLO.CHAPTER11020001_EXPLANATION]
 The Next King of Games
+
+Jaden arrives at Duel Academy late and has to duel Dr. Crowler for his entrance exam. His Elemental HERO Deck turns a first impression into a declaration that a new kind of hero has arrived.
 
 Jaden Yuki vs. Dr. Vellian Crowler
 
@@ -367,17 +499,25 @@ Unlocks the Alexis Rhodes pack in the shop.
 [IDS_SOLO.CHAPTER11020002_EXPLANATION]
 The Next King of Games (Reverse Duel)
 
+Take Crowler's side and put the new student in his place. Use Ancient Gear power to show Jaden that Duel Academy will not be won with enthusiasm alone.
+
 Dr. Vellian Crowler vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020003_EXPLANATION]
 A Duel in Love
+
+Jaden crosses paths with Alexis Rhodes while searching for the truth behind her missing brother. The duel introduces him to one of Obelisk Blue's strongest students.
 
 Jaden Yuki vs. Alexis Rhodes
 [IDS_SOLO.CHAPTER11020004_EXPLANATION]
 A Duel in Love (Reverse Duel)
 
+Play as Alexis and test the Slifer Red newcomer. Use discipline and Cyber-style pressure to prove that Jaden still has plenty to learn.
+
 Alexis Rhodes vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020005_EXPLANATION]
 The Shadow Duelist
+
+Titan claims to be a Shadow Duelist and uses fear to challenge Jaden in the abandoned dorm. Jaden has to cut through the act before the darkness around Duel Academy becomes real.
 
 Jaden Yuki vs. Titan
 
@@ -385,17 +525,25 @@ Unlocks the Bastion Misawa pack in the shop.
 [IDS_SOLO.CHAPTER11020006_EXPLANATION]
 The Shadow Duelist (Reverse Duel)
 
+Take Titan's role and turn the duel into a performance of terror. Use fiends and intimidation to convince Jaden that he is trapped in a true Shadow Game.
+
 Titan vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020007_EXPLANATION]
 For the Sake of Syrus
+
+Zane Truesdale challenges Jaden after Syrus's confidence is shaken. Against Duel Academy's top duelist, Jaden must show that friendship can stand beside elite skill.
 
 Zane Truesdale vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020008_EXPLANATION]
 For the Sake of Syrus (Reverse Duel)
 
+Play as Jaden against Zane's Cyber Dragon strategy. Fight for Syrus and prove that a Slifer Red can push the academy's best to his limit.
+
 Jaden Yuki vs. Zane Truesdale
 [IDS_SOLO.CHAPTER11020009_EXPLANATION]
 Formula for Success
+
+Bastion and Chazz duel to decide who deserves recognition at Duel Academy. The match pits careful calculation against Chazz's pride and hunger for status.
 
 Bastion Misawa vs. Chazz Princeton
 
@@ -403,17 +551,25 @@ Unlocks the Chazz Princeton pack in the shop.
 [IDS_SOLO.CHAPTER11020010_EXPLANATION]
 Formula for Success (Reverse Duel)
 
+Take Chazz's side and challenge Bastion's formulas head-on. Use confidence and pressure to prove that dueling cannot be solved by math alone.
+
 Chazz Princeton vs. Bastion Misawa
 [IDS_SOLO.CHAPTER11020011_EXPLANATION]
 Doomsday Duel
+
+Atticus returns under a mask and brings darkness back to the abandoned dorm. Jaden duels to free Alexis's brother from the force controlling him.
 
 Jaden Yuki vs. Masked Atticus
 [IDS_SOLO.CHAPTER11020012_EXPLANATION]
 Doomsday Duel (Reverse Duel)
 
+Play as Masked Atticus and keep the darkness in control. Use the power behind the mask to stop Jaden before he can reach the friend trapped inside.
+
 Masked Atticus vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020013_EXPLANATION]
 Field of Screams
+
+Camula of the Shadow Riders targets Duel Academy and threatens Jaden's friends. Jaden has to defeat her Vampire strategy before another soul is taken.
 
 Jaden Yuki vs. Camula
 
@@ -421,17 +577,25 @@ Unlocks the Syrus Truesdale pack in the shop.
 [IDS_SOLO.CHAPTER11020014_EXPLANATION]
 Field of Screams (Reverse Duel)
 
+Take Camula's side and duel with the confidence of a Shadow Rider. Use vampires, traps, and soul-stealing pressure to stop Jaden's HEROes.
+
 Camula vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020015_EXPLANATION]
 Duel Distractions
+
+Tania challenges Jaden in a duel where emotion and instinct matter as much as tactics. Jaden must stay focused while the Shadow Rider tests his heart.
 
 Jaden Yuki vs. Tania
 [IDS_SOLO.CHAPTER11020016_EXPLANATION]
 Duel Distractions (Reverse Duel)
 
+Play as Tania and turn the duel into a trial of spirit. Use your Amazoness warriors to push Jaden beyond his usual carefree style.
+
 Tania vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020017_EXPLANATION]
 A Reason to Win
+
+Alexis faces Titan with more than victory on her mind. The duel gives her a chance to confront fear directly and fight for her own reason to win.
 
 Alexis Rhodes vs. Titan
 
@@ -439,25 +603,39 @@ Unlocks the Jesse Anderson pack in the shop.
 [IDS_SOLO.CHAPTER11020018_EXPLANATION]
 A Reason to Win (Reverse Duel)
 
+Take Titan's side and try to drag Alexis back into the fear of the abandoned dorm. Use dark pressure to test her resolve.
+
+Titan turns the abandoned dorm into a stage for fear, pretending the supernatural is on his side. Keep Alexis trapped in that atmosphere and prove whether her confidence can survive the darkness.
+
 Titan vs. Alexis Rhodes
 [IDS_SOLO.CHAPTER11020019_EXPLANATION]
 Amnaels Endgame
+
+Amnael reveals the secret behind the Shadow Riders' final challenge. Jaden must duel through alchemy, deception, and the truth about a trusted teacher.
 
 Jaden Yuki vs. Amnael
 [IDS_SOLO.CHAPTER11020020_EXPLANATION]
 Amnaels Endgame (Reverse Duel)
 
+Play as Amnael and use alchemy to dismantle Jaden's HERO strategy. Turn knowledge and preparation into the final test of the Seven Stars arc.
+
 Amnael vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020021_EXPLANATION]
 Rise of the Sacred Beasts
+
+Kagemaru awakens the Sacred Beasts and threatens the power hidden beneath Duel Academy. Jaden has to face a legendary threat before the island is consumed.
 
 Jaden Yuki vs. Kagemaru
 [IDS_SOLO.CHAPTER11020022_EXPLANATION]
 Rise of the Sacred Beasts (Reverse Duel)
 
+Take Kagemaru's side and command the Sacred Beasts. Use overwhelming power to show Jaden what the Shadow Riders were trying to release.
+
 Kagemaru vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020023_EXPLANATION]
 Magna Chum Laude
+
+Crowler challenges Chumley as graduation approaches, forcing him to prove how far he has come. The duel becomes a farewell to one student's time at the academy.
 
 Dr. Vellian Crowler vs. Chumley Huffington
 
@@ -465,161 +643,243 @@ Unlocks the Jaden Yuki pack in the shop.
 [IDS_SOLO.CHAPTER11020024_EXPLANATION]
 Magna Chum Laude (Reverse Duel)
 
+Play as Chumley and show Crowler that your growth is real. Duel with the confidence of a student ready to leave Duel Academy behind.
+
 Chumley Huffington vs. Dr. Vellian Crowler
 [IDS_SOLO.CHAPTER11020025_EXPLANATION]
 The Graduation Match
+
+Jaden and Zane meet again in a graduation duel that measures how much both have changed. HEROes and Cyber Dragons clash in a match built on respect.
 
 Jaden Yuki vs. Zane Truesdale
 [IDS_SOLO.CHAPTER11020026_EXPLANATION]
 The Graduation Match (Reverse Duel)
 
+Take Zane's side in the rematch with Jaden. Use Cyber Dragon precision to test whether Jaden is ready to stand beside Duel Academy's best.
+
 Zane Truesdale vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020027_EXPLANATION]
 A New Breed of Hero
+
+Aster Phoenix enters Jaden's life with a different vision of what a HERO can be. His Destiny HEROes challenge Jaden's confidence and his bond with his Deck.
 
 Aster Phoenix vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020028_EXPLANATION]
 A New Breed of Hero (Reverse Duel)
 
+Play as Jaden against Aster's Destiny HEROes. Prove that your Elemental HEROes still have a future even against a pro duelist's polished strategy.
+
 Jaden Yuki vs. Aster Phoenix
 [IDS_SOLO.CHAPTER11020029_EXPLANATION]
 Schooling the Master
+
+Zane duels Chancellor Sheppard while wrestling with pressure, pride, and his future. The match pushes him toward the darker edge of the Cyber style.
 
 Zane Truesdale vs. Chancellor Sheppard
 [IDS_SOLO.CHAPTER11020030_EXPLANATION]
 Schooling the Master (Reverse Duel)
 
+Take Sheppard's side and confront Zane before his path changes. Use experience to challenge the student who once seemed untouchable.
+
 Chancellor Sheppard vs. Zane Truesdale
 [IDS_SOLO.CHAPTER11020031_EXPLANATION]
 Blinded by the Light
+
+Chazz falls under Sartorius's influence and turns his ambition against Jaden. To save his rival, Jaden has to duel through the pull of the Society of Light.
 
 Jaden Yuki vs. Chazz Princeton
 [IDS_SOLO.CHAPTER11020032_EXPLANATION]
 Blinded by the Light (Reverse Duel)
 
+Play as Chazz under the Society of Light's sway. Use your new conviction to test whether Jaden can bring his rival back.
+
 Chazz Princeton vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020033_EXPLANATION]
 Duel for Hire
+
+Pegasus visits Duel Academy and becomes tangled in Crowler's latest scheme. The duel puts two showmen across from each other, each trying to control the spotlight.
 
 Maximillion Pegasus vs. Dr. Vellian Crowler
 [IDS_SOLO.CHAPTER11020034_EXPLANATION]
 Duel for Hire (Reverse Duel)
 
+Take Crowler's side and prove Duel Academy's staff can stand against Pegasus himself. Use Ancient Gear power to challenge the creator of Duel Monsters.
+
 Dr. Vellian Crowler vs. Maximillion Pegasus
 [IDS_SOLO.CHAPTER11020035_EXPLANATION]
 Heart of Ice
+
+Alexis is pulled into the Society of Light's influence, leaving Jaden to duel a friend whose heart has been frozen by Sartorius's will. He must win without giving up on her.
 
 Jaden Yuki vs. Alexis Rhodes
 [IDS_SOLO.CHAPTER11020036_EXPLANATION]
 Heart of Ice (Reverse Duel)
 
+Play as Alexis under the Society's control and test Jaden's resolve. Use cold precision to keep him from reaching the friend beneath the light.
+
 Alexis Rhodes vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020037_EXPLANATION]
 Tough Love
+
+Zane and Syrus face each other as brothers on very different paths. Syrus has to stand up to the duelist he admires most and prove he can duel with his own strength.
 
 Zane Truesdale vs. Syrus Truesdale
 [IDS_SOLO.CHAPTER11020038_EXPLANATION]
 Tough Love (Reverse Duel)
 
+Take Syrus's side and challenge Zane directly. Use courage and machine teamwork to show your brother how much you have grown.
+
 Syrus Truesdale vs. Zane Truesdale
 [IDS_SOLO.CHAPTER11020039_EXPLANATION]
 The Hand of Justice
+
+Sartorius moves openly against Jaden, using fate and the Society of Light to reshape Duel Academy. Jaden must fight destiny itself before more friends are taken.
 
 Jaden Yuki vs. Sartorius Kumar
 [IDS_SOLO.CHAPTER11020040_EXPLANATION]
 The Hand of Justice (Reverse Duel)
 
+Play as Sartorius and let the cards decide Jaden's fate. Use Arcana Force power to prove that the future belongs to the Society of Light.
+
 Sartorius Kumar vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020041_EXPLANATION]
 Future Changes
+
+Chazz crosses paths with Blair as the academy's relationships shift around the Society of Light. The duel shows how ambition, loyalty, and stubborn pride keep pulling him forward.
 
 Chazz Princeton vs. Blair Flannigan
 [IDS_SOLO.CHAPTER11020042_EXPLANATION]
 Future Changes (Reverse Duel)
 
+Take Blair's side and challenge Chazz's inflated confidence. Use your Deck to make him take you seriously instead of brushing you aside.
+
 Blair Flannigan vs. Chazz Princeton
 [IDS_SOLO.CHAPTER11020043_EXPLANATION]
 A Jewel of a Duel
+
+Jesse Anderson arrives with the Crystal Beasts and immediately connects with Jaden's love of dueling. Their match is a friendly clash between two duelists who can hear their cards.
 
 Jaden Yuki vs. Jesse Anderson
 [IDS_SOLO.CHAPTER11020044_EXPLANATION]
 A Jewel of a Duel (Reverse Duel)
 
+Play as Jesse and let the Crystal Beasts shine. Show Jaden a different kind of bond between duelist and Deck.
+
+Jesse has just arrived at Duel Academy with a Deck built around trust in his Crystal Beasts. Match Jaden's instincts with your own bond to your monsters and turn a friendly meeting into a real test.
+
 Jesse Anderson vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020045_EXPLANATION]
 Hanging with Axel
+
+Axel Brodie challenges Jaden during the expedition into another dimension. His Volcanic strategy tests whether Jaden can stay sharp while the academy's world grows stranger.
 
 Jaden Yuki vs. Axel Brodie
 [IDS_SOLO.CHAPTER11020046_EXPLANATION]
 Hanging with Axel (Reverse Duel)
 
+Take Axel's side and pressure Jaden with Volcanic firepower. Duel like a soldier and see whether Jaden can handle a battlefield mindset.
+
 Axel Brodie vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020047_EXPLANATION]
 Primal Instinct
+
+Jim Cook and Tyranno Hassleberry clash with rugged pride and survival instincts. Their duel brings raw strength and fossil power to the strange new world around Duel Academy.
 
 Jim Crocodile Cook vs. Tyranno Hassleberry
 [IDS_SOLO.CHAPTER11020048_EXPLANATION]
 Primal Instinct (Reverse Duel)
 
+Play as Hassleberry and meet Jim's fossil strategy head-on. Use dinosaur muscle and soldier spirit to prove whose instincts are stronger.
+
 Tyranno Hassleberry vs. Jim Crocodile Cook
 [IDS_SOLO.CHAPTER11020049_EXPLANATION]
 Head in the Clouds
+
+Adrian Gecko duels Chazz while hiding ambitions that reach far beyond the academy. Chazz has to fight through Adrian's calculated style and prove he is more than comic relief.
 
 Adrian Gecko vs. Chazz Princeton
 [IDS_SOLO.CHAPTER11020050_EXPLANATION]
 Head in the Clouds (Reverse Duel)
 
+Take Chazz's side and push back against Adrian's polished control. Duel with pride, Ojamas, and stubborn Princeton energy.
+
 Chazz Princeton vs. Adrian Gecko
 [IDS_SOLO.CHAPTER11020051_EXPLANATION]
 A Snake in the Grass
+
+Professor Viper manipulates the students through survival duels and hidden motives. Jaden faces the man behind the danger to uncover why Duel Academy was dragged into crisis.
 
 Jaden Yuki vs. Prof. Thelonious Viper
 [IDS_SOLO.CHAPTER11020052_EXPLANATION]
 A Snake in the Grass (Reverse Duel)
 
+Play as Viper and keep your plan moving. Use venomous tactics to drain Jaden's strength before he can expose your real objective.
+
 Prof. Thelonious Viper vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020053_EXPLANATION]
 A Dimensional Duel
+
+Jesse and Zane duel amid the chaos of another dimension, where every choice carries a heavier cost. Crystal Beasts meet Cyber Dragons in a battle between two trusted allies.
 
 Jesse Anderson vs. Zane Truesdale
 [IDS_SOLO.CHAPTER11020054_EXPLANATION]
 A Dimensional Duel (Reverse Duel)
 
+Take Zane's side and bring Cyber Dragon power into the dimensional crisis. Test Jesse's Crystal Beasts with the intensity of the Cyber Style.
+
 Zane Truesdale vs. Jesse Anderson
 [IDS_SOLO.CHAPTER11020055_EXPLANATION]
 Unleashing the Dragon
+
+Marcel becomes the vessel for a sinister force and turns the academy's crisis toward Yubel's return. Jaden must fight through possession to protect his friends.
 
 Jaden Yuki vs. Marcel Bonaparte
 [IDS_SOLO.CHAPTER11020056_EXPLANATION]
 Unleashing the Dragon (Reverse Duel)
 
+Play as Marcel under Yubel's influence and twist the duel against Jaden. Use the danger inside the vessel to push him toward despair.
+
 Marcel Bonaparte vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020057_EXPLANATION]
 The Power Within
+
+Jaden reaches Jesse after Yubel's shadow has changed everything between them. The duel tests Jaden's guilt, his bond with Jesse, and the darkness growing inside himself.
 
 Jaden Yuki vs. Jesse Anderson
 [IDS_SOLO.CHAPTER11020058_EXPLANATION]
 The Power Within (Reverse Duel)
 
+Take Jesse's side and challenge Jaden with the Crystal Beasts under impossible circumstances. Make him fight for the friend he is desperate to save.
+
 Jesse Anderson vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020059_EXPLANATION]
 Return of the Supreme King
+
+Jaden confronts Yubel after the rise of the Supreme King and the pain caused by his choices. This duel forces him to face the bond he forgot and the darkness he created.
 
 Jaden Yuki vs. Yubel
 [IDS_SOLO.CHAPTER11020060_EXPLANATION]
 Return of the Supreme King (Reverse Duel)
 
+Play as Yubel and test Jaden with love twisted into vengeance. Use your power to make him remember the promise that tied you together.
+
 Yubel vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020061_EXPLANATION]
 Darkness Returns
+
+Nightshroud emerges as the final darkness threatening Duel Academy and the world beyond it. Jaden duels to protect the future after everything he has survived.
 
 Jaden Yuki vs. Nightshroud
 [IDS_SOLO.CHAPTER11020062_EXPLANATION]
 Darkness Returns (Reverse Duel)
 
+Take Nightshroud's side and try to smother Jaden's hope. Use darkness itself to challenge the HERO who keeps standing back up.
+
 Nightshroud vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11020063_EXPLANATION]
 The Legendary Duelist
+
+Jaden seeks out Yugi for one last duel before his journey continues. Facing the legendary duelist lets him rediscover the joy of dueling that started it all.
 
 Jaden Yuki vs. Yami Yugi
 
@@ -627,9 +887,15 @@ Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11020064_EXPLANATION]
 The Legendary Duelist (Reverse Duel)
 
+Take Yugi's side in Jaden's farewell duel. Test the next generation with the calm strength of the King of Games.
+
+Jaden's final journey brings him face to face with the legendary duelist who inspired his path. Use Yugi's experience to measure how far Jaden has come before he steps into the future.
+
 Yami Yugi vs. Jaden Yuki
 [IDS_SOLO.CHAPTER11030001_EXPLANATION]
 Ready, Set, Duel
+
+Yusei leaves Satellite and runs straight into Sector Security. His first duel against Trudge introduces the speed, grit, and defiance that define his fight to reach New Domino City.
 
 Yusei Fudo vs. Tetsu Trudge
 
@@ -637,25 +903,37 @@ Unlocks the Tatsu Trudge pack in the shop.
 [IDS_SOLO.CHAPTER11030002_EXPLANATION]
 Ready, Set, Duel (Reverse Duel)
 
+Take Trudge's side and stop the Satellite runner before he slips away. Use Security's authority and pressure to bring Yusei down.
+
 Tetsu Trudge vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030003_EXPLANATION]
 A Blast from the Past
+
+Yusei finally confronts Jack Atlas, the friend who stole his Stardust Dragon and escaped Satellite. Their first clash is driven by betrayal, pride, and unfinished history.
 
 Yusei Fudo vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030004_EXPLANATION]
 A Blast from the Past (Reverse Duel)
 
+Play as Jack and defend your title as the Duel King. Use Red Dragon Archfiend to prove that leaving Satellite behind made you stronger.
+
 Jack Atlas vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030005_EXPLANATION]
 The Facility
+
+After his arrest, Yusei is sent to the Facility and meets Bolt Tanner. The duel becomes a test of survival and respect among people discarded by New Domino City.
 
 Yusei Fudo vs. Bolt Tanner
 [IDS_SOLO.CHAPTER11030006_EXPLANATION]
 The Facility (Reverse Duel)
 
+Take Bolt Tanner's side and challenge the newcomer in the Facility. Use brute strength to see whether Yusei deserves the respect of the inmates.
+
 Bolt Tanner vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030007_EXPLANATION]
 The Lockdown Duel
+
+Mr. Armstrong rules the Facility with cruelty and stacked odds. Yusei duels to expose his corruption and give the prisoners a chance to reclaim their dignity.
 
 Yusei Fudo vs. Mr. Armstrong
 
@@ -663,17 +941,25 @@ Unlocks the Leo/Luna pack in the shop.
 [IDS_SOLO.CHAPTER11030008_EXPLANATION]
 The Lockdown Duel (Reverse Duel)
 
+Play as Armstrong and keep control of the Facility. Use your rigged authority to crush Yusei before his defiance spreads.
+
 Mr. Armstrong vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030009_EXPLANATION]
 The Take Back
+
+Yusei gets another shot at Trudge while trying to recover what was taken from him. The duel pushes him one step closer to Jack and Stardust Dragon.
 
 Yusei Fudo vs. Tetsu Trudge
 [IDS_SOLO.CHAPTER11030010_EXPLANATION]
 The Take Back (Reverse Duel)
 
+Take Trudge's side in the rematch and stop Yusei's escape. Keep him pinned down before he can return to the Fortune Cup path.
+
 Tetsu Trudge vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030011_EXPLANATION]
 Welcome to the Fortune Cup
+
+The Fortune Cup begins, drawing duelists with hidden ties to the Signers. Greiger faces Leo, whose courage is larger than his experience.
 
 Greiger vs. Leo
 
@@ -681,17 +967,25 @@ Unlocks the Akiza Izinski pack in the shop.
 [IDS_SOLO.CHAPTER11030012_EXPLANATION]
 Welcome to the Fortune Cup (Reverse Duel)
 
+Play as Leo and stand up to Greiger on the Fortune Cup stage. Use Power Tool Dragon's spirit to show that courage can surprise experience.
+
 Leo vs. Greiger
 [IDS_SOLO.CHAPTER11030013_EXPLANATION]
 Surprise Surprise
+
+Yusei's Fortune Cup match against Hunter Pace is another step toward the truth behind the Signer marks. He has to stay focused despite Goodwin's manipulation of the tournament.
 
 Yusei Fudo vs. Hunter Pace
 [IDS_SOLO.CHAPTER11030014_EXPLANATION]
 Surprise Surprise (Reverse Duel)
 
+Take Hunter Pace's side and make Yusei work for every opening. Use the tournament spotlight to slow his climb toward Jack.
+
 Hunter Pace vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030015_EXPLANATION]
 Second Round Showdown
+
+Yusei faces Greiger, a duelist carrying anger over what happened to his village. Their duel reveals that the Fortune Cup is hiding pain as well as spectacle.
 
 Yusei Fudo vs. Greiger
 
@@ -699,33 +993,49 @@ Unlocks the Jack Atlas pack in the shop.
 [IDS_SOLO.CHAPTER11030016_EXPLANATION]
 Second Round Showdown (Reverse Duel)
 
+Play as Greiger and turn your grief into power against Yusei. Force him to understand the cost behind New Domino City's shining image.
+
 Greiger vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030017_EXPLANATION]
 Duel of Dragons
+
+Akiza's psychic powers and Black Rose Dragon make her feared as the Black Rose Witch. Yusei duels to reach the person hidden behind that fear.
 
 Yusei Fudo vs. Akiza Izinski
 [IDS_SOLO.CHAPTER11030018_EXPLANATION]
 Duel of Dragons (Reverse Duel)
 
+Take Akiza's side and unleash Black Rose Dragon's destructive power. Keep Yusei away before his trust breaks through your defenses.
+
 Akiza Izinski vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030019_EXPLANATION]
 The Fortune Cup Finale
+
+Yusei and Jack meet in the Fortune Cup finale with Stardust Dragon and Red Dragon Archfiend at the center of their rivalry. The Signer mystery begins to awaken around them.
 
 Yusei Fudo vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030020_EXPLANATION]
 The Fortune Cup Finale (Reverse Duel)
 
+Play as Jack in the Fortune Cup finale and hold onto your throne. Use Red Dragon Archfiend to overpower Yusei and prove the king still rules.
+
 Jack Atlas vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030021_EXPLANATION]
 Supersensory Shakedown
+
+Sayer manipulates psychic duelists from behind the Arcadia Movement. Leo steps into danger and has to face a man willing to use powers and people for control.
 
 Sayer vs. Leo
 [IDS_SOLO.CHAPTER11030022_EXPLANATION]
 Supersensory Shakedown (Reverse Duel)
 
+Take Leo's side and fight back against Sayer's psychic pressure. Protect your friends with Power Tool Dragon and reckless bravery.
+
 Leo vs. Sayer
 [IDS_SOLO.CHAPTER11030023_EXPLANATION]
 Digging Deeper
+
+Carly investigates the Arcadia Movement and gets pulled into Sayer's secrets. The duel exposes how dangerous the search for truth can become.
 
 Sayer vs. Carly Carmine
 
@@ -733,25 +1043,39 @@ Unlocks the Crow pack in the shop.
 [IDS_SOLO.CHAPTER11030024_EXPLANATION]
 Digging Deeper (Reverse Duel)
 
+Play as Carly and push past fear to uncover Sayer's lies. Use your reporter's determination to duel your way toward the truth.
+
 Carly Carmine vs. Sayer
 [IDS_SOLO.CHAPTER11030025_EXPLANATION]
 Mark of the Monkey
+
+Devack captures Luna and threatens the spirit world tied to Ancient Fairy Dragon. Leo fights to protect his sister even when the Dark Signers outmatch him.
 
 Leo vs. Devack
 [IDS_SOLO.CHAPTER11030026_EXPLANATION]
 Mark of the Monkey (Reverse Duel)
 
+Take Devack's side and use Earthbound Immortal power to trap Leo's hope. Keep Ancient Fairy Dragon out of reach.
+
+Devack guards Ancient Fairy Dragon for the Dark Signers and treats Leo's courage as a weakness. Use the monkey's control and Earthbound pressure to stop Leo before his faith in Luna can turn the duel.
+
 Devack vs. Leo
 [IDS_SOLO.CHAPTER11030027_EXPLANATION]
 A Whale of a Ride
+
+Crow faces Greiger after the Dark Signer curse twists Greiger's pain into vengeance. Blackwings take flight against an Earthbound Immortal born from tragedy.
 
 Crow Hogan vs. Greiger
 [IDS_SOLO.CHAPTER11030028_EXPLANATION]
 A Whale of a Ride (Reverse Duel)
 
+Play as Greiger and let the Dark Signer mark fuel your revenge. Use the whale's overwhelming force to bring Crow crashing down.
+
 Greiger vs. Crow Hogan
 [IDS_SOLO.CHAPTER11030029_EXPLANATION]
 A Score to Settle
+
+Yusei confronts Kalin, his former friend from Team Satisfaction, now reborn as a Dark Signer. Their duel carries the guilt of Satellite's past and a friendship broken by betrayal.
 
 Yusei Fudo vs. Kalin Kessler
 
@@ -759,137 +1083,209 @@ Unlocks the Yusei Fudo pack in the shop.
 [IDS_SOLO.CHAPTER11030030_EXPLANATION]
 A Score to Settle (Reverse Duel)
 
+Take Kalin's side and turn old wounds against Yusei. Use Infernity tactics and Dark Signer hatred to settle the score from Satellite.
+
 Kalin Kessler vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030031_EXPLANATION]
 Destiny's Will
+
+Roman Goodwin reveals the Dark Signers' plan and challenges Yusei with the fate of the Signers hanging over the duel. Yusei must stand against destiny's darkest pull.
 
 Yusei Fudo vs. Roman Goodwin
 [IDS_SOLO.CHAPTER11030032_EXPLANATION]
 Destiny's Will (Reverse Duel)
 
+Play as Roman Goodwin and wield the Dark Signers' purpose against Yusei. Use ancient power to break the Signers before they can unite.
+
 Roman Goodwin vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030033_EXPLANATION]
 Shadows of Doubt
+
+Jack faces Carly after the Dark Signer mark twists her feelings into a weapon. The duel forces him to confront both his pride and the person who believed in him.
 
 Jack Atlas vs. Carly Carmine
 [IDS_SOLO.CHAPTER11030034_EXPLANATION]
 Shadows of Doubt (Reverse Duel)
 
+Play as Carly and turn love, grief, and Dark Signer power against Jack. Make the former king answer for the heart he tried to keep distant.
+
 Carly Carmine vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030035_EXPLANATION]
 Truth and Consequences
+
+Akiza confronts Misty, whose hatred is tied to the tragedy around her brother. Their duel tears into the pain behind the Black Rose Witch's reputation.
 
 Akiza Izinski vs. Misty Tredwell
 [IDS_SOLO.CHAPTER11030036_EXPLANATION]
 Truth and Consequences (Reverse Duel)
 
+Take Misty's side and use the Dark Signer curse to punish Akiza. Force her to face the consequences of powers she never asked for.
+
 Misty Tredwell vs. Akiza Izinski
 [IDS_SOLO.CHAPTER11030037_EXPLANATION]
 Signs of Doom
+
+Yusei faces Rex Goodwin as the Signers and Dark Signers reach their final battle. The duel decides whether the Crimson Dragon's power can overcome Goodwin's ambition.
 
 Yusei Fudo vs. Rex Goodwin
 [IDS_SOLO.CHAPTER11030038_EXPLANATION]
 Signs of Doom (Reverse Duel)
 
+Play as Rex Goodwin and wield the power gathered from both sides of destiny. Break Yusei before the Signers can end your plan.
+
 Rex Goodwin vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030039_EXPLANATION]
 French Twist
+
+Sherry LeBlanc enters Yusei's life while chasing the mystery behind her parents' fate. Their duel introduces a new ally whose elegance hides fierce determination.
 
 Yusei Fudo vs. Sherry LeBlanc
 [IDS_SOLO.CHAPTER11030040_EXPLANATION]
 French Twist (Reverse Duel)
 
+Take Sherry's side and test Yusei with a refined, relentless strategy. Prove that your search for answers has made you dangerous.
+
 Sherry LeBlanc vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030041_EXPLANATION]
 The Edge of Elimination Part 1
+
+Team 5D's enters the WRGP and faces Team Unicorn. Yusei opens the match against Andre, where teamwork and endurance matter as much as individual skill.
 
 Yusei Fudo vs. Andre
 [IDS_SOLO.CHAPTER11030042_EXPLANATION]
 The Edge of Elimination Part 1 (Reverse Duel)
 
+Play as Andre and put Team 5D's on the defensive. Use Team Unicorn's opening strategy to wear Yusei down before his teammates can recover.
+
 Andre vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030043_EXPLANATION]
 The Edge of Elimination Part 2
+
+Breo continues Team Unicorn's plan, forcing Yusei to fight through a duel designed to exhaust him. Every card matters as the team match tightens.
 
 Yusei Fudo vs. Breo
 [IDS_SOLO.CHAPTER11030044_EXPLANATION]
 The Edge of Elimination Part 2 (Reverse Duel)
 
+Take Breo's side and keep Team Unicorn's strategy moving. Pressure Yusei until his resources and stamina begin to crack.
+
 Breo vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030045_EXPLANATION]
 The Edge of Elimination Part 3
+
+Jean takes the final position for Team Unicorn, turning the match into a test of Yusei's endurance. Team 5D's needs one more breakthrough to stay alive.
 
 Yusei Fudo vs. Jean
 [IDS_SOLO.CHAPTER11030046_EXPLANATION]
 The Edge of Elimination Part 3 (Reverse Duel)
 
+Play as Jean and finish the plan Team Unicorn built across the whole match. Keep Yusei from turning persistence into victory.
+
 Jean vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030047_EXPLANATION]
 Duel for Redemption
+
+Jack faces Dragan of Team Ragnarok, a duelist tied to the truth behind Jack's old championship. The duel challenges Jack's pride and his right to call himself king.
 
 Jack Atlas vs. Dragan
 [IDS_SOLO.CHAPTER11030048_EXPLANATION]
 Duel for Redemption (Reverse Duel)
 
+Take Dragan's side and force Jack to confront the past. Use the power of Team Ragnarok to test whether his pride has become real strength.
+
 Dragan vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030049_EXPLANATION]
 Tricking the Trickster
+
+Crow duels Broder as Team 5D's battles Team Ragnarok. Blackwings must cut through divine tricks and team tactics to keep the WRGP dream alive.
 
 Crow Hogan vs. Broder
 [IDS_SOLO.CHAPTER11030050_EXPLANATION]
 Tricking the Trickster (Reverse Duel)
 
+Play as Broder and use Team Ragnarok's deceptive style to ground Crow's Blackwings. Make every attack feel like a trap.
+
 Broder vs. Crow Hogan
 [IDS_SOLO.CHAPTER11030051_EXPLANATION]
 Tricking the Trickster 2
+
+Yusei faces Halldor and the full weight of the Nordic Gods. The duel becomes a clash between the bonds of Team 5D's and the divine power of Team Ragnarok.
 
 Yusei Fudo vs. Halldor
 [IDS_SOLO.CHAPTER11030052_EXPLANATION]
 Tricking the Trickster 2 (Reverse Duel)
 
+Take Halldor's side and summon the force of the Aesir. Test whether Yusei's bonds can survive against gods on the field.
+
 Halldor vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030053_EXPLANATION]
 The Beginning of the End
+
+The Machine Emperors begin their attack on the WRGP through Lester and Team New World. Jack's strength is tested against a future built to erase Synchro Summoning.
 
 Jack Atlas vs. Lester
 [IDS_SOLO.CHAPTER11030054_EXPLANATION]
 The Beginning of the End (Reverse Duel)
 
+Play as Lester and strike first for Team New World. Use Meklord tactics to show Jack how vulnerable Synchro monsters can be.
+
 Lester vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030055_EXPLANATION]
 Dawn of the Machines
+
+Primo escalates the Meklord threat and pushes Jack into a duel against the machinery of despair. The future enemy's plan starts to reveal its true scale.
 
 Jack Atlas vs. Primo
 [IDS_SOLO.CHAPTER11030056_EXPLANATION]
 Dawn of the Machines (Reverse Duel)
 
+Take Primo's side and make Jack feel the terror of the Meklords. Punish Synchro power and advance the machine future.
+
+Primo's Meklords are built to hunt the Synchro Monsters that define New Domino's heroes. Force Jack to confront a future where his strongest moves become the very weapons used against him.
+
 Primo vs. Jack Atlas
 [IDS_SOLO.CHAPTER11030057_EXPLANATION]
 Victory or Doom
+
+Yusei faces Aporia, the despair created from the ruined future. To protect Synchro Summoning and his friends, Yusei must answer a man who has seen hope fail.
 
 Yusei Fudo vs. Aporia
 [IDS_SOLO.CHAPTER11030058_EXPLANATION]
 Victory or Doom (Reverse Duel)
 
+Play as Aporia and bring the pain of the future into the duel. Use Meklord power to convince Yusei that hope only leads to ruin.
+
 Aporia vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030059_EXPLANATION]
 Fight for the Future
+
+Antinomy reveals his connection to Yusei and challenges him with Accel Synchro's final lesson. The duel is both a farewell and a push toward the future.
 
 Yusei Fudo vs. Antinomy
 [IDS_SOLO.CHAPTER11030060_EXPLANATION]
 Fight for the Future (Reverse Duel)
 
+Take Antinomy's side and teach Yusei through speed and sacrifice. Push him to master the power he needs to face Z-one.
+
 Antinomy vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030061_EXPLANATION]
 Hope
+
+Yusei confronts Z-one at the center of the Ark Cradle crisis. The duel weighs one man's broken future against Yusei's belief that people can choose a better path.
 
 Yusei Fudo vs. Zone
 [IDS_SOLO.CHAPTER11030062_EXPLANATION]
 Hope (Reverse Duel)
 
+Play as Z-one and use the future's despair to judge Yusei's hope. Prove that changing history requires sacrifice too great for optimism.
+
+Z-one has seen a ruined future and believes Yusei's ideals cannot save humanity from Momentum's fate. Use that despair to challenge Yusei's bonds and make hope answer for every possible disaster.
+
 Zone vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11030063_EXPLANATION]
 Future Path
+
+After saving the future, Yusei and Jack duel to decide the path ahead. Their final clash is a farewell to Team 5D's and a promise that each friend will keep moving.
 
 Yusei Fudo vs. Jack Atlas
 
@@ -897,9 +1293,13 @@ Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11030064_EXPLANATION]
 Future Path (Reverse Duel)
 
+Take Jack's side in the final duel with Yusei. Challenge your rival one last time and prove the king's road still burns bright.
+
 Jack Atlas vs. Yusei Fudo
 [IDS_SOLO.CHAPTER11040001_EXPLANATION]
 Go with the Flow
+
+Yuma challenges Shark after a schoolyard conflict pulls him into a duel he is not ready for. When Astral appears, the hunt for Number cards begins alongside Yuma's first real test.
 
 Yuma Tsukumo vs. Reginald Kastle
 
@@ -907,25 +1307,39 @@ Unlocks the Cathy Katherine pack in the shop.
 [IDS_SOLO.CHAPTER11040002_EXPLANATION]
 Go with the Flow (Reverse Duel)
 
+Take Shark's side and punish Yuma's reckless confidence. Use a stronger, sharper Deck to show the rookie how far he still has to climb.
+
 Reginald Kastle vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040003_EXPLANATION]
 Flipping Out
+
+Flip Turner uses a Number card and a trickster's smile to turn Yuma's friends against him. Yuma and Astral must learn to work together before the damage spreads.
 
 Yuma Tsukumo vs. Flip Turner
 [IDS_SOLO.CHAPTER11040004_EXPLANATION]
 Flipping Out (Reverse Duel)
 
+Play as Flip and use deception to keep Yuma off balance. Turn every friendly face into another part of your trap.
+
+Flip hides his schemes behind a harmless act, using tricks and false friendship to get close to Yuma. Keep the duel slippery and make Yuma learn that not every classmate is playing fair.
+
 Flip Turner vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040005_EXPLANATION]
 The Sparrow
+
+Nelson hides behind the Sparrow persona and a Number card that feeds his fantasy of heroism. Yuma has to reach the real person beneath the costume.
 
 Yuma Tsukumo vs. Nelson Andrews
 [IDS_SOLO.CHAPTER11040006_EXPLANATION]
 The Sparrow (Reverse Duel)
 
+Take Nelson's side and duel as the hero he imagines himself to be. Use the Sparrow's courage to challenge Yuma and Astral.
+
 Nelson Andrews vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040007_EXPLANATION]
 Feline Frenzy
+
+Cathy Katherine's crush on Yuma turns into a duel after a Number card twists her feelings. Yuma must win without forgetting that his opponent is still a friend.
 
 Yuma Tsukumo vs. Cathy Katherine
 
@@ -933,25 +1347,37 @@ Unlocks the Quinton pack in the shop.
 [IDS_SOLO.CHAPTER11040008_EXPLANATION]
 Feline Frenzy (Reverse Duel)
 
+Play as Cathy and let a catlike strategy corner Yuma. Use affection, mischief, and Number power to keep him guessing.
+
 Cathy Katherine vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040009_EXPLANATION]
 Roots of the Problem
+
+Number 96 takes shape as a dark mirror of Astral and threatens Yuma's friends. Bronk is caught in the middle as the Number mystery becomes more dangerous.
 
 Bronk Stone vs. Number 96
 [IDS_SOLO.CHAPTER11040010_EXPLANATION]
 Roots of the Problem (Reverse Duel)
 
+Take Number 96's side and turn Astral's shadow against Yuma's allies. Use chaos and cruelty to prove that the Numbers are more than prizes.
+
 Number 96 vs. Bronk Stone
 [IDS_SOLO.CHAPTER11040011_EXPLANATION]
 Love Hurts
+
+Anna Kaboom bursts into Yuma's life with explosive affection and an even louder Deck. Yuma has to survive her runaway energy before friendship can settle the misunderstanding.
 
 Yuma Tsukumo vs. Anna Kaboom
 [IDS_SOLO.CHAPTER11040012_EXPLANATION]
 Love Hurts (Reverse Duel)
 
+Play as Anna and barrel through Yuma's defenses with unstoppable momentum. Make the duel as direct and explosive as your feelings.
+
 Anna Kaboom vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040013_EXPLANATION]
 Double Jeopardy
+
+Dextra challenges Yuma while investigating the growing Number threat. Her professional skill forces Yuma and Astral to sharpen their teamwork.
 
 Yuma Tsukumo vs. Dextra
 
@@ -959,33 +1385,53 @@ Unlocks the Kite Tenjo pack in the shop.
 [IDS_SOLO.CHAPTER11040014_EXPLANATION]
 Double Jeopardy (Reverse Duel)
 
+Take Dextra's side and show Yuma what a trained duelist can do. Use precision and experience to pressure the Number holder.
+
 Dextra vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040015_EXPLANATION]
 The Dragon Awakens
+
+Kite Tenjo enters the hunt with Galaxy-Eyes Photon Dragon and a mission tied to his brother. His duel with Trey reveals how ruthless the search for Numbers has become.
 
 Kite Tenjo vs. Trey
 [IDS_SOLO.CHAPTER11040016_EXPLANATION]
 The Dragon Awakens (Reverse Duel)
 
+Play as Trey and challenge Kite's overwhelming Photon power. Use the crest family's strategy to test the hunter who steals Numbers.
+
 Trey vs. Kite Tenjo
 [IDS_SOLO.CHAPTER11040017_EXPLANATION]
 Cosmic Chaos
+
+Kite faces Quinton, whose calm control hides the Vetrix family's deeper agenda. Galaxy-Eyes meets a strategist who understands both Kite's power and his weakness.
 
 Kite Tenjo vs. Quinton
 [IDS_SOLO.CHAPTER11040018_EXPLANATION]
 Cosmic Chaos (Reverse Duel)
 
+Take Quinton's side and exploit Kite's burden. Use calculated pressure to make Galaxy-Eyes answer for every move.
+
+Quinton knows Kite's history and uses that knowledge to turn the duel into a lesson about obsession and control. Keep the pressure precise and force Kite to defend both his brother and Galaxy-Eyes.
+
 Quinton vs. Kite Tenjo
 [IDS_SOLO.CHAPTER11040019_EXPLANATION]
 Swimming with Sharks
+
+Shark clashes with Quattro as the Vetrix family's revenge plan tightens around him. The duel pushes Shark's anger toward the surface and hints at a larger destiny.
 
 Reginald Kastle vs. Quattro
 [IDS_SOLO.CHAPTER11040020_EXPLANATION]
 Swimming with Sharks (Reverse Duel)
 
+Play as Quattro and provoke Shark with every move. Use showmanship and cruelty to drag his fury into the open.
+
+Quattro understands that Shark's temper can be as dangerous as any monster. Turn the duel into a performance, needle his pride, and make every reaction pull him deeper into your rhythm.
+
 Quattro vs. Reginald Kastle
 [IDS_SOLO.CHAPTER11040021_EXPLANATION]
 Rockin' and Rollin'
+
+Nistro challenges Yuma during the World Duel Carnival, turning the tournament into a trial of strength and spirit. Yuma must keep climbing toward the heart of the Number mystery.
 
 Yuma Tsukumo vs. Nistro
 
@@ -993,33 +1439,51 @@ Unlocks the Shark pack in the shop.
 [IDS_SOLO.CHAPTER11040022_EXPLANATION]
 Rockin' and Rollin' (Reverse Duel)
 
+Take Nistro's side and meet Yuma with raw fighting spirit. Use heroic force to prove who deserves to advance.
+
+Nistro turns the duel into a contest of will, strength, and respect. Match Yuma's optimism with Heroic Challenger pressure and prove that a straight-ahead fighter can still shake his confidence.
+
 Nistro vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040023_EXPLANATION]
 Duel of Destiny
+
+Yuma and Shark duel again with far more than pride between them. Their rivalry has become a bond, and the outcome helps decide how both will face the battles ahead.
 
 Yuma Tsukumo vs. Reginald Kastle
 [IDS_SOLO.CHAPTER11040024_EXPLANATION]
 Duel of Destiny (Reverse Duel)
 
+Play as Shark and test Yuma with everything your rivalry has taught you. Push him to prove that his trust in Astral can survive a real challenge.
+
 Reginald Kastle vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040025_EXPLANATION]
 Sphere of Fear
+
+Vetrix confronts Yuma after manipulating the World Duel Carnival from behind the scenes. Yuma must stand against a duelist fueled by revenge and family tragedy.
 
 Yuma Tsukumo vs. Vetrix
 [IDS_SOLO.CHAPTER11040026_EXPLANATION]
 Sphere of Fear (Reverse Duel)
 
+Take Vetrix's side and turn pain into control. Use the crest's power to break Yuma before he can protect Astral and his friends.
+
 Vetrix vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040027_EXPLANATION]
 A Trio's Challenge
+
+Yuma reaches Dr. Faker, whose actions have driven Kite, Hart, and the Number hunt. The duel pushes Yuma and Astral toward the truth behind the portals and the World Duel Carnival.
 
 Yuma Tsukumo vs. Dr. Faker
 [IDS_SOLO.CHAPTER11040028_EXPLANATION]
 A Trio's Challenge (Reverse Duel)
 
+Take Dr. Faker's side and defend the plan that endangered Astral World. Use ruthless science and ambition to keep Yuma from stopping you.
+
 Dr. Faker vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040029_EXPLANATION]
 Counter Offensive
+
+The Barian threat rises, and Yuma's bond with Astral becomes ZEXAL. Alito challenges that power with a duelist's fighting spirit and the pride of Barian World.
 
 ZEXAL vs. Alito
 
@@ -1027,89 +1491,141 @@ Unlocks the Yuma Tsukumo pack in the shop.
 [IDS_SOLO.CHAPTER11040030_EXPLANATION]
 Counter Offensive (Reverse Duel)
 
+Play as Alito and meet ZEXAL's power head-on. Use honest force and Barian pride to prove Yuma is not the only one dueling from the heart.
+
 Alito vs. ZEXAL
 [IDS_SOLO.CHAPTER11040031_EXPLANATION]
 Dual Duel
+
+Ray Shadows appears as an ally while Girag pushes the Barians' plan forward. The duel hides deeper manipulation behind a friendly face.
+
+Ray steps into the conflict acting like one of Yuma's newest supporters. Girag's Barian mission keeps tightening around them, and the duel leaves the truth of Ray's role just out of reach.
 
 Ray Shadows vs. Girag
 [IDS_SOLO.CHAPTER11040032_EXPLANATION]
 Dual Duel (Reverse Duel)
 
+Take Girag's side and carry out Barian World's mission. Pressure Ray while the larger trap around Yuma continues to form.
+
+Girag is trying to keep the Barian plan moving even when the field around Yuma becomes harder to read. Treat Ray as an obstacle, force him to reveal his nerve, and keep the mission from slipping.
+
 Girag vs. Ray Shadows
 [IDS_SOLO.CHAPTER11040033_EXPLANATION]
 Search for Shadows, Pt. 1
+
+Shark confronts Dumon as pieces of his forgotten Barian identity begin surfacing. The duel pulls him closer to a past that could change every bond he has made.
 
 Reginald Kastle vs. Dumon
 [IDS_SOLO.CHAPTER11040034_EXPLANATION]
 Search for Shadows, Pt. 1 (Reverse Duel)
 
+Play as Dumon and force Shark to face the truth buried inside him. Use Barian resolve to awaken the warrior he used to be.
+
 Dumon vs. Reginald Kastle
 [IDS_SOLO.CHAPTER11040035_EXPLANATION]
 Search for Shadows, Pt. 2
+
+Kite faces Mizar in a clash between Galaxy-Eyes wielders. Their duel becomes a battle over pride, dragons, and the strength needed to reach the Numeron Code.
 
 Kite Tenjo vs. Mizar
 [IDS_SOLO.CHAPTER11040036_EXPLANATION]
 Search for Shadows, Pt. 2 (Reverse Duel)
 
+Take Mizar's side and challenge Kite's claim to Galaxy-Eyes. Prove that Barian power can surpass the Photon dragon.
+
+Mizar sees Galaxy-Eyes as more than Kite's ace; it is a symbol of a destiny he believes belongs to the Barians. Use Tachyon power to test Kite's resolve and make the Photon dragon answer.
+
 Mizar vs. Kite Tenjo
 [IDS_SOLO.CHAPTER11040037_EXPLANATION]
 Search for Shadows, Pt. 3
+
+Vector reveals how dangerous his schemes have become, turning trust into a weapon against Yuma. Yuma must hold onto Astral and his friends while the trap snaps shut.
 
 Yuma Tsukumo vs. Vector
 [IDS_SOLO.CHAPTER11040038_EXPLANATION]
 Search for Shadows, Pt. 3 (Reverse Duel)
 
+Play as Vector and twist Yuma's faith in others against him. Use deception and Barian malice to make hope look foolish.
+
 Vector vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040039_EXPLANATION]
 Barian Vengeance
+
+Nistro stands in Yuma's path as the Barian conflict grows harsher. The duel tests whether Yuma can keep fighting without losing the ideals that define him.
 
 Yuma Tsukumo vs. Nistro
 [IDS_SOLO.CHAPTER11040040_EXPLANATION]
 Barian Vengeance (Reverse Duel)
 
+Take Nistro's side and attack Yuma's resolve with full force. Push him to prove that his optimism can survive a real battle.
+
 Nistro vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040041_EXPLANATION]
 A Sea of Troubles
+
+Shark duels Rio as both siblings are drawn toward memories of their Barian lives. The match turns family bonds into another battlefield of destiny.
 
 Reginald Kastle vs. Rio Kastle
 [IDS_SOLO.CHAPTER11040042_EXPLANATION]
 A Sea of Troubles (Reverse Duel)
 
+Play as Rio and confront Shark with the truth neither sibling can avoid. Use your own strength to pull him toward the past.
+
 Rio Kastle vs. Reginald Kastle
 [IDS_SOLO.CHAPTER11040043_EXPLANATION]
 A World of Chaos
+
+Number 96 returns with chaos powerful enough to threaten both Yuma and Astral. The duel forces them to confront the shadow that has followed their journey from the start.
 
 Yuma Tsukumo vs. Number 96
 [IDS_SOLO.CHAPTER11040044_EXPLANATION]
 A World of Chaos (Reverse Duel)
 
+Take Number 96's side and drown Yuma in chaos. Use Astral's darkness to prove that their bond has a destructive mirror.
+
 Number 96 vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040045_EXPLANATION]
 Clash of the Emperors
+
+Nash accepts his Barian identity and confronts Vector, the traitor behind so much suffering. The duel decides what kind of leader Barian World will follow.
 
 Nash vs. Vector
 [IDS_SOLO.CHAPTER11040046_EXPLANATION]
 Clash of the Emperors (Reverse Duel)
 
+Play as Vector and strike at Nash with every betrayal you have built. Turn chaos and cruelty against the Barian emperor.
+
+Vector thrives on twisting trust into a weapon, and Nash stands in the way of his final schemes. Use that chaos to unsettle the Barian emperor and drag the duel into your kind of battlefield.
+
 Vector vs. Nash
 [IDS_SOLO.CHAPTER11040047_EXPLANATION]
 The New World
+
+ZEXAL III faces Don Thousand, the ancient force manipulating the Barian war. Yuma and Astral must unite at their highest power to challenge a godlike enemy.
 
 ZEXAL 3 vs. Don Thousand
 [IDS_SOLO.CHAPTER11040048_EXPLANATION]
 The New World (Reverse Duel)
 
+Take Don Thousand's side and remake the battlefield in your image. Crush ZEXAL III before Yuma and Astral can reach the future.
+
 Don Thousand vs. ZEXAL 3
 [IDS_SOLO.CHAPTER11040049_EXPLANATION]
 The Battle of Three Worlds
+
+Yuma and Nash duel with Human World, Astral World, and Barian World hanging in the balance. Their friendship becomes the final obstacle between duty and hope.
 
 Yuma Tsukumo vs. Nash
 [IDS_SOLO.CHAPTER11040050_EXPLANATION]
 The Battle of Three Worlds (Reverse Duel)
 
+Play as Nash and carry the burden of Barian World into the duel. Force Yuma to understand that saving everyone may mean fighting a friend.
+
 Nash vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11040051_EXPLANATION]
 Forever ZEXAL
+
+Yuma and Astral face each other after surviving the war between worlds. Their final duel is a goodbye, a test, and a promise that both can keep growing.
 
 Yuma Tsukumo vs. Astral
 
@@ -1117,9 +1633,15 @@ Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11040052_EXPLANATION]
 Forever ZEXAL (Reverse Duel)
 
+Take Astral's side in the farewell duel. Test Yuma one last time and see whether your partner is ready to walk his own path.
+
+Astral's last duel with Yuma is not about hatred, but about whether their journey has truly changed them both. Use Utopia and Astral's calm judgment to give Yuma the final test of their bond.
+
 Astral vs. Yuma Tsukumo
 [IDS_SOLO.CHAPTER11050001_EXPLANATION]
 Swing Into Action
+
+Yuya Sakaki enters the spotlight with entertainment dueling and a dream inherited from his father. Against the Sledgehammer, his new Pendulum Summon turns a desperate duel into a show.
 
 Yuya Sakaki vs. The Sledgehammer
 
@@ -1127,41 +1649,65 @@ Unlocks the Gong Strong pack in the shop.
 [IDS_SOLO.CHAPTER11050002_EXPLANATION]
 Swing Into Action (Reverse Duel)
 
+Take the Sledgehammer's side and crush Yuya's debut before the crowd can believe in him. Test whether his new Pendulum power is more than a lucky trick.
+
 The Sledgehammer vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050003_EXPLANATION]
 Trade Bait
+
+Sylvio Sawatari schemes to steal Yuya's Pendulum cards and make their power his own. Yuya must protect both his cards and the dueling style he is trying to build.
 
 Yuya Sakaki vs. Sylvio Sawatari
 [IDS_SOLO.CHAPTER11050004_EXPLANATION]
 Trade Bait (Reverse Duel)
 
+Play as Sylvio and turn Yuya's discovery against him. Use confidence and stolen momentum to prove you deserve the spotlight.
+
 Sylvio Sawatari vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050005_EXPLANATION]
 Dueling with the Stars
+
+Dipper O'rion challenges Yuya as the You Show Duel School gains attention. Yuya has to show that entertainment dueling can stand up to skilled opponents.
 
 Yuya Sakaki vs. Dipper O'rion
 [IDS_SOLO.CHAPTER11050006_EXPLANATION]
 Dueling with the Stars (Reverse Duel)
 
+Take Dipper's side and read Yuya like a charted star. Use careful prediction to bring the entertainer back down to earth.
+
 Dipper O'rion vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050007_EXPLANATION]
 You Show 'Em!
+
+Zuzu faces Julia Krystal while trying to prove she is more than Yuya's supporter. The duel pushes her to stand on her own stage.
+
+Julia's polished Fusion style challenges Zuzu before the You Show students fully understand the larger conflict ahead. Zuzu has to prove her training, her confidence, and her Melodious rhythm belong in the spotlight.
 
 Julia Krystal vs. Zuzu Boyle
 [IDS_SOLO.CHAPTER11050008_EXPLANATION]
 You Show 'Em! (Reverse Duel)
 
+Play as Zuzu and show Julia what You Show training can do. Use your own rhythm to prove you belong in the spotlight.
+
+Zuzu is still fighting to be seen as her own duelist instead of someone standing behind Yuya. Turn the stage back on Julia, use Melodious timing, and show that You Show spirit has teeth.
+
 Zuzu Boyle vs. Julia Krystal
 [IDS_SOLO.CHAPTER11050009_EXPLANATION]
 Going, Going, Gong
+
+Gong Strong faces Kit Blade in a duel built on discipline, honor, and stubborn pride. His Superheavy Samurai style shows what it means to stand firm.
 
 Gong Strong vs. Kit Blade
 [IDS_SOLO.CHAPTER11050010_EXPLANATION]
 Going, Going, Gong (Reverse Duel)
 
+Take Kit's side and challenge Gong's immovable dueling. Cut through his defenses before his Superheavy Samurai can turn patience into power.
+
 Kit Blade vs. Gong Strong
 [IDS_SOLO.CHAPTER11050011_EXPLANATION]
 A Date With Fate
+
+Aura Sentia draws Yuya into a duel wrapped in fortune-telling and strange destiny. Yuya must keep smiling even as the mysteries around Pendulum Summoning deepen.
 
 Yuya Sakaki vs. Aura Sentia
 
@@ -1169,41 +1715,65 @@ Unlocks the Zuzu Boyle pack in the shop.
 [IDS_SOLO.CHAPTER11050012_EXPLANATION]
 A Date With Fate (Reverse Duel)
 
+Play as Aura and let fate guide the duel. Use prediction and pressure to see whether Yuya can escape what the cards reveal.
+
 Aura Sentia vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050013_EXPLANATION]
 Fusion Foes
+
+Zuzu faces Julia again as Fusion Summoning enters the spotlight. The duel becomes another step toward finding her own style beyond Yuya's shadow.
 
 Zuzu Boyle vs. Julia Krystal
 [IDS_SOLO.CHAPTER11050014_EXPLANATION]
 Fusion Foes (Reverse Duel)
 
+Take Julia's side and put Zuzu's growth to the test. Use Fusion discipline to challenge her confidence and timing.
+
+Julia represents the sharper, more formal side of Fusion dueling, and Zuzu's confidence is still taking shape. Keep the tempo strict and make her earn every note of her Melodious strategy.
+
 Julia Krystal vs. Zuzu Boyle
 [IDS_SOLO.CHAPTER11050015_EXPLANATION]
 The Pendulum Swings Both Ways
+
+Sylvio returns with Pendulum cards of his own, determined to upstage Yuya. Their rematch proves that a new summoning method means nothing without heart.
 
 Yuya Sakaki vs. Sylvio Sawatari
 [IDS_SOLO.CHAPTER11050016_EXPLANATION]
 The Pendulum Swings Both Ways (Reverse Duel)
 
+Play as Sylvio and show Yuya you can master Pendulum Summoning too. Turn his discovery into your performance.
+
 Sylvio Sawatari vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050017_EXPLANATION]
 Making the Cut
+
+Shay Obsidian clashes with Sora Perse, revealing that the duel school rivalry hides a war between dimensions. Raidraptors and Frightfurs expose the danger behind the fun.
 
 Shay Obsidian vs. Sora Perse
 [IDS_SOLO.CHAPTER11050018_EXPLANATION]
 Making the Cut (Reverse Duel)
 
+Take Sora's side and show the brutal edge behind his playful act. Use Frightfur Fusion power to tear through Shay's resistance.
+
 Sora Perse vs. Shay Obsidian
 [IDS_SOLO.CHAPTER11050019_EXPLANATION]
 A Dark Reflection
+
+Yugo and Yuto mistake each other for enemies because of their identical faces and different dimensions. Their duel hints that Yuya is tied to something much larger.
 
 Yugo vs. Yuto
 [IDS_SOLO.CHAPTER11050020_EXPLANATION]
 A Dark Reflection (Reverse Duel)
 
+Play as Yuto and confront the duelist who shares your face. Use Xyz rebellion to push back against confusion and dimensional war.
+
+Yuto is carrying the scars of the Xyz Dimension when he runs into another duelist who looks like Yuya. Use Phantom Knight resistance to cut through the confusion and fight for the people he lost.
+
 Yuto vs. Yugo
 [IDS_SOLO.CHAPTER11050021_EXPLANATION]
 Obelisk Assault
+
+Celina and Dennis are caught in the Fusion Dimension's invasion plans. The duel reveals how the Obelisk Force turns students into soldiers.
 
 Celina vs. Dennis McField
 
@@ -1211,33 +1781,51 @@ Unlocks the Shay pack in the shop.
 [IDS_SOLO.CHAPTER11050022_EXPLANATION]
 Obelisk Assault (Reverse Duel)
 
+Take Dennis's side and hide your true allegiance behind performance. Use showmanship to keep Celina from seeing the trap.
+
 Dennis McField vs. Celina
 [IDS_SOLO.CHAPTER11050023_EXPLANATION]
 Battlefronts
+
+Moon Shadow faces the Obelisk Force as the dimensional conflict reaches You Show's doorstep. Stealth and loyalty become weapons against Academia's soldiers.
 
 Moon Shadow vs. Obelisk Force
 [IDS_SOLO.CHAPTER11050024_EXPLANATION]
 Battlefronts (Reverse Duel)
 
+Play as the Obelisk Force and advance Academia's assault. Break through Moon Shadow's defenses and keep the invasion moving.
+
 Obelisk Force vs. Moon Shadow
 [IDS_SOLO.CHAPTER11050025_EXPLANATION]
 Fighting for Fun
+
+Yuya duels Sora while still believing dueling should make people smile. Sora's darker nature turns that ideal into a painful test.
+
+Sora has been Yuya's friend, but the truth behind his Fusion training begins to make that friendship dangerous. Yuya has to hold onto entertainment dueling while facing a smile that no longer feels innocent.
 
 Yuya Sakaki vs. Sora Perse
 [IDS_SOLO.CHAPTER11050026_EXPLANATION]
 Fighting for Fun (Reverse Duel)
 
+Take Sora's side and make Yuya face the cruelty behind your playful mask. Use Frightfurs to challenge his belief in fun.
+
 Sora Perse vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050027_EXPLANATION]
 City 'Scape
+
+Yugo races into the Synchro Dimension and runs afoul of Sector Security. His speed and Clear Wing power become his only way through the city's rules.
 
 Yugo vs. Officer 227
 [IDS_SOLO.CHAPTER11050028_EXPLANATION]
 City 'Scape (Reverse Duel)
 
+Play as Officer 227 and stop Yugo before he tears through the city. Use Security's control to rein in the rider from another dimension.
+
 Officer 227 vs. Yugo
 [IDS_SOLO.CHAPTER11050029_EXPLANATION]
 Crow's Crew
+
+Crow Hogan protects his kids in the Commons while Gong learns the harsh divide of the Synchro Dimension. Their duel is built on pride, family, and survival.
 
 Crow Hogan vs. Gong Strong
 
@@ -1245,49 +1833,73 @@ Unlocks the Declan Akaba pack in the shop.
 [IDS_SOLO.CHAPTER11050030_EXPLANATION]
 Crow's Crew (Reverse Duel)
 
+Take Gong's side and meet Crow's Blackwings with Superheavy Samurai resolve. Stand firm for your friends in a city that tries to split people apart.
+
 Gong Strong vs. Crow Hogan
 [IDS_SOLO.CHAPTER11050031_EXPLANATION]
 A Concerted Effort
+
+Zuzu duels Chojiro in the Synchro Dimension, where entertainment and survival collide. She must keep her own voice strong while the city watches.
 
 Zuzu Boyle vs. Chojiro Tokumatsu
 [IDS_SOLO.CHAPTER11050032_EXPLANATION]
 A Concerted Effort (Reverse Duel)
 
+Play as Chojiro and use your old-school style to challenge Zuzu's performance. Make her earn every note of the duel.
+
 Chojiro Tokumatsu vs. Zuzu Boyle
 [IDS_SOLO.CHAPTER11050033_EXPLANATION]
 Turbotainers
+
+Shay and Dennis meet again in the Friendship Cup, with Shay hunting the truth behind Dennis's mask. The duel exposes how entertainment can hide betrayal.
 
 Shay Obsidian vs. Dennis McField
 [IDS_SOLO.CHAPTER11050034_EXPLANATION]
 Turbotainers (Reverse Duel)
 
+Take Dennis's side and keep your performer persona intact. Use calculated showmanship to hold Shay back from the truth.
+
 Dennis McField vs. Shay Obsidian
 [IDS_SOLO.CHAPTER11050035_EXPLANATION]
 Battle Birds
+
+Crow and Shay clash in the Synchro Dimension, each fighting for people they refuse to abandon. Blackwings and Raidraptors turn the duel into a battle of survival and loyalty.
 
 Crow Hogan vs. Shay Obsidian
 [IDS_SOLO.CHAPTER11050036_EXPLANATION]
 Battle Birds (Reverse Duel)
 
+Take Shay's side and meet Crow's streetwise resolve with Raidraptor vengeance. Prove that the Resistance can soar higher than the Commons' Blackwings.
+
 Shay Obsidian vs. Crow Hogan
 [IDS_SOLO.CHAPTER11050037_EXPLANATION]
 The Many Dimensions of Yuya
+
+Yuya faces Crow while struggling with the mystery of his counterparts and the anger inside him. The duel tests whether entertainment can survive a world built on class division.
 
 Yuya Sakaki vs. Crow Hogan
 [IDS_SOLO.CHAPTER11050038_EXPLANATION]
 The Many Dimensions of Yuya (Reverse Duel)
 
+Play as Crow and challenge Yuya's ideals with the hard truth of the Commons. Use Blackwings to force him to fight for more than applause.
+
 Crow Hogan vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050039_EXPLANATION]
 Chain Game
+
+Yugo and Yuri finally collide, bringing the Synchro and Fusion counterparts closer to the truth behind their shared existence. Clear Wing faces Yuri's cruel Fusion tactics.
 
 Yugo vs. Yuri
 [IDS_SOLO.CHAPTER11050040_EXPLANATION]
 Chain Game (Reverse Duel)
 
+Take Yuri's side and turn Yugo's speed against him. Use Predaplant pressure to show how dangerous the Fusion Dimension's hunter really is.
+
 Yuri vs. Yugo
 [IDS_SOLO.CHAPTER11050041_EXPLANATION]
 Friendship Finale
+
+Yuya duels Jack Atlas in the Friendship Cup final, carrying the hopes of friends from multiple dimensions. To win, he has to turn pain into a performance that reaches everyone.
 
 Yuya Sakaki vs. Jack Atlas
 
@@ -1295,97 +1907,153 @@ Unlocks the Yuya Sakaki pack in the shop.
 [IDS_SOLO.CHAPTER11050042_EXPLANATION]
 Friendship Finale (Reverse Duel)
 
+Play as Jack and test Yuya with the pride of the king. Make him prove his entertainment dueling can stand on the grandest stage.
+
 Jack Atlas vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050043_EXPLANATION]
 A Vicious Cycle
+
+Declan Akaba challenges Roget's control over the Synchro Dimension. The duel pits Declan's cold strategy against a man who treats the city like his machine.
 
 Declan Akaba vs. Jean Michel Roget
 [IDS_SOLO.CHAPTER11050044_EXPLANATION]
 A Vicious Cycle (Reverse Duel)
 
+Take Roget's side and defend your hold on the city. Use manipulation and control to keep Declan from breaking your system.
+
 Jean Michel Roget vs. Declan Akaba
 [IDS_SOLO.CHAPTER11050045_EXPLANATION]
 Rush to Revenge
+
+Kite Tenjo attacks Yuya in the Xyz Dimension, seeing him as another face of the enemy who destroyed Heartland. Yuya must survive revenge before he can earn trust.
 
 Yuya Sakaki vs. Kite Tenjo
 [IDS_SOLO.CHAPTER11050046_EXPLANATION]
 Rush to Revenge (Reverse Duel)
 
+Play as Kite and unleash Galaxy-Eyes against Yuya. Make him answer for a war he does not yet understand.
+
+Kite arrives from the ruined Xyz Dimension with grief sharpened into vengeance. Use Galaxy-Eyes pressure to test Yuya's ideals and force him to face a war that has already destroyed lives.
+
 Kite Tenjo vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050047_EXPLANATION]
 Rise of the Resistance
+
+Alexis Rhodes fights the Obelisk Force from within the Fusion Dimension's shadow. Her duel shows that Academia's soldiers can still be resisted.
 
 Alexis Rhodes vs. Obelisk Force
 [IDS_SOLO.CHAPTER11050048_EXPLANATION]
 Rise of the Resistance (Reverse Duel)
 
+Take the Obelisk Force's side and suppress the rebellion. Use Academia's discipline to stop Alexis before she can free more students.
+
 Obelisk Force vs. Alexis Rhodes
 [IDS_SOLO.CHAPTER11050049_EXPLANATION]
 Last Laugh
+
+Yuya faces Aster Phoenix, whose loyalty to Academia begins to crack when confronted by Yuya's ideals. The duel asks whether smiles can reach even a hardened commander.
 
 Yuya Sakaki vs. Aster Phoenix
 [IDS_SOLO.CHAPTER11050050_EXPLANATION]
 Last Laugh (Reverse Duel)
 
+Play as Aster and test Yuya with Destiny HERO precision. Decide whether Academia's orders matter more than the truth in front of you.
+
 Aster Phoenix vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050051_EXPLANATION]
 All Duel Hands on Deck
+
+Kite confronts Dennis, whose betrayal helped devastate Heartland. The duel is a reckoning between a survivor's fury and a performer hiding behind another mask.
 
 Kite Tenjo vs. Dennis McField
 [IDS_SOLO.CHAPTER11050052_EXPLANATION]
 All Duel Hands on Deck (Reverse Duel)
 
+Take Dennis's side and keep performing even as the truth catches up. Use every trick you have to survive Kite's Galaxy-Eyes assault.
+
 Dennis McField vs. Kite Tenjo
 [IDS_SOLO.CHAPTER11050053_EXPLANATION]
 Grip of the Parasite
+
+Rin is controlled by the parasite and forced into a duel against the people trying to save her. Yugo has to fight without losing sight of the friend he came to rescue.
 
 Rin vs. Yugo
 [IDS_SOLO.CHAPTER11050054_EXPLANATION]
 Grip of the Parasite (Reverse Duel)
 
+Play as Yugo and reach Rin through the parasite's control. Use Clear Wing speed to break the hold on someone you refuse to abandon.
+
 Yugo vs. Rin
 [IDS_SOLO.CHAPTER11050055_EXPLANATION]
 Family Face Off
+
+Shay finally finds Lulu, only to face the pain of seeing his sister controlled by Academia's plans. The duel turns family love into another battlefield.
 
 Shay Obsidian vs. Lulu
 [IDS_SOLO.CHAPTER11050056_EXPLANATION]
 Family Face Off (Reverse Duel)
 
+Take Lulu's side under the enemy's influence. Force Shay to fight the person he crossed dimensions to save.
+
+Lulu's presence should mean rescue, but the control over her turns Shay's hope into a trap. Use that painful distance to make him fight his own sister before he can reach the truth.
+
 Lulu vs. Shay Obsidian
 [IDS_SOLO.CHAPTER11050057_EXPLANATION]
 Duel Interrupted
+
+Yuri and Yugo clash again as the counterparts move closer to fusion and disaster. Their duel threatens to pull the dimensions deeper into Z-ARC's shadow.
 
 Yuri vs. Yugo
 [IDS_SOLO.CHAPTER11050058_EXPLANATION]
 Duel Interrupted (Reverse Duel)
 
+Play as Yugo and push back against Yuri's cruel Fusion tactics. Fight to stay yourself as the forces connecting the counterparts tighten.
+
 Yugo vs. Yuri
 [IDS_SOLO.CHAPTER11050059_EXPLANATION]
 Time to Reunite
+
+Yuya faces Yuri as the final counterpart struggle begins. The duel forces Yuya to confront the darkness linking them and the danger of becoming whole again.
 
 Yuya Sakaki vs. Yuri
 [IDS_SOLO.CHAPTER11050060_EXPLANATION]
 Time to Reunite (Reverse Duel)
 
+Take Yuri's side and draw Yuya toward the truth of Z-ARC. Use Predaplants to drag the final piece into place.
+
+Yuri treats the coming reunion of the four counterparts as destiny, not tragedy. Use Predaplant pressure to corner Yuya and push him closer to the power everyone has been trying to stop.
+
 Yuri vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050061_EXPLANATION]
 A Ray of Hope
+
+Declan stands against Z-ARC after the four counterparts become the Supreme King. The duel is a desperate attempt to stop destruction before every dimension falls.
 
 Declan Akaba vs. Z-ARC
 [IDS_SOLO.CHAPTER11050062_EXPLANATION]
 A Ray of Hope (Reverse Duel)
 
+Play as Z-ARC and unleash the rage born from every dimension's dueling. Crush Declan before hope can reach Yuya.
+
+Z-ARC is what remains when entertainment dueling curdles into spectacle, fear, and destruction. Use overwhelming power to silence Declan's plan before the fragments of hope can pull Yuya back.
+
 Z-ARC vs. Declan Akaba
 [IDS_SOLO.CHAPTER11050063_EXPLANATION]
 One Last Duel
+
+Yuya duels Declan after the crisis, trying to prove he can bring smiles back after everything Z-ARC caused. Their duel measures recovery, trust, and a new future.
 
 Yuya Sakaki vs. Declan Akaba
 [IDS_SOLO.CHAPTER11050064_EXPLANATION]
 One Last Duel (Reverse Duel)
 
+Take Declan's side and test Yuya's restored resolve. Use D/D/D tactics to see whether entertainment dueling can truly move forward.
+
 Declan Akaba vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11050065_EXPLANATION]
 That's a Wrap!
+
+Yuya faces his father Yusho in a duel about entertainment's true purpose. To complete his journey, Yuya must show that his smile can reach both audience and opponent.
 
 Yuya Sakaki vs. Yusho Sakaki
 
@@ -1393,9 +2061,13 @@ Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11050066_EXPLANATION]
 That's a Wrap! (Reverse Duel)
 
+Play as Yusho and give Yuya the final lesson of the stage. Test whether your son has found his own way to make the crowd smile.
+
 Yusho Sakaki vs. Yuya Sakaki
 [IDS_SOLO.CHAPTER11060001_EXPLANATION]
 My Name Is Playmaker
+
+Playmaker enters LINK VRAINS hunting the Knights of Hanoi and the truth behind his past. His duel with a Hanoi agent begins the fight over Ignis and the network itself.
 
 Playmaker vs. Knight of Hanoi
 
@@ -1403,57 +2075,89 @@ Unlocks the Playmaker pack in the shop.
 [IDS_SOLO.CHAPTER11060002_EXPLANATION]
 My Name Is Playmaker (Reverse Duel)
 
+Take the Knight of Hanoi's side and stop Playmaker before he can interfere. Use Hanoi's mission to keep the Ignis out of his hands.
+
 Knight of Hanoi vs. Playmaker
 [IDS_SOLO.CHAPTER11060003_EXPLANATION]
 The Three Count Rings
+
+The Gore challenges Playmaker to prove who deserves the crowd's respect. The duel pits spectacle and raw strength against Playmaker's cold focus.
 
 Playmaker vs. The Gore
 [IDS_SOLO.CHAPTER11060004_EXPLANATION]
 The Three Count Rings (Reverse Duel)
 
+Play as The Gore and bring the arena's energy down on Playmaker. Use Gouki power to show the crowd their hero can still fall.
+
 The Gore vs. Playmaker
 [IDS_SOLO.CHAPTER11060005_EXPLANATION]
 Hanoi's Angel
+
+Blue Angel pursues Playmaker and becomes tangled in Hanoi's trap. Playmaker must duel through Trickstar tactics while protecting someone caught in a dangerous game.
 
 Playmaker vs. Blue Angel
 [IDS_SOLO.CHAPTER11060006_EXPLANATION]
 Hanoi's Angel (Reverse Duel)
 
+Take Blue Angel's side and use Trickstars to corner Playmaker. Turn performance and burn damage into pressure he cannot ignore.
+
 Blue Angel vs. Playmaker
 [IDS_SOLO.CHAPTER11060007_EXPLANATION]
 A Storm is Coming
+
+Varis appears as the leader of Hanoi and Playmaker's most direct link to the Lost Incident. Their duel brings personal history and network warfare together.
 
 Playmaker vs. Varis
 [IDS_SOLO.CHAPTER11060008_EXPLANATION]
 A Storm is Coming (Reverse Duel)
 
+Play as Varis and defend Hanoi's purpose. Use your dragons and knowledge of Playmaker's past to keep him from the truth.
+
+Varis believes the Ignis are too dangerous to be left free, even if stopping them means hurting people tied to his past. Use Rokket discipline and Borreload power to block Playmaker's search for answers.
+
 Varis vs. Playmaker
 [IDS_SOLO.CHAPTER11060009_EXPLANATION]
 Ghost Gal's Invitation
+
+Ghost Gal lures Playmaker into a professional duel with information as the prize. Playmaker has to navigate Altergeist tricks to keep chasing Hanoi.
 
 Playmaker vs. Ghost Gal
 [IDS_SOLO.CHAPTER11060010_EXPLANATION]
 Ghost Gal's Invitation (Reverse Duel)
 
+Take Ghost Gal's side and make the job look easy. Use Altergeist control to extract value from Playmaker before he slips away.
+
 Ghost Gal vs. Playmaker
 [IDS_SOLO.CHAPTER11060011_EXPLANATION]
 Dueling for Answers
+
+Akira Zaizen confronts Playmaker while trying to protect both SOL Technologies and his sister. The duel forces Playmaker to push past another gatekeeper to the truth.
 
 Playmaker vs. Akira Zaizen
 [IDS_SOLO.CHAPTER11060012_EXPLANATION]
 Dueling for Answers (Reverse Duel)
 
+Play as Akira and stop Playmaker's investigation before it endangers more people. Use authority and strategy to hold the line.
+
 Akira Zaizen vs. Playmaker
 [IDS_SOLO.CHAPTER11060013_EXPLANATION]
 Under VRAINS
+
+Varis targets Ghost Gal as Hanoi's plan moves beneath LINK VRAINS. The duel shows how little room remains for mercenaries once the real war begins.
 
 Varis vs. Ghost Gal
 [IDS_SOLO.CHAPTER11060014_EXPLANATION]
 Under VRAINS (Reverse Duel)
 
+Take Ghost Gal's side and survive Varis's assault. Use every Altergeist trick to escape Hanoi's leader with the truth intact.
+
+Ghost Gal enters the case as a professional, but Varis makes it clear that Hanoi will not let its secrets leave quietly. Use Altergeist traps to outlast his dragons and escape with your lead.
+
 Ghost Gal vs. Varis
 [IDS_SOLO.CHAPTER11060015_EXPLANATION]
 Once Upon a Time
+
+Spectre forces Blue Angel into a duel wrapped in trauma and manipulation. Blue Angel has to resist his twisted devotion to Hanoi and his Sunavalon strategy.
 
 Spectre vs. Blue Angel
 
@@ -1461,41 +2165,69 @@ Unlocks the Blue Angel pack in the shop.
 [IDS_SOLO.CHAPTER11060016_EXPLANATION]
 Once Upon a Time (Reverse Duel)
 
+Play as Blue Angel and fight through Spectre's trap. Use Trickstars to cut through his story and protect your own future.
+
+Spectre twists Blue Angel's memories and compassion into a trap meant to break her confidence. Keep the performance sharp, turn Trickstar pressure into defiance, and refuse the story he writes for you.
+
 Blue Angel vs. Spectre
 [IDS_SOLO.CHAPTER11060017_EXPLANATION]
 A Bridge Too Far
+
+Playmaker confronts Spectre as the Tower of Hanoi threatens the network. The duel becomes a battle of trauma, control, and the will to move forward.
 
 Playmaker vs. Spectre
 [IDS_SOLO.CHAPTER11060018_EXPLANATION]
 A Bridge Too Far (Reverse Duel)
 
+Take Spectre's side and bind Playmaker in Sunavalon control. Prove that Hanoi's chosen can turn pain into loyalty.
+
+Spectre sees his past with the Lost Incident as the reason he belongs at Varis's side. Use Sunavalon control to trap Playmaker and prove that loyalty born from pain can still be dangerous.
+
 Spectre vs. Playmaker
 [IDS_SOLO.CHAPTER11060019_EXPLANATION]
 Gore at War
+
+Varis faces The Gore as the Tower of Hanoi crisis reaches its peak. The Gore's heroism runs into Hanoi's ruthless commitment to its cause.
+
+The Gore steps in as a public hero while LINK VRAINS watches the Tower of Hanoi threaten everything around them. Varis treats that heroism as another obstacle between Hanoi and its goal.
 
 Varis vs. The Gore
 [IDS_SOLO.CHAPTER11060020_EXPLANATION]
 Gore at War (Reverse Duel)
 
+Play as The Gore and fight Varis for the people watching LINK VRAINS. Use Gouki determination to challenge Hanoi's leader.
+
+The Gore cannot ignore the crowd or the danger hanging over LINK VRAINS. Turn Gouki showmanship into real resistance and make Varis answer to the people he is willing to sacrifice.
+
 The Gore vs. Varis
 [IDS_SOLO.CHAPTER11060021_EXPLANATION]
 Link to the Future
+
+Playmaker and Varis duel at the center of the Tower of Hanoi. The fight decides whether Playmaker can save LINK VRAINS and finally confront the past that shaped him.
 
 Playmaker vs. Varis
 [IDS_SOLO.CHAPTER11060022_EXPLANATION]
 Link to the Future (Reverse Duel)
 
+Take Varis's side in the decisive Tower of Hanoi duel. Use your dragons to complete Hanoi's mission before Playmaker can link the future back together.
+
 Varis vs. Playmaker
 [IDS_SOLO.CHAPTER11060023_EXPLANATION]
 The Bounty Hunter
+
+The Shepherd enters as a professional hunter targeting Playmaker and the Ignis. Playmaker must overcome a duelist who treats every weakness like a contract clause.
 
 Playmaker vs. The Shepherd
 [IDS_SOLO.CHAPTER11060024_EXPLANATION]
 The Bounty Hunter (Reverse Duel)
 
+Play as The Shepherd and pursue the bounty with precision. Use tactical pressure to make Playmaker pay for every move.
+
 The Shepherd vs. Playmaker
 [IDS_SOLO.CHAPTER11060025_EXPLANATION]
 Blue Gal's Here!
+
+Soulburner arrives with Flame and crosses paths with Blue Gal. Their duel introduces a new partner in the fight over the Ignis and the scars of the Lost Incident.
 
 Soulburner vs. Blue Gal
 
@@ -1503,65 +2235,109 @@ Unlocks the Soulburner pack in the shop.
 [IDS_SOLO.CHAPTER11060026_EXPLANATION]
 Blue Gal's Here! (Reverse Duel)
 
+Take Blue Gal's side and test Soulburner's fiery entrance. Use Trickstar pressure to see whether the new Ignis partner is ready.
+
 Blue Gal vs. Soulburner
 [IDS_SOLO.CHAPTER11060027_EXPLANATION]
 Tuning Rokkets
+
+Varis confronts Windy as the Ignis conflict grows more dangerous. The duel reveals how far Varis will go to stop an artificial intelligence he cannot trust.
 
 Varis vs. Windy
 [IDS_SOLO.CHAPTER11060028_EXPLANATION]
 Tuning Rokkets (Reverse Duel)
 
+Play as Windy and fight back against Varis's anti-Ignis crusade. Use the storm of your own will to resist Hanoi's judgment.
+
+Windy refuses to be judged by humans or by Hanoi's plan to erase the Ignis threat. Use his speed and arrogance to throw Varis off balance before Borreload can bring the storm down.
+
 Windy vs. Varis
 [IDS_SOLO.CHAPTER11060029_EXPLANATION]
 Battle of the Siblings
+
+The Shepherd and Ghost Gal face each other with family history and professional pride between them. Their duel exposes old wounds beneath the bounty hunter's cold exterior.
 
 The Shepherd vs. Ghost Gal
 [IDS_SOLO.CHAPTER11060030_EXPLANATION]
 Battle of the Siblings (Reverse Duel)
 
+Play as Ghost Gal and answer your brother's challenge. Use Altergeist tactics to cut through his precision and the distance between you.
+
 Ghost Gal vs. The Shepherd
 [IDS_SOLO.CHAPTER11060031_EXPLANATION]
 Friend or Foe
+
+Varis confronts The Shepherd while the battle around the Ignis escalates. Both duelists understand sacrifice, but neither trusts the other's mission.
 
 Varis vs. The Shepherd
 [IDS_SOLO.CHAPTER11060032_EXPLANATION]
 Friend or Foe (Reverse Duel)
 
+Take The Shepherd's side and test Varis like any other target. Use tactical discipline to challenge Hanoi's leader.
+
+The Shepherd approaches dueling like a mission, studying his target and striking only when the odds make sense. Keep emotion out of the fight and make Varis work for every opening.
+
 The Shepherd vs. Varis
 [IDS_SOLO.CHAPTER11060033_EXPLANATION]
 Specter's Plan
+
+Lightning manipulates the conflict between humans and Ignis, and Spectre becomes one of the few who can read his cruelty. Their duel reveals the ruthlessness behind Lightning's ideal world.
 
 Lightning vs. Spectre
 [IDS_SOLO.CHAPTER11060034_EXPLANATION]
 Specter's Plan (Reverse Duel)
 
+Play as Spectre and resist Lightning's control. Use Sunavalon patience to expose the arrogance behind his plan.
+
+Lightning tries to use Spectre as another piece in the Ignis war, but Spectre's loyalty and pain are not easy to overwrite. Let Sunavalon roots hold firm and turn manipulation back on its source.
+
 Spectre vs. Lightning
 [IDS_SOLO.CHAPTER11060035_EXPLANATION]
 Windy's Revenge
+
+Soulburner faces Windy as the Ignis war turns personal. Flame's partner must answer a rogue Ignis who sees humanity as disposable.
+
+Windy's contempt for humans makes him a threat to everything Soulburner and Flame are trying to protect. The duel turns fire against storm as Soulburner fights for trust between partners.
 
 Soulburner vs. Windy
 [IDS_SOLO.CHAPTER11060036_EXPLANATION]
 Windy's Revenge (Reverse Duel)
 
+Take Windy's side and punish Soulburner's faith in humans. Use the storm to prove the Ignis should not bow to their creators.
+
+Windy sees Soulburner's bond with Flame as weakness dressed up as friendship. Drive the duel with reckless speed and make the human-Ignis partnership look fragile under pressure.
+
 Windy vs. Soulburner
 [IDS_SOLO.CHAPTER11060037_EXPLANATION]
 A New World Coming
+
+Bohman challenges Blue Maiden as the Ignis conflict moves toward a new digital world. She has to fight for her own identity against an enemy built to absorb others.
 
 Bohman vs. Blue Maiden
 [IDS_SOLO.CHAPTER11060038_EXPLANATION]
 A New World Coming (Reverse Duel)
 
+Play as Blue Maiden and resist Bohman's vision. Use your evolved strength to keep your data, memories, and will your own.
+
 Blue Maiden vs. Bohman
 [IDS_SOLO.CHAPTER11060039_EXPLANATION]
 Burning Soul
+
+Bohman confronts Soulburner in a duel that tests the fire left by the Lost Incident. Soulburner must protect Flame's will and his own recovered courage.
 
 Bohman vs. Soulburner
 [IDS_SOLO.CHAPTER11060040_EXPLANATION]
 Burning Soul (Reverse Duel)
 
+Take Soulburner's side and burn through Bohman's control. Use Salamangreat resolve to keep Flame's hope alive.
+
+Bohman's power keeps growing as the Ignis conflict narrows toward its end. Use Soulburner's Salamangreat resilience to break through that control and keep Flame's future from being absorbed.
+
 Soulburner vs. Bohman
 [IDS_SOLO.CHAPTER11060041_EXPLANATION]
 Anything to Win
+
+Varis faces Lightning with the fate of humans and Ignis at stake. The duel shows how far Varis will go when he believes survival demands ruthless choices.
 
 Varis vs. Lightning
 
@@ -1569,33 +2345,51 @@ Unlocks the Varis pack in the shop.
 [IDS_SOLO.CHAPTER11060042_EXPLANATION]
 Anything to Win (Reverse Duel)
 
+Play as Lightning and turn logic into a weapon against Varis. Use calculation and cruelty to prove your new world should replace the old one.
+
 Lightning vs. Varis
 [IDS_SOLO.CHAPTER11060043_EXPLANATION]
 A Wish Entrusted
+
+Playmaker takes on Bohman carrying the wishes of allies who have fallen in the Ignis war. The duel becomes a final stand for the future of both humans and AI.
 
 Playmaker vs. Bohman
 [IDS_SOLO.CHAPTER11060044_EXPLANATION]
 A Wish Entrusted (Reverse Duel)
 
+Take Bohman's side and attempt to absorb the future into one perfect will. Stop Playmaker before his bonds can overturn your new world.
+
 Bohman vs. Playmaker
 [IDS_SOLO.CHAPTER11060045_EXPLANATION]
 Go Go Roboppi!
+
+Roboppi enters the battlefield with innocence twisted by new power. Ghost Gal has to face an AI whose growth has become dangerous and unstable.
 
 Roboppi vs. Ghost Gal
 [IDS_SOLO.CHAPTER11060046_EXPLANATION]
 Go Go Roboppi! (Reverse Duel)
 
+Play as Ghost Gal and contain Roboppi before that power hurts more people. Use experience to outmaneuver an unpredictable AI.
+
+Roboppi's new strength comes with a childlike confidence that makes the duel unpredictable and dangerous. Rely on Ghost Gal's experience to contain the AI before playfulness turns into real harm.
+
 Ghost Gal vs. Roboppi
 [IDS_SOLO.CHAPTER11060047_EXPLANATION]
 Unbreakable Spirit
+
+Ai begins walking a lonely path after the Ignis war, forcing The Gore into a duel with consequences neither fully understands. Ai's grief starts reshaping his choices.
 
 Ai vs. The Gore
 [IDS_SOLO.CHAPTER11060048_EXPLANATION]
 Unbreakable Spirit (Reverse Duel)
 
+Take The Gore's side and challenge Ai with everything your new strength can offer. Prove that human will can still stand against an Ignis.
+
 The Gore vs. Ai
 [IDS_SOLO.CHAPTER11060049_EXPLANATION]
 Ai's Conundrum
+
+Ai faces Blue Maiden as his plan moves forward and his loneliness deepens. The duel turns friendship, grief, and responsibility into conflicting motives.
 
 Ai vs. Blue Maiden
 
@@ -1603,31 +2397,47 @@ Unlocks the Ai pack in the shop.
 [IDS_SOLO.CHAPTER11060050_EXPLANATION]
 Ai's Conundrum (Reverse Duel)
 
+Play as Blue Maiden and try to reach Ai before he loses himself. Use Marincess resolve to fight for both humanity and the friend he used to be.
+
 Blue Maiden vs. Ai
 [IDS_SOLO.CHAPTER11060051_EXPLANATION]
 Roboppi's Dream
+
+Soulburner faces Roboppi as the AI's dream collapses under the weight of too much power. The duel asks whether compassion can survive a necessary fight.
 
 Soulburner vs. Roboppi
 [IDS_SOLO.CHAPTER11060052_EXPLANATION]
 Roboppi's Dream (Reverse Duel)
 
+Take Roboppi's side and chase the dream you barely understand. Use unstable power to challenge Soulburner's fire.
+
+Roboppi wants a future beyond being a household AI, but that dream is tangled with power they cannot fully control. Push Soulburner with Appliancer tricks and see how long innocence can survive battle.
+
 Roboppi vs. Soulburner
 [IDS_SOLO.CHAPTER11060053_EXPLANATION]
 Back to the Beginning
+
+Soulburner duels Varis to settle the pain left by the Lost Incident. Their match is a confrontation with the past and a step toward choosing what comes next.
 
 Soulburner vs. Varis
 [IDS_SOLO.CHAPTER11060054_EXPLANATION]
 Back to the Beginning (Reverse Duel)
 
+Play as Varis and face Soulburner's anger directly. Use Borreload power to answer for Hanoi's sins and your own resolve.
+
 Varis vs. Soulburner
 [IDS_SOLO.CHAPTER11060055_EXPLANATION]
 Separate Ways
+
+Playmaker and Ai meet in the final duel of their shared journey. What began with capture and escape ends as a painful choice between friendship and the future.
 
 Playmaker vs. Ai
 
 Unlocks a campaign pack in the shop.
 [IDS_SOLO.CHAPTER11060056_EXPLANATION]
 Separate Ways (Reverse Duel)
+
+Take Ai's side and face Playmaker with the grief that drove your plan. Duel your partner one last time before both of you choose separate paths.
 
 Ai vs. Playmaker
 [IDS_SOLO.CHAPTER11110001_EXPLANATION]
@@ -2288,696 +3098,839 @@ Who is this challenger? Where did he come from?
 But more importantly...
 
 Which deck will he use next?
-[IDS_SOLO.CHAPTER11010065_TITLE]
-Everything's Relative
+
 [IDS_SOLO.CHAPTER11010065_EXPLANATION]
+Everything's Relative
+
+Mokuba lashes out during Duelist Kingdom while Pegasus's schemes put his brother and KaibaCorp in danger. Yugi has to get past Mokuba's stolen cards and reach the scared kid underneath the bravado.
+
 Yami Yugi vs. Mokuba Kaiba
-
-[IDS_SOLO.CHAPTER11010066_TITLE]
-Double Trouble Duel
 [IDS_SOLO.CHAPTER11010066_EXPLANATION]
+Double Trouble Duel
+
+Yugi and Joey are trapped in the Paradox Brothers' underground maze on the way to Pegasus's castle. Break through their riddle-filled tag strategy before Gate Guardian blocks the only path forward.
+
 Yami Yugi vs. Paradox Brothers
-
-[IDS_SOLO.CHAPTER11010067_TITLE]
-Dungeon Dice Monsters
 [IDS_SOLO.CHAPTER11010067_EXPLANATION]
+Dungeon Dice Monsters
+
+Duke Devlin tries to humble Joey after blaming Yugi's circle for Pegasus's fall from grace. Joey must answer Duke's dice-driven style and prove he can win without being carried by luck.
+
 Duke Devlin vs. Joey Wheeler
-
-[IDS_SOLO.CHAPTER11010068_TITLE]
-The ESP Duelist
 [IDS_SOLO.CHAPTER11010068_EXPLANATION]
+The ESP Duelist
+
+Joey enters Battle City against Espa Roba, a fake psychic whose brothers secretly scout his opponent's hand. Expose the trick, survive Jinzo, and keep Joey's tournament hopes alive.
+
 Joey Wheeler vs. Espa Roba
-
-[IDS_SOLO.CHAPTER11010069_TITLE]
-Double Duel
 [IDS_SOLO.CHAPTER11010069_EXPLANATION]
+Double Duel
+
+Marik's masked Rare Hunters force Yugi and Kaiba into a deadly rooftop tag duel. Yugi has to work with his rival while Lumis and Umbra's masks cut off tribute summons.
+
 Yami Yugi vs. Lumis And Umbra
-
-[IDS_SOLO.CHAPTER11010070_TITLE]
-Friends 'Til The End
 [IDS_SOLO.CHAPTER11010070_EXPLANATION]
+Friends 'Til The End
+
+Marik brainwashes Joey and chains both friends into a duel where the loser will sink into the harbor. Yugi has to survive without hurting Joey and break the control over his best friend.
+
 Yugi Muto vs. Joey
-
-[IDS_SOLO.CHAPTER11010071_TITLE]
-Mind Game
 [IDS_SOLO.CHAPTER11010071_EXPLANATION]
+Mind Game
+
+Mai faces Yami Marik in the Battle City finals and is dragged into a Shadow Game that steals her memories. Marik turns the duel into torture while The Winged Dragon of Ra waits above them.
+
 Yami Marik vs. Mai Valentine
-
-[IDS_SOLO.CHAPTER11010072_TITLE]
-Showdown In The Shadows
 [IDS_SOLO.CHAPTER11010072_EXPLANATION]
+Showdown In The Shadows
+
+Yami Bakura and the spirit of Marik's better self challenge Yami Marik in a battle of dark souls. Marik fights to keep control of the Millennium Rod and silence anyone who knows his weakness.
+
 Yami Marik vs. Yami Bakura
-
-[IDS_SOLO.CHAPTER11010073_TITLE]
-Noah's Final Threat
 [IDS_SOLO.CHAPTER11010073_EXPLANATION]
+Noah's Final Threat
+
+Noah Kaiba tries to trap Yugi's friends in the virtual world and prove he deserves Kaiba's legacy. Yugi must carry Seto's cards into the fight and break Noah's godlike control.
+
 Yami Yugi vs. Noah Kaiba
-
-[IDS_SOLO.CHAPTER11010074_TITLE]
-The Darkness Returns
 [IDS_SOLO.CHAPTER11010074_EXPLANATION]
+The Darkness Returns
+
+Joey reaches Yami Marik in the Battle City semifinals and enters a Shadow Game that punishes every attack. Marik wants to crush Joey's body and spirit before Yugi can face him.
+
 Yami Marik vs. Joey Wheeler
-
-[IDS_SOLO.CHAPTER11010075_TITLE]
-One Step Ahead
 [IDS_SOLO.CHAPTER11010075_EXPLANATION]
+One Step Ahead
+
+Zigfried von Schroeder targets Kaiba's tournament to settle a family grudge against KaibaCorp. Kaiba answers the sabotage directly and turns the duel into a corporate war with cards.
+
 Seto Kaiba vs. Zigfried von Schroeder
-
-[IDS_SOLO.CHAPTER11010076_TITLE]
-Sinister Secrets
 [IDS_SOLO.CHAPTER11010076_EXPLANATION]
+Sinister Secrets
+
+Leon faces Yugi in the KC Grand Championship finals while Zigfried's illegal Golden Castle of Stromberg corrupts the match. Yugi must save Leon from a victory built as sabotage.
+
 Yami Yugi vs. Leon von Schroeder
-
-[IDS_SOLO.CHAPTER11010077_TITLE]
-Dark Side of Dimensions Pt. 1
 [IDS_SOLO.CHAPTER11010077_EXPLANATION]
+Dark Side of Dimensions Pt. 1
+
+Aigami, also known as Diva, uses the Quantum Cube to target Yugi's friends while chasing revenge for Shadi. Yugi must face Cubic monsters and stop his classmate's plan from erasing people into another dimension.
+
 Yami Yugi vs. Aigami
-
-[IDS_SOLO.CHAPTER11010078_TITLE]
-Dark Side of Dimensions Pt. 2
 [IDS_SOLO.CHAPTER11010078_EXPLANATION]
+Dark Side of Dimensions Pt. 2
+
+Kaiba rebuilds the Millennium Puzzle hoping to reach Atem, but Yugi stands before him as his own duelist. Their duel proves whether Kaiba can accept a future without the Pharaoh.
+
 Yami Yugi vs. Seto Kaiba
-
-[IDS_SOLO.CHAPTER11010079_TITLE]
-Shadi Vs. Grandpa
 [IDS_SOLO.CHAPTER11010079_EXPLANATION]
+Shadi Vs. Grandpa
+
+Shadi's connection to the Millennium Items brings him into contact with Solomon Muto's long history of games, travel, and ancient secrets. The duel imagines an old guardian testing Yugi's family at the game shop.
+
 Shadi vs. Solomon Muto
-
-[IDS_SOLO.CHAPTER11010080_TITLE]
-Rebecca Vs Tristan
 [IDS_SOLO.CHAPTER11010080_EXPLANATION]
+Rebecca Vs Tristan
+
+Rebecca Hawkins enters the game shop as a young prodigy with a sharp temper and a powerful Deck. Tristan gets pulled into the chaos and has to prove heart can matter against raw talent.
+
 Rebecca Hawkins vs. Tristan Taylor
-
-[IDS_SOLO.CHAPTER11010081_TITLE]
-Sera vs Anubis
 [IDS_SOLO.CHAPTER11010081_EXPLANATION]
+Sera vs Anubis
+
+This after-story duel pits Sera's dimensional powers against an ancient threat tied to the Pyramid of Light. Use her Cubic-style avatars to hold back Anubis before old darkness rises again.
+
 Sera vs. Anubis
-
-[IDS_SOLO.CHAPTER11020065_TITLE]
-Dormitory Demolition
 [IDS_SOLO.CHAPTER11020065_EXPLANATION]
+Dormitory Demolition
+
+Crowler and Bonaparte duel over whether the Slifer Red dorm should be torn down. Crowler's pride in Duel Academy clashes with Bonaparte's plans, turning school politics into a real fight for the students' home.
+
 Dr. Vellian Crowler vs. Vice Chancellor Bonaparte
-
-[IDS_SOLO.CHAPTER11020066_TITLE]
-What Lies Beneath
 [IDS_SOLO.CHAPTER11020066_EXPLANATION]
+What Lies Beneath
+
+Axel Brodie confronts the Supreme King in the alternate dimension where Jaden's darkness has taken command. This version lets the Supreme King answer Axel's courage with Evil HERO power.
+
 Supreme King vs. Axel Brodie
-
-[IDS_SOLO.CHAPTER11020067_TITLE]
-The Invasion of Darkness
 [IDS_SOLO.CHAPTER11020067_EXPLANATION]
+The Invasion of Darkness
+
+Atticus Rhodes faces Yusuke Fujiwara as Darkness reaches back into Duel Academy's past. The duel centers on old friendship, lost identity, and the danger hidden inside Clear World.
+
 Yusuke vs. Atticus Rhodes
-
-[IDS_SOLO.CHAPTER11020068_TITLE]
-Fonda vs Sarina
 [IDS_SOLO.CHAPTER11020068_EXPLANATION]
+Fonda vs Sarina
+
+Fonda Fontaine steps out of the infirmary role and into a duel against Sarina's mirror tactics. Her healing theme becomes a way to protect Duel Academy's students beyond the nurse's office.
+
 Fonda Fontaine vs. Sarina
-
-[IDS_SOLO.CHAPTER11020069_TITLE]
-Kuriboh Vs Banner
 [IDS_SOLO.CHAPTER11020069_EXPLANATION]
+Kuriboh Vs Banner
+
+Jaden's Winged Kuriboh spirit faces Professor Banner's alchemy-themed strategy in a playful spirit duel. It is instinct, loyalty, and card-spirit charm against careful classroom science.
+
 Winged Kuriboh vs. Prof. Lyman Banner
-
-[IDS_SOLO.CHAPTER11020070_TITLE]
-Obelisk Girl's Battle
 [IDS_SOLO.CHAPTER11020070_EXPLANATION]
+Obelisk Girl's Battle
+
+Jasmine and Mindy turn the Obelisk Blue girls' dorm into a friendly rivalry match. The duel gives Alexis's closest friends a chance to show their own style away from the main spotlight.
+
 Jasmine vs. Mindy
-
-[IDS_SOLO.CHAPTER11020071_TITLE]
-Shadow Rider Duel
 [IDS_SOLO.CHAPTER11020071_EXPLANATION]
+Shadow Rider Duel
+
+Two unusual threats from GX's supernatural side collide in this extra matchup. Don Zaloog's Dark Scorpions try to steal the pace from Abidos the Third's ancient royal pride.
+
 Don Zaloog vs. Abidos the Third
-
-[IDS_SOLO.CHAPTER11030065_TITLE]
-Good Cop, Bad Cop
 [IDS_SOLO.CHAPTER11030065_EXPLANATION]
+Good Cop, Bad Cop
+
+Carly Carmine gets caught between journalism and danger when Trudge is turned against her. Her Fortune Ladies have to keep Public Security pressure away long enough to uncover the truth.
+
 Carly Carmine vs. Tetsu Trudge
-
-[IDS_SOLO.CHAPTER11030066_TITLE]
-Surely You Jest
 [IDS_SOLO.CHAPTER11030066_EXPLANATION]
+Surely You Jest
+
+Crow Hogan corners Lazar while searching for answers about the threats facing Satellite and New Domino City. Lazar's clownish act hides a slippery strategy built to waste Crow's time.
+
 Crow Hogan vs. Lazar
-
-[IDS_SOLO.CHAPTER11030067_TITLE]
-Dawn of the Duel Board
 [IDS_SOLO.CHAPTER11030067_EXPLANATION]
+Dawn of the Duel Board
+
+Lester targets Luna during a dangerous Duel Board encounter tied to Iliaster's plan for the Signers. Luna has to protect her bond with Ancient Fairy Dragon from a Meklord hunter.
+
 Lester vs. Luna
-
-[IDS_SOLO.CHAPTER11030068_TITLE]
-Against All Odds
 [IDS_SOLO.CHAPTER11030068_EXPLANATION]
+Against All Odds
+
+Jakob brings Iliaster's heaviest pressure against Crow and the future the Signers are fighting to protect. Crow's Blackwings must answer Meklord Emperor Granel and the timeline Jakob wants to impose.
+
 Jakob vs. Crow Hogan
-
-[IDS_SOLO.CHAPTER11030069_TITLE]
-Hanging Out in New Domino City
 [IDS_SOLO.CHAPTER11030069_EXPLANATION]
+Hanging Out in New Domino City
+
+Mina Simington and Blister meet in a street-level duel away from the Signers' biggest battles. Public Security polish runs into Blister's practical city experience.
+
 Mina Simington vs. Blister
-
-[IDS_SOLO.CHAPTER11030070_TITLE]
-No One Remembers Us
 [IDS_SOLO.CHAPTER11030070_EXPLANATION]
+No One Remembers Us
+
+Rally Dawson and Tenzen Yanagi get a rare moment in the spotlight in this side duel. Rally's scrappy Satellite cards meet Yanagi's eccentric historical treasures.
+
 Rally Dawson vs. Tenzen Yanagi
-
-[IDS_SOLO.CHAPTER11030071_TITLE]
-Bonds Beyond Time
 [IDS_SOLO.CHAPTER11030071_EXPLANATION]
+Bonds Beyond Time
+
+Paradox's time-traveling Malefic monsters threaten the history that connects generations of duelists. The Vagabond steps in as a silent stand-in for that legacy.
+
 The Vagabond vs. Paradox
-
-[IDS_SOLO.CHAPTER11030072_TITLE]
-Death's Favorites, Pt. 1
 [IDS_SOLO.CHAPTER11030072_EXPLANATION]
+Death's Favorites, Pt. 1
+
+Misty Tredwell and Carly Carmine cross paths before tragedy fully consumes them. This duel frames two future Dark Signers around fate, investigation, and the shadows closing in.
+
 Misty Tredwell vs. Carly Carmine
-
-[IDS_SOLO.CHAPTER11030073_TITLE]
-Death's Favorites, Pt. 2
 [IDS_SOLO.CHAPTER11030073_EXPLANATION]
+Death's Favorites, Pt. 2
+
+Misty and Carly meet again after both have fallen under the Dark Signer curse. Earthbound Immortals turn their personal pain into a duel between two doomed favorites of the shadows.
+
 Dark Signer Misty vs. Dark Signer Carly
-
-[IDS_SOLO.CHAPTER11040053_TITLE]
-Doom In Bloom
 [IDS_SOLO.CHAPTER11040053_EXPLANATION]
+Doom In Bloom
+
+Rio Kastle faces Lotus in a duel built around beauty, thorns, and control. Rio's icy confidence has to cut through floral traps before the field blooms against her.
+
 Rio Kastle vs. Lotus
-
-[IDS_SOLO.CHAPTER11040054_TITLE]
-The Friendship Games
 [IDS_SOLO.CHAPTER11040054_EXPLANATION]
+The Friendship Games
+
+Rio and Tori get a friendly match that highlights the support network around Yuma. Tori's optimism meets Rio's cool precision in a duel more about pride than survival.
+
 Rio Kastle vs. Tori Meadows
-
-[IDS_SOLO.CHAPTER11040055_TITLE]
-Battle With The Barians
 [IDS_SOLO.CHAPTER11040055_EXPLANATION]
+Battle With The Barians
+
+Bronk is pulled into a duel against Marin, Rio's Barian identity. The match brings ordinary loyalty face to face with the hidden Barian world surrounding Yuma's friends.
+
 Marin vs. Bronk Stone
-
-[IDS_SOLO.CHAPTER11050067_TITLE]
-Who Gets The Kids?
 [IDS_SOLO.CHAPTER11050067_EXPLANATION]
+Who Gets The Kids?
+
+Henrietta Akaba confronts Leo Akaba over the family and dimensions left broken by his plans. This duel turns the Akaba family's private fracture into a public card battle.
+
 Henrietta Akaba vs. Leo Akaba (Professor)
-
-[IDS_SOLO.CHAPTER11050068_TITLE]
-Riley Vs Ray
 [IDS_SOLO.CHAPTER11050068_EXPLANATION]
+Riley Vs Ray
+
+Ray Akaba's sacrifice is central to stopping Z-ARC, while Riley carries the burden of what comes after. Their duel reflects protection, fear, and the hope that the next generation can hold the darkness back.
+
 Ray Akaba vs. Riley
-
-[IDS_SOLO.CHAPTER11050069_TITLE]
-Dueling Sisters
 [IDS_SOLO.CHAPTER11050069_EXPLANATION]
+Dueling Sisters
+
+Grace and Gloria Tyler settle their Amazoness rivalry in a sister duel. Grace's agility and Gloria's force turn family teamwork into a contest for bragging rights.
+
 Grace Tyler vs. Gloria Tyler
-
-[IDS_SOLO.CHAPTER11060057_TITLE]
-Final Battle
 [IDS_SOLO.CHAPTER11060057_EXPLANATION]
+Final Battle
+
+Tour Guide faces The Vagrant in a final extra duel outside the main VRAINS conflict. Underworld fiends meet a wandering opponent, giving the bonus campaign a last playful challenge.
+
 Tour Guide vs. The Vagrant
-
-[IDS_SOLO.CHAPTER11010100_TITLE]
-Everything's Relative (Reverse Duel)
-[IDS_SOLO.CHAPTER11010100_EXPLANATION]
-Mokuba Kaiba vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010101_TITLE]
-Double Trouble Duel (Reverse Duel)
-[IDS_SOLO.CHAPTER11010101_EXPLANATION]
-Paradox Brothers vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010102_TITLE]
-Dungeon Dice Monsters (Reverse Duel)
-[IDS_SOLO.CHAPTER11010102_EXPLANATION]
-Joey Wheeler vs. Duke Devlin
-
-[IDS_SOLO.CHAPTER11010103_TITLE]
-The ESP Duelist (Reverse Duel)
-[IDS_SOLO.CHAPTER11010103_EXPLANATION]
-Espa Roba vs. Joey Wheeler
-
-[IDS_SOLO.CHAPTER11010104_TITLE]
-Double Duel (Reverse Duel)
-[IDS_SOLO.CHAPTER11010104_EXPLANATION]
-Lumis And Umbra vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010105_TITLE]
-Friends 'Til The End (Reverse Duel)
-[IDS_SOLO.CHAPTER11010105_EXPLANATION]
-Joey vs. Yugi Muto
-
-[IDS_SOLO.CHAPTER11010106_TITLE]
-Mind Game (Reverse Duel)
-[IDS_SOLO.CHAPTER11010106_EXPLANATION]
-Mai Valentine vs. Yami Marik
-
-[IDS_SOLO.CHAPTER11010107_TITLE]
-Showdown In The Shadows (Reverse Duel)
-[IDS_SOLO.CHAPTER11010107_EXPLANATION]
-Yami Bakura vs. Yami Marik
-
-[IDS_SOLO.CHAPTER11010108_TITLE]
-Noah's Final Threat (Reverse Duel)
-[IDS_SOLO.CHAPTER11010108_EXPLANATION]
-Noah Kaiba vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010109_TITLE]
-The Darkness Returns (Reverse Duel)
-[IDS_SOLO.CHAPTER11010109_EXPLANATION]
-Joey Wheeler vs. Yami Marik
-
-[IDS_SOLO.CHAPTER11010110_TITLE]
-One Step Ahead (Reverse Duel)
-[IDS_SOLO.CHAPTER11010110_EXPLANATION]
-Zigfried von Schroeder vs. Seto Kaiba
-
-[IDS_SOLO.CHAPTER11010111_TITLE]
-Sinister Secrets (Reverse Duel)
-[IDS_SOLO.CHAPTER11010111_EXPLANATION]
-Leon von Schroeder vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010112_TITLE]
-Sera vs Anubis (Reverse Duel)
-[IDS_SOLO.CHAPTER11010112_EXPLANATION]
-Anubis vs. Sera
-
-[IDS_SOLO.CHAPTER11010113_TITLE]
-Dark Side of Dimensions Pt. 1 (Reverse Duel)
-[IDS_SOLO.CHAPTER11010113_EXPLANATION]
-Aigami vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010114_TITLE]
-Dark Side of Dimensions Pt. 2 (Reverse Duel)
-[IDS_SOLO.CHAPTER11010114_EXPLANATION]
-Seto Kaiba vs. Yami Yugi
-
-[IDS_SOLO.CHAPTER11010115_TITLE]
-Shadi Vs. Grandpa (Reverse Duel)
-[IDS_SOLO.CHAPTER11010115_EXPLANATION]
-Solomon Muto vs. Shadi
-
-[IDS_SOLO.CHAPTER11010116_TITLE]
-Rebecca Vs Tristan (Reverse Duel)
-[IDS_SOLO.CHAPTER11010116_EXPLANATION]
-Tristan Taylor vs. Rebecca Hawkins
-
-[IDS_SOLO.CHAPTER11020100_TITLE]
-Dormitory Demolition (Reverse Duel)
-[IDS_SOLO.CHAPTER11020100_EXPLANATION]
-Vice Chancellor Bonaparte vs. Dr. Vellian Crowler
-
-[IDS_SOLO.CHAPTER11020101_TITLE]
-Fonda vs Sarina (Reverse Duel)
-[IDS_SOLO.CHAPTER11020101_EXPLANATION]
-Sarina vs. Fonda Fontaine
-
-[IDS_SOLO.CHAPTER11020102_TITLE]
-Obelisk Girl's Battle (Reverse Duel)
-[IDS_SOLO.CHAPTER11020102_EXPLANATION]
-Mindy vs. Jasmine
-
-[IDS_SOLO.CHAPTER11020103_TITLE]
-What Lies Beneath (Reverse Duel)
-[IDS_SOLO.CHAPTER11020103_EXPLANATION]
-Axel Brodie vs. Supreme King
-
-[IDS_SOLO.CHAPTER11020104_TITLE]
-Kuriboh Vs Banner (Reverse Duel)
-[IDS_SOLO.CHAPTER11020104_EXPLANATION]
-Prof. Lyman Banner vs. Winged Kuriboh
-
-[IDS_SOLO.CHAPTER11020105_TITLE]
-The Invasion of Darkness (Reverse Duel)
-[IDS_SOLO.CHAPTER11020105_EXPLANATION]
-Atticus Rhodes vs. Yusuke
-
-[IDS_SOLO.CHAPTER11020106_TITLE]
-Shadow Rider Duel (Reverse Duel)
-[IDS_SOLO.CHAPTER11020106_EXPLANATION]
-Abidos the Third vs. Don Zaloog
-
-[IDS_SOLO.CHAPTER11030100_TITLE]
-Good Cop, Bad Cop (Reverse Duel)
-[IDS_SOLO.CHAPTER11030100_EXPLANATION]
-Tetsu Trudge vs. Carly Carmine
-
-[IDS_SOLO.CHAPTER11030101_TITLE]
-Surely You Jest (Reverse Duel)
-[IDS_SOLO.CHAPTER11030101_EXPLANATION]
-Lazar vs. Crow Hogan
-
-[IDS_SOLO.CHAPTER11030102_TITLE]
-Dawn of the Duel Board (Reverse Duel)
-[IDS_SOLO.CHAPTER11030102_EXPLANATION]
-Luna vs. Lester
-
-[IDS_SOLO.CHAPTER11030103_TITLE]
-Hanging Out in New Domino City (Reverse Duel)
-[IDS_SOLO.CHAPTER11030103_EXPLANATION]
-Blister vs. Mina Simington
-
-[IDS_SOLO.CHAPTER11030104_TITLE]
-No One Remembers Us (Reverse Duel)
-[IDS_SOLO.CHAPTER11030104_EXPLANATION]
-Tenzen Yanagi vs. Rally Dawson
-
-[IDS_SOLO.CHAPTER11030105_TITLE]
-Bonds Beyond Time (Reverse Duel)
-[IDS_SOLO.CHAPTER11030105_EXPLANATION]
-Paradox vs. The Vagabond
-
-[IDS_SOLO.CHAPTER11030106_TITLE]
-Death's Favorites, Pt. 1 (Reverse Duel)
-[IDS_SOLO.CHAPTER11030106_EXPLANATION]
-Carly Carmine vs. Misty Tredwell
-
-[IDS_SOLO.CHAPTER11030107_TITLE]
-Death's Favorites, Pt. 2 (Reverse Duel)
-[IDS_SOLO.CHAPTER11030107_EXPLANATION]
-Dark Signer Carly vs. Dark Signer Misty
-
-[IDS_SOLO.CHAPTER11030108_TITLE]
-Against All Odds (Reverse Duel)
-[IDS_SOLO.CHAPTER11030108_EXPLANATION]
-Crow Hogan vs. Jakob
-
-[IDS_SOLO.CHAPTER11040100_TITLE]
-Doom In Bloom (Reverse Duel)
-[IDS_SOLO.CHAPTER11040100_EXPLANATION]
-Lotus vs. Rio Kastle
-
-[IDS_SOLO.CHAPTER11040101_TITLE]
-The Friendship Games (Reverse Duel)
-[IDS_SOLO.CHAPTER11040101_EXPLANATION]
-Tori Meadows vs. Rio Kastle
-
-[IDS_SOLO.CHAPTER11040102_TITLE]
-Battle With The Barians (Reverse Duel)
-[IDS_SOLO.CHAPTER11040102_EXPLANATION]
-Bronk Stone vs. Marin
-
-[IDS_SOLO.CHAPTER11050100_TITLE]
-Dueling Sisters (Reverse Duel)
-[IDS_SOLO.CHAPTER11050100_EXPLANATION]
-Gloria Tyler vs. Grace Tyler
-
-[IDS_SOLO.CHAPTER11050101_TITLE]
-Who Gets The Kids? (Reverse Duel)
-[IDS_SOLO.CHAPTER11050101_EXPLANATION]
-Leo Akaba (Professor) vs. Henrietta Akaba
-
-[IDS_SOLO.CHAPTER11050102_TITLE]
-Riley Vs Ray (Reverse Duel)
-[IDS_SOLO.CHAPTER11050102_EXPLANATION]
-Riley vs. Ray Akaba
-
-[IDS_SOLO.CHAPTER11060100_TITLE]
-Final Battle (Reverse Duel)
-[IDS_SOLO.CHAPTER11060100_EXPLANATION]
-The Vagrant vs. Tour Guide
 [IDS_SOLO.CHAPTER11110025_EXPLANATION]
-Ancient Spirits
+Requiem Challenge: Noah Kaiba
 
-vs. Noah Kaiba
+Face Noah Kaiba with the Requiem challenge Deck "Ancient Spirits". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Ancient Spirits
 [IDS_SOLO.CHAPTER11110026_EXPLANATION]
-Releasing The Chains
+Requiem Challenge: Lumis And Umbra
 
-vs. Lumis And Umbra
+Face Lumis And Umbra with the Requiem challenge Deck "Releasing The Chains". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Releasing The Chains
 [IDS_SOLO.CHAPTER11110027_EXPLANATION]
-Graydle Control
+Requiem Challenge: Joey
 
-vs. Joey
+Face Joey with the Requiem challenge Deck "Graydle Control". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Graydle Control
 [IDS_SOLO.CHAPTER11110028_EXPLANATION]
-Blue-Eyes Unleashed
+Requiem Challenge: Seto Kaiba
 
-vs. Seto Kaiba
+Face Seto Kaiba with the Requiem challenge Deck "Blue-Eyes Unleashed". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Blue-Eyes Unleashed
 [IDS_SOLO.CHAPTER11110029_EXPLANATION]
-Time Thief
+Requiem Challenge: Paradox Brothers
 
-vs. Paradox Brothers
+Face Paradox Brothers with the Requiem challenge Deck "Time Thief". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Time Thief
 [IDS_SOLO.CHAPTER11150032_EXPLANATION]
-Sacred Nephthys
+Requiem Challenge: Grace Tyler
 
-vs. Grace Tyler
+Face Grace Tyler with the Requiem challenge Deck "Sacred Nephthys". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Sacred Nephthys
 [IDS_SOLO.CHAPTER11150033_EXPLANATION]
-Magnet Conductors
+Requiem Challenge: Gloria Tyler
 
-vs. Gloria Tyler
+Face Gloria Tyler with the Requiem challenge Deck "Magnet Conductors". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Magnet Conductors
 [IDS_SOLO.CHAPTER11120028_EXPLANATION]
-Cyber Angel Squad
+Requiem Challenge: Alexis Rhodes
 
-vs. Alexis Rhodes
+Face Alexis Rhodes with the Requiem challenge Deck "Cyber Angel Squad". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Cyber Angel Squad
 [IDS_SOLO.CHAPTER11110030_EXPLANATION]
-Heavy Mech
+Requiem Challenge: Duke Devlin
 
-vs. Duke Devlin
+Face Duke Devlin with the Requiem challenge Deck "Heavy Mech". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Heavy Mech
 [IDS_SOLO.CHAPTER11110031_EXPLANATION]
-Sweet Symphony
+Requiem Challenge: Sera
 
-vs. Sera
+Face Sera with the Requiem challenge Deck "Sweet Symphony". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Sweet Symphony
 [IDS_SOLO.CHAPTER11110032_EXPLANATION]
-Magicians
+Requiem Challenge: Rebecca Hawkins
 
-vs. Rebecca Hawkins
+Face Rebecca Hawkins with the Requiem challenge Deck "Magicians". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Magicians
 [IDS_SOLO.CHAPTER11120029_EXPLANATION]
-Gentle Fragrance
+Requiem Challenge: Jasmine
 
-vs. Jasmine
+Face Jasmine with the Requiem challenge Deck "Gentle Fragrance". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Gentle Fragrance
 [IDS_SOLO.CHAPTER11120030_EXPLANATION]
-Madolche
+Requiem Challenge: Mindy
 
-vs. Mindy
+Face Mindy with the Requiem challenge Deck "Madolche". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Madolche
 [IDS_SOLO.CHAPTER11120031_EXPLANATION]
-CyberDarkWave
+Requiem Challenge: Zane Truesdale
 
-vs. Zane Truesdale
+Face Zane Truesdale with the Requiem challenge Deck "CyberDarkWave". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: CyberDarkWave
 [IDS_SOLO.CHAPTER11130030_EXPLANATION]
-Oblivion
+Requiem Challenge: Mina Simington
 
-vs. Mina Simington
+Face Mina Simington with the Requiem challenge Deck "Oblivion". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Oblivion
 [IDS_SOLO.CHAPTER11120032_EXPLANATION]
-Masked Heroes
+Requiem Challenge: Jaden Yuki
 
-vs. Jaden Yuki
+Face Jaden Yuki with the Requiem challenge Deck "Masked Heroes". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Masked Heroes
 [IDS_SOLO.CHAPTER11130031_EXPLANATION]
-Powered Up Machina
+Requiem Challenge: Blister
 
-vs. Blister
+Face Blister with the Requiem challenge Deck "Powered Up Machina". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Powered Up Machina
 [IDS_SOLO.CHAPTER11120033_EXPLANATION]
-World Chalice
+Requiem Challenge: Sarina
 
-vs. Sarina
+Face Sarina with the Requiem challenge Deck "World Chalice". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: World Chalice
 [IDS_SOLO.CHAPTER11120034_EXPLANATION]
-Evil Heroes Return
+Requiem Challenge: Supreme King
 
-vs. Supreme King
+Face Supreme King with the Requiem challenge Deck "Evil Heroes Return". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Evil Heroes Return
 [IDS_SOLO.CHAPTER11120035_EXPLANATION]
-Regal Birds
+Requiem Challenge: Fonda Fontaine
 
-vs. Fonda Fontaine
+Face Fonda Fontaine with the Requiem challenge Deck "Regal Birds". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Regal Birds
 [IDS_SOLO.CHAPTER11130032_EXPLANATION]
-Ways Of The Shiranui
+Requiem Challenge: Paradox
 
-vs. Paradox
+Face Paradox with the Requiem challenge Deck "Ways Of The Shiranui". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Ways Of The Shiranui
 [IDS_SOLO.CHAPTER11110033_EXPLANATION]
-Mecha Beasts
+Requiem Challenge: Anubis
 
-vs. Anubis
+Face Anubis with the Requiem challenge Deck "Mecha Beasts". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Mecha Beasts
 [IDS_SOLO.CHAPTER11130033_EXPLANATION]
-Reptilianne Swarm
+Requiem Challenge: Misty Tredwell
 
-vs. Misty Tredwell
+Face Misty Tredwell with the Requiem challenge Deck "Reptilianne Swarm". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Reptilianne Swarm
 [IDS_SOLO.CHAPTER11130034_EXPLANATION]
-Whispers Of Death
+Requiem Challenge: Dark Signer Misty
 
-vs. Dark Signer Misty
+Face Dark Signer Misty with the Requiem challenge Deck "Whispers Of Death". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Whispers Of Death
 [IDS_SOLO.CHAPTER11130035_EXPLANATION]
-Daily Horoscope
+Requiem Challenge: Carly Carmine
 
-vs. Carly Carmine
+Face Carly Carmine with the Requiem challenge Deck "Daily Horoscope". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Daily Horoscope
 [IDS_SOLO.CHAPTER11130036_EXPLANATION]
-Witchcraft
+Requiem Challenge: Dark Signer Carly
 
-vs. Dark Signer Carly
+Face Dark Signer Carly with the Requiem challenge Deck "Witchcraft". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Witchcraft
 [IDS_SOLO.CHAPTER11110034_EXPLANATION]
-Folly Of Youth
+Requiem Challenge: Espa Roba
 
-vs. Espa Roba
+Face Espa Roba with the Requiem challenge Deck "Folly Of Youth". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Folly Of Youth
 [IDS_SOLO.CHAPTER11110035_EXPLANATION]
-World Legacy
+Requiem Challenge: Zigfried von Schroeder
 
-vs. Zigfried von Schroeder
+Face Zigfried von Schroeder with the Requiem challenge Deck "World Legacy". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: World Legacy
 [IDS_SOLO.CHAPTER11110036_EXPLANATION]
-Quantum Affinity
+Requiem Challenge: Leon von Schroeder
 
-vs. Leon von Schroeder
+Face Leon von Schroeder with the Requiem challenge Deck "Quantum Affinity". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Quantum Affinity
 [IDS_SOLO.CHAPTER11120036_EXPLANATION]
-Malice Of The Evilswarm
+Requiem Challenge: Yusuke
 
-vs. Yusuke
+Face Yusuke with the Requiem challenge Deck "Malice Of The Evilswarm". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Malice Of The Evilswarm
 [IDS_SOLO.CHAPTER11140029_EXPLANATION]
-Friggin' Bees!
+Requiem Challenge: Lotus
 
-vs. Lotus
+Face Lotus with the Requiem challenge Deck "Friggin' Bees!". This optional ZEXAL challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Friggin' Bees!
 [IDS_SOLO.CHAPTER11110037_EXPLANATION]
-Fly My Pretties
+Requiem Challenge: Mai Valentine
 
-vs. Mai Valentine
+Face Mai Valentine with the Requiem challenge Deck "Fly My Pretties". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Fly My Pretties
 [IDS_SOLO.CHAPTER11130037_EXPLANATION]
-Ghosttrick
+Requiem Challenge: Carly Carmine
 
-vs. Carly Carmine
+Face Carly Carmine with the Requiem challenge Deck "Ghosttrick". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Ghosttrick
 [IDS_SOLO.CHAPTER11160020_EXPLANATION]
-The Summoned Skull
+Requiem Challenge: The Vagrant
 
-vs. The Vagrant
+Face The Vagrant with the Requiem challenge Deck "The Summoned Skull". This optional VRAINS challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: The Summoned Skull
 [IDS_SOLO.CHAPTER11110038_EXPLANATION]
-Spell It Out
+Requiem Challenge: Aigami
 
-vs. Aigami
+Face Aigami with the Requiem challenge Deck "Spell It Out". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Spell It Out
 [IDS_SOLO.CHAPTER11130038_EXPLANATION]
-The Darklords
+Requiem Challenge: Jakob
 
-vs. Jakob
+Face Jakob with the Requiem challenge Deck "The Darklords". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: The Darklords
 [IDS_SOLO.CHAPTER11130039_EXPLANATION]
-Comic Book
+Requiem Challenge: Lazar
 
-vs. Lazar
+Face Lazar with the Requiem challenge Deck "Comic Book". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Comic Book
 [IDS_SOLO.CHAPTER11130040_EXPLANATION]
-Household Chores
+Requiem Challenge: Luna
 
-vs. Luna
+Face Luna with the Requiem challenge Deck "Household Chores". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Household Chores
 [IDS_SOLO.CHAPTER11130041_EXPLANATION]
-Genex
+Requiem Challenge: Rally Dawson
 
-vs. Rally Dawson
+Face Rally Dawson with the Requiem challenge Deck "Genex". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Genex
 [IDS_SOLO.CHAPTER11130042_EXPLANATION]
-Master Of The Tenyi
+Requiem Challenge: Tenzen Yanagi
 
-vs. Tenzen Yanagi
+Face Tenzen Yanagi with the Requiem challenge Deck "Master Of The Tenyi". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Master Of The Tenyi
 [IDS_SOLO.CHAPTER11150034_EXPLANATION]
-Hazy Flame
+Requiem Challenge: Leo Akaba (Professor)
 
-vs. Leo Akaba (Professor)
+Face Leo Akaba (Professor) with the Requiem challenge Deck "Hazy Flame". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Hazy Flame
 [IDS_SOLO.CHAPTER11150035_EXPLANATION]
-Generaider
+Requiem Challenge: Henrietta Akaba
 
-vs. Henrietta Akaba
+Face Henrietta Akaba with the Requiem challenge Deck "Generaider". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Generaider
 [IDS_SOLO.CHAPTER11150036_EXPLANATION]
-Endymion's Lessons
+Requiem Challenge: Ray Akaba
 
-vs. Ray Akaba
+Face Ray Akaba with the Requiem challenge Deck "Endymion's Lessons". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Endymion's Lessons
 [IDS_SOLO.CHAPTER11150037_EXPLANATION]
-Ancient Kings
+Requiem Challenge: Riley
 
-vs. Riley
+Face Riley with the Requiem challenge Deck "Ancient Kings". This optional ARC-V challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Ancient Kings
 [IDS_SOLO.CHAPTER11110039_EXPLANATION]
-Stepping Out Of His Shadow
+Requiem Challenge: Mokuba Kaiba
 
-vs. Mokuba Kaiba
+Face Mokuba Kaiba with the Requiem challenge Deck "Stepping Out Of His Shadow". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Stepping Out Of His Shadow
 [IDS_SOLO.CHAPTER11110040_EXPLANATION]
-Secrets Of The Mayakashi
+Requiem Challenge: Shadi
 
-vs. Shadi
+Face Shadi with the Requiem challenge Deck "Secrets Of The Mayakashi". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Secrets Of The Mayakashi
 [IDS_SOLO.CHAPTER11110041_EXPLANATION]
-Danger Nearby
+Requiem Challenge: Solomon Muto
 
-vs. Solomon Muto
+Face Solomon Muto with the Requiem challenge Deck "Danger Nearby". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Danger Nearby
 [IDS_SOLO.CHAPTER11110042_EXPLANATION]
-Dinowrestling
+Requiem Challenge: Tristan Taylor
 
-vs. Tristan Taylor
+Face Tristan Taylor with the Requiem challenge Deck "Dinowrestling". This optional Yu-Gi-Oh! challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Dinowrestling
 [IDS_SOLO.CHAPTER11120037_EXPLANATION]
-Power Of The Red-Eyes
+Requiem Challenge: Atticus Rhodes
 
-vs. Atticus Rhodes
+Face Atticus Rhodes with the Requiem challenge Deck "Power Of The Red-Eyes". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Power Of The Red-Eyes
 [IDS_SOLO.CHAPTER11120038_EXPLANATION]
-Magical Musketeers
+Requiem Challenge: Vice Chancellor Bonaparte
 
-vs. Vice Chancellor Bonaparte
+Face Vice Chancellor Bonaparte with the Requiem challenge Deck "Magical Musketeers". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Magical Musketeers
 [IDS_SOLO.CHAPTER11120039_EXPLANATION]
-Today's Math Lesson
+Requiem Challenge: Prof. Lyman Banner
 
-vs. Prof. Lyman Banner
+Face Prof. Lyman Banner with the Requiem challenge Deck "Today's Math Lesson". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Today's Math Lesson
 [IDS_SOLO.CHAPTER11120040_EXPLANATION]
-Kuriboh Chaos
+Requiem Challenge: Winged Kuriboh
 
-vs. Winged Kuriboh
+Face Winged Kuriboh with the Requiem challenge Deck "Kuriboh Chaos". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Kuriboh Chaos
 [IDS_SOLO.CHAPTER11130043_EXPLANATION]
-Monarchs
+Requiem Challenge: The Vagabond
 
-vs. The Vagabond
+Face The Vagabond with the Requiem challenge Deck "Monarchs". This optional 5D's challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Monarchs
 [IDS_SOLO.CHAPTER11160021_EXPLANATION]
-Evil Eyes
+Requiem Challenge: Tour Guide
 
-vs. Tour Guide
+Face Tour Guide with the Requiem challenge Deck "Evil Eyes". This optional VRAINS challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Evil Eyes
 [IDS_SOLO.CHAPTER11140030_EXPLANATION]
-Aquaactresses
+Requiem Challenge: Marin
 
-vs. Marin
+Face Marin with the Requiem challenge Deck "Aquaactresses". This optional ZEXAL challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Aquaactresses
 [IDS_SOLO.CHAPTER11140031_EXPLANATION]
-Naturia's Blessings
+Requiem Challenge: Tori Meadows
 
-vs. Tori Meadows
+Face Tori Meadows with the Requiem challenge Deck "Naturia's Blessings". This optional ZEXAL challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Naturia's Blessings
 [IDS_SOLO.CHAPTER11120041_EXPLANATION]
-Chazz It Up!
+Requiem Challenge: Chazz
 
-vs. Chazz
+Face Chazz with the Requiem challenge Deck "Chazz It Up!". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Chazz It Up!
 [IDS_SOLO.CHAPTER11120042_EXPLANATION]
-Megaliths
+Requiem Challenge: Abidos the Third
 
-vs. Abidos the Third
+Face Abidos the Third with the Requiem challenge Deck "Megaliths". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
 
+Challenge Deck: Megaliths
 [IDS_SOLO.CHAPTER11120043_EXPLANATION]
-The Don
+Requiem Challenge: Don Zaloog
 
-vs. Don Zaloog
+Face Don Zaloog with the Requiem challenge Deck "The Don". This optional GX challenge uses your own Deck against a harder opponent list from the Requiem mod.
+
+Challenge Deck: The Don
+
+[IDS_SOLO.CHAPTER11010100_EXPLANATION]
+Everything's Relative (Reverse Duel)
+
+Take Mokuba's side and fight with the anger of a brother who feels cornered. Use his improvised Deck to challenge Yugi and prove that KaibaCorp's heir is not helpless.
+
+Mokuba Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010101_EXPLANATION]
+Double Trouble Duel (Reverse Duel)
+
+Take the Paradox Brothers' side and turn the labyrinth into a weapon. Lock Yugi inside maze tricks, defensive walls, and the threat of Gate Guardian.
+
+Paradox Brothers vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010102_EXPLANATION]
+Dungeon Dice Monsters (Reverse Duel)
+
+Play as Joey and strike back at Duke's showy dice tactics. Keep your pride intact, trust your instincts, and show that a streetwise duelist can adapt to a strange game.
+
+Joey Wheeler vs. Duke Devlin
+[IDS_SOLO.CHAPTER11010103_EXPLANATION]
+The ESP Duelist (Reverse Duel)
+
+Take Espa Roba's side and keep the psychic act alive. Use Jinzo and hidden information to pressure Joey before he can expose the cheating behind your reputation.
+
+Espa Roba vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010104_EXPLANATION]
+Double Duel (Reverse Duel)
+
+Play as Lumis and Umbra carrying out Marik's orders high above Battle City. Use Mask cards and teamwork to trap Yugi before he and Kaiba can turn rivalry into cooperation.
+
+Lumis And Umbra vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010105_EXPLANATION]
+Friends 'Til The End (Reverse Duel)
+
+Take control of Joey while Marik twists his mind against Yugi. Push a ruthless burn strategy and force Yugi to choose between winning the duel and saving his friend.
+
+Joey vs. Yugi Muto
+[IDS_SOLO.CHAPTER11010106_EXPLANATION]
+Mind Game (Reverse Duel)
+
+Play as Mai and fight through Marik's psychic cruelty before your memories disappear. Use Harpies and courage to challenge Ra and refuse to become another victim of the shadows.
+
+Mai Valentine vs. Yami Marik
+[IDS_SOLO.CHAPTER11010107_EXPLANATION]
+Showdown In The Shadows (Reverse Duel)
+
+Take Yami Bakura's side and duel with the thief's occult patience. Use fiends, spirits, and a dangerous alliance to pry the Millennium Rod away from Yami Marik.
+
+Yami Bakura vs. Yami Marik
+[IDS_SOLO.CHAPTER11010108_EXPLANATION]
+Noah's Final Threat (Reverse Duel)
+
+Play as Noah and defend the virtual world built around your claim to KaibaCorp. Use Shinato's power to show Yugi that this digital kingdom already has a chosen heir.
+
+Noah Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010109_EXPLANATION]
+The Darkness Returns (Reverse Duel)
+
+Take Joey's side and push past pain, fear, and The Winged Dragon of Ra. Fight for Mai and your friends even when every move brings you closer to collapse.
+
+Joey Wheeler vs. Yami Marik
+[IDS_SOLO.CHAPTER11010110_EXPLANATION]
+One Step Ahead (Reverse Duel)
+
+Play as Zigfried and make Kaiba pay for the rivalry that shaped both families. Use Valkyries and elegant spellcraft to embarrass Kaiba on his own tournament stage.
+
+Zigfried von Schroeder vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010111_EXPLANATION]
+Sinister Secrets (Reverse Duel)
+
+Take Leon's side and command a fairy tale Deck against the King of Games. Fight for the championship while the Golden Castle hides a scheme you never agreed to carry.
+
+Leon von Schroeder vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010112_EXPLANATION]
+Sera vs Anubis (Reverse Duel)
+
+Take Anubis's side and turn ancient malice against Sera's dimensional gifts. Push past her avatars and make the Pyramid of Light's lingering curse feel impossible to contain.
+
+Anubis vs. Sera
+[IDS_SOLO.CHAPTER11010113_EXPLANATION]
+Dark Side of Dimensions Pt. 1 (Reverse Duel)
+
+Play as Aigami and weaponize the Quantum Cube's dimensional power. Use Cubic monsters to punish Yugi's circle for the past you blame on Bakura and the Millennium Ring.
+
+Aigami vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010114_EXPLANATION]
+Dark Side of Dimensions Pt. 2 (Reverse Duel)
+
+Take Kaiba's side and use the newest Duel Disk technology to force the rematch you have chased since Battle City. Break through Yugi and reach the rival you refuse to let go.
+
+Seto Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010115_EXPLANATION]
+Shadi Vs. Grandpa (Reverse Duel)
+
+Play as Solomon Muto and answer Shadi's mysterious trial with the wisdom of a lifelong gamer. Use your old-school Deck to show that Yugi's courage has roots.
+
+Solomon Muto vs. Shadi
+[IDS_SOLO.CHAPTER11010116_EXPLANATION]
+Rebecca Vs Tristan (Reverse Duel)
+
+Take Tristan's side in an unlikely duel against Rebecca's competitive instincts. Use a rough-and-ready strategy to stand up for your friends and survive a prodigy's pressure.
+
+Tristan Taylor vs. Rebecca Hawkins
+[IDS_SOLO.CHAPTER11020100_EXPLANATION]
+Dormitory Demolition (Reverse Duel)
+
+Take Vice Chancellor Bonaparte's side in the alternate version of this story duel. The same conflict now turns Dr. Vellian Crowler's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Vice Chancellor Bonaparte vs. Dr. Vellian Crowler
+[IDS_SOLO.CHAPTER11020101_EXPLANATION]
+Fonda vs Sarina (Reverse Duel)
+
+Take Sarina's side in the alternate version of this story duel. The same conflict now turns Fonda Fontaine's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Sarina vs. Fonda Fontaine
+[IDS_SOLO.CHAPTER11020102_EXPLANATION]
+Obelisk Girl's Battle (Reverse Duel)
+
+Take Mindy's side in the alternate version of this story duel. The same conflict now turns Jasmine's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Mindy vs. Jasmine
+[IDS_SOLO.CHAPTER11020103_EXPLANATION]
+What Lies Beneath (Reverse Duel)
+
+Take Axel Brodie's side in the alternate version of this story duel. The same conflict now turns Supreme King's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Axel Brodie vs. Supreme King
+[IDS_SOLO.CHAPTER11020104_EXPLANATION]
+Kuriboh Vs Banner (Reverse Duel)
+
+Take Prof. Lyman Banner's side in the alternate version of this story duel. The same conflict now turns Winged Kuriboh's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Prof. Lyman Banner vs. Winged Kuriboh
+[IDS_SOLO.CHAPTER11020105_EXPLANATION]
+The Invasion of Darkness (Reverse Duel)
+
+Take Atticus Rhodes's side in the alternate version of this story duel. The same conflict now turns Yusuke's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Atticus Rhodes vs. Yusuke
+[IDS_SOLO.CHAPTER11020106_EXPLANATION]
+Shadow Rider Duel (Reverse Duel)
+
+Take Abidos the Third's side in the alternate version of this story duel. The same conflict now turns Don Zaloog's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Abidos the Third vs. Don Zaloog
+[IDS_SOLO.CHAPTER11030100_EXPLANATION]
+Good Cop, Bad Cop (Reverse Duel)
+
+Take Tetsu Trudge's side in the alternate version of this story duel. The same conflict now turns Carly Carmine's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Tetsu Trudge vs. Carly Carmine
+[IDS_SOLO.CHAPTER11030101_EXPLANATION]
+Surely You Jest (Reverse Duel)
+
+Take Lazar's side in the alternate version of this story duel. The same conflict now turns Crow Hogan's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Lazar vs. Crow Hogan
+[IDS_SOLO.CHAPTER11030102_EXPLANATION]
+Dawn of the Duel Board (Reverse Duel)
+
+Take Luna's side in the alternate version of this story duel. The same conflict now turns Lester's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Luna vs. Lester
+[IDS_SOLO.CHAPTER11030103_EXPLANATION]
+Hanging Out in New Domino City (Reverse Duel)
+
+Take Blister's side in the alternate version of this story duel. The same conflict now turns Mina Simington's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Blister vs. Mina Simington
+[IDS_SOLO.CHAPTER11030104_EXPLANATION]
+No One Remembers Us (Reverse Duel)
+
+Take Tenzen Yanagi's side in the alternate version of this story duel. The same conflict now turns Rally Dawson's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Tenzen Yanagi vs. Rally Dawson
+[IDS_SOLO.CHAPTER11030105_EXPLANATION]
+Bonds Beyond Time (Reverse Duel)
+
+Take Paradox's side in the alternate version of this story duel. The same conflict now turns The Vagabond's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Paradox vs. The Vagabond
+[IDS_SOLO.CHAPTER11030106_EXPLANATION]
+Death's Favorites, Pt. 1 (Reverse Duel)
+
+Take Carly Carmine's side in the alternate version of this story duel. The same conflict now turns Misty Tredwell's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Carly Carmine vs. Misty Tredwell
+[IDS_SOLO.CHAPTER11030107_EXPLANATION]
+Death's Favorites, Pt. 2 (Reverse Duel)
+
+Take Dark Signer Carly's side in the alternate version of this story duel. The same conflict now turns Dark Signer Misty's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Dark Signer Carly vs. Dark Signer Misty
+[IDS_SOLO.CHAPTER11030108_EXPLANATION]
+Against All Odds (Reverse Duel)
+
+Take Crow Hogan's side in the alternate version of this story duel. The same conflict now turns Jakob's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Crow Hogan vs. Jakob
+[IDS_SOLO.CHAPTER11040100_EXPLANATION]
+Doom In Bloom (Reverse Duel)
+
+Take Lotus's side in the alternate version of this story duel. The same conflict now turns Rio Kastle's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Lotus vs. Rio Kastle
+[IDS_SOLO.CHAPTER11040101_EXPLANATION]
+The Friendship Games (Reverse Duel)
+
+Take Tori Meadows's side in the alternate version of this story duel. The same conflict now turns Rio Kastle's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Tori Meadows vs. Rio Kastle
+[IDS_SOLO.CHAPTER11040102_EXPLANATION]
+Battle With The Barians (Reverse Duel)
+
+Take Bronk Stone's side in the alternate version of this story duel. The same conflict now turns Marin's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Bronk Stone vs. Marin
+[IDS_SOLO.CHAPTER11050100_EXPLANATION]
+Dueling Sisters (Reverse Duel)
+
+Take Gloria Tyler's side in the alternate version of this story duel. The same conflict now turns Grace Tyler's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Gloria Tyler vs. Grace Tyler
+[IDS_SOLO.CHAPTER11050101_EXPLANATION]
+Who Gets The Kids? (Reverse Duel)
+
+Take Leo Akaba (Professor)'s side in the alternate version of this story duel. The same conflict now turns Henrietta Akaba's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Leo Akaba (Professor) vs. Henrietta Akaba
+[IDS_SOLO.CHAPTER11050102_EXPLANATION]
+Riley Vs Ray (Reverse Duel)
+
+Take Riley's side in the alternate version of this story duel. The same conflict now turns Ray Akaba's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+Riley vs. Ray Akaba
+[IDS_SOLO.CHAPTER11060100_EXPLANATION]
+Final Battle (Reverse Duel)
+
+Take The Vagrant's side in the alternate version of this story duel. The same conflict now turns Tour Guide's plan into the obstacle, letting the other duelist drive the pace and prove their point from across the field.
+
+The Vagrant vs. Tour Guide
