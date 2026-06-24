@@ -372,3 +372,15 @@ MigrationBackup/
 
 # VS Code
 .vscode
+
+# Local installed YgoMaster runtime
+/Data/
+/mono/
+/MonoRun.exe
+/YgoMaster.exe
+/YgoMaster.exe.bak-*
+/YgoMasterClient.exe
+/YgoMasterLoader.dll
+/YgoMasterLaunch.sh.bak-*
+/mono_log*.txt
+/backup-*/
