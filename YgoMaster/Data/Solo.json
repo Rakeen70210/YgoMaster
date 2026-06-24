@@ -678,7 +678,7 @@
                 "parent_gate": 0,
                 "unlock_id": 0,
                 "view_gate": 0,
-                "clear_chapter": 11010063,
+                "clear_chapter": 11010080,
                 "category": 2
               },
               "1002": {
@@ -734,7 +734,7 @@
                 "parent_gate": 1001,
                 "unlock_id": 0,
                 "view_gate": 0,
-                "clear_chapter": 11010063,
+                "clear_chapter": 11010080,
                 "category": 2
               },
               "1102": {
@@ -6686,8 +6686,28 @@
                   "p1_img": "weevilunderwood",
                   "p2_img": "yamiyugi"
                 },
-                "11010007": {
+                "11010065": {
                   "parent_chapter": 11010005,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "mokubakaiba"
+                },
+                "11010100": {
+                  "parent_chapter": 11010065,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "mokubakaiba",
+                  "p2_img": "yamiyugi"
+                },
+                "11010007": {
+                  "parent_chapter": 11010065,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -6812,8 +6832,28 @@
                   "p1_img": "bonz",
                   "p2_img": "joeywheeler"
                 },
-                "11010019": {
+                "11010066": {
                   "parent_chapter": 11010017,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "paradoxbrothers"
+                },
+                "11010101": {
+                  "parent_chapter": 11010066,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "paradoxbrothers",
+                  "p2_img": "yamiyugi"
+                },
+                "11010019": {
+                  "parent_chapter": 11010066,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -6978,8 +7018,28 @@
                   "p1_img": "banditkeith",
                   "p2_img": "yugimuto"
                 },
-                "11010035": {
+                "11010067": {
                   "parent_chapter": 11010033,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "dukedevlin",
+                  "p2_img": "joeywheeler"
+                },
+                "11010102": {
+                  "parent_chapter": 11010067,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "joeywheeler",
+                  "p2_img": "dukedevlin"
+                },
+                "11010035": {
+                  "parent_chapter": 11010067,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -6998,8 +7058,28 @@
                   "p1_img": "seeker",
                   "p2_img": "yamiyugi"
                 },
-                "11010037": {
+                "11010068": {
                   "parent_chapter": 11010035,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "joeywheeler",
+                  "p2_img": "esparoba"
+                },
+                "11010103": {
+                  "parent_chapter": 11010068,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "esparoba",
+                  "p2_img": "joeywheeler"
+                },
+                "11010037": {
+                  "parent_chapter": 11010068,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7058,8 +7138,48 @@
                   "p1_img": "strings",
                   "p2_img": "yamiyugi"
                 },
-                "11010043": {
+                "11010069": {
                   "parent_chapter": 11010041,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "lumisumbra"
+                },
+                "11010104": {
+                  "parent_chapter": 11010069,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "lumisumbra",
+                  "p2_img": "yamiyugi"
+                },
+                "11010070": {
+                  "parent_chapter": 11010069,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yugimuto",
+                  "p2_img": "joeymindcontrolled"
+                },
+                "11010105": {
+                  "parent_chapter": 11010070,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "joeymindcontrolled",
+                  "p2_img": "yugimuto"
+                },
+                "11010043": {
+                  "parent_chapter": 11010070,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7098,8 +7218,28 @@
                   "p1_img": "odion",
                   "p2_img": "joeywheeler"
                 },
-                "11010047": {
+                "11010071": {
                   "parent_chapter": 11010045,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamimarik",
+                  "p2_img": "maivalentine"
+                },
+                "11010106": {
+                  "parent_chapter": 11010071,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "maivalentine",
+                  "p2_img": "yamimarik"
+                },
+                "11010047": {
+                  "parent_chapter": 11010071,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7118,8 +7258,68 @@
                   "p1_img": "ishizuishtar",
                   "p2_img": "setokaiba"
                 },
-                "11010049": {
+                "11010072": {
                   "parent_chapter": 11010047,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamimarik",
+                  "p2_img": "yamibakura"
+                },
+                "11010107": {
+                  "parent_chapter": 11010072,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamibakura",
+                  "p2_img": "yamimarik"
+                },
+                "11010073": {
+                  "parent_chapter": 11010072,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "noahkaiba"
+                },
+                "11010108": {
+                  "parent_chapter": 11010073,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "noahkaiba",
+                  "p2_img": "yamiyugi"
+                },
+                "11010074": {
+                  "parent_chapter": 11010073,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamimarik",
+                  "p2_img": "joeywheeler"
+                },
+                "11010109": {
+                  "parent_chapter": 11010074,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "joeywheeler",
+                  "p2_img": "yamimarik"
+                },
+                "11010049": {
+                  "parent_chapter": 11010074,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7258,8 +7458,48 @@
                   "p1_img": "dartz",
                   "p2_img": "yamiyugi"
                 },
-                "11010063": {
+                "11010075": {
                   "parent_chapter": 11010061,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "setokaiba",
+                  "p2_img": "zigfried"
+                },
+                "11010110": {
+                  "parent_chapter": 11010075,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "zigfried",
+                  "p2_img": "setokaiba"
+                },
+                "11010076": {
+                  "parent_chapter": 11010075,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "leon"
+                },
+                "11010111": {
+                  "parent_chapter": 11010076,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "leon",
+                  "p2_img": "yamiyugi"
+                },
+                "11010063": {
+                  "parent_chapter": 11010076,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7280,6 +7520,106 @@
                   "mydeck_set_id": 1,
                   "p1_img": "yamiyugi",
                   "p2_img": "yugimuto"
+                },
+                "11010081": {
+                  "parent_chapter": 11010063,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "sera",
+                  "p2_img": "anubis"
+                },
+                "11010112": {
+                  "parent_chapter": 11010081,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "anubis",
+                  "p2_img": "sera"
+                },
+                "11010077": {
+                  "parent_chapter": 11010081,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "aigami"
+                },
+                "11010113": {
+                  "parent_chapter": 11010077,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "aigami",
+                  "p2_img": "yamiyugi"
+                },
+                "11010078": {
+                  "parent_chapter": 11010077,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yamiyugi",
+                  "p2_img": "kaibadsod"
+                },
+                "11010114": {
+                  "parent_chapter": 11010078,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "kaibadsod",
+                  "p2_img": "yamiyugi"
+                },
+                "11010079": {
+                  "parent_chapter": 11010078,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "shadi",
+                  "p2_img": "solomonmuto"
+                },
+                "11010115": {
+                  "parent_chapter": 11010079,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "solomonmuto",
+                  "p2_img": "shadi"
+                },
+                "11010080": {
+                  "parent_chapter": 11010079,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "rebecca",
+                  "p2_img": "tristantaylor"
+                },
+                "11010116": {
+                  "parent_chapter": 11010080,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "tristantaylor",
+                  "p2_img": "rebecca"
                 }
               },
               "1102": {
@@ -7601,8 +7941,48 @@
                   "p1_img": "sheppard",
                   "p2_img": "zanetruesdale"
                 },
-                "11020031": {
+                "11020065": {
                   "parent_chapter": 11020029,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "velliancrowler",
+                  "p2_img": "bonaparte"
+                },
+                "11020100": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020065,
+                  "p1_img": "bonaparte",
+                  "p2_img": "velliancrowler"
+                },
+                "11020068": {
+                  "parent_chapter": 11020065,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "fonda",
+                  "p2_img": "sarina"
+                },
+                "11020101": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020068,
+                  "p1_img": "sarina",
+                  "p2_img": "fonda"
+                },
+                "11020031": {
+                  "parent_chapter": 11020068,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7681,8 +8061,28 @@
                   "p1_img": "syrustruesdale",
                   "p2_img": "zanetruesdale"
                 },
-                "11020039": {
+                "11020070": {
                   "parent_chapter": 11020037,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "jasmine",
+                  "p2_img": "mindy"
+                },
+                "11020102": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020070,
+                  "p1_img": "mindy",
+                  "p2_img": "jasmine"
+                },
+                "11020039": {
+                  "parent_chapter": 11020070,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7821,8 +8221,28 @@
                   "p1_img": "theloniousviper",
                   "p2_img": "jadenyuki"
                 },
-                "11020053": {
+                "11020066": {
                   "parent_chapter": 11020051,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "supremeking",
+                  "p2_img": "axelbrodie"
+                },
+                "11020103": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020066,
+                  "p1_img": "axelbrodie",
+                  "p2_img": "supremeking"
+                },
+                "11020053": {
+                  "parent_chapter": 11020066,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -7901,8 +8321,68 @@
                   "p1_img": "yubel",
                   "p2_img": "jadenyuki"
                 },
-                "11020061": {
+                "11020069": {
                   "parent_chapter": 11020059,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "wingedkuriboh",
+                  "p2_img": "professorbanner"
+                },
+                "11020104": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020069,
+                  "p1_img": "professorbanner",
+                  "p2_img": "wingedkuriboh"
+                },
+                "11020067": {
+                  "parent_chapter": 11020069,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "yusuke",
+                  "p2_img": "atticusrhodesunmasked"
+                },
+                "11020105": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020067,
+                  "p1_img": "atticusrhodesunmasked",
+                  "p2_img": "yusuke"
+                },
+                "11020071": {
+                  "parent_chapter": 11020067,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "donzaloog",
+                  "p2_img": "shadowrider"
+                },
+                "11020106": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11020071,
+                  "p1_img": "shadowrider",
+                  "p2_img": "donzaloog"
+                },
+                "11020061": {
+                  "parent_chapter": 11020071,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8075,8 +8555,28 @@
                   "p1_img": "leoasluna",
                   "p2_img": "greiger"
                 },
-                "11030013": {
+                "11030065": {
                   "parent_chapter": 11030011,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "carlycarmine_glasses",
+                  "p2_img": "tetsutrudge"
+                },
+                "11030100": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030065,
+                  "p1_img": "tetsutrudge",
+                  "p2_img": "carlycarmine_glasses"
+                },
+                "11030013": {
+                  "parent_chapter": 11030065,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8095,8 +8595,28 @@
                   "p1_img": "hunterpace",
                   "p2_img": "yuseifudo"
                 },
-                "11030015": {
+                "11030066": {
                   "parent_chapter": 11030013,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "crowhogan",
+                  "p2_img": "lazar"
+                },
+                "11030101": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030066,
+                  "p1_img": "lazar",
+                  "p2_img": "crowhogan"
+                },
+                "11030015": {
+                  "parent_chapter": 11030066,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8201,8 +8721,28 @@
                   "p1_img": "carlycarmine",
                   "p2_img": "sayer"
                 },
-                "11030025": {
+                "11030067": {
                   "parent_chapter": 11030023,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "lester",
+                  "p2_img": "luna"
+                },
+                "11030102": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030067,
+                  "p1_img": "luna",
+                  "p2_img": "lester"
+                },
+                "11030025": {
+                  "parent_chapter": 11030067,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8344,8 +8884,48 @@
                   "p1_img": "rexgoodwin",
                   "p2_img": "yuseifudo"
                 },
-                "11030039": {
+                "11030069": {
                   "parent_chapter": 11030037,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "minasimington",
+                  "p2_img": "blister"
+                },
+                "11030103": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030069,
+                  "p1_img": "blister",
+                  "p2_img": "minasimington"
+                },
+                "11030070": {
+                  "parent_chapter": 11030069,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "rallydawson",
+                  "p2_img": "tenzenyanagi"
+                },
+                "11030104": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030070,
+                  "p1_img": "tenzenyanagi",
+                  "p2_img": "rallydawson"
+                },
+                "11030039": {
+                  "parent_chapter": 11030070,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8364,8 +8944,68 @@
                   "p1_img": "sherryleblanc",
                   "p2_img": "yuseifudo"
                 },
-                "11030041": {
+                "11030071": {
                   "parent_chapter": 11030039,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "in4m8",
+                  "p2_img": "paradox"
+                },
+                "11030105": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030071,
+                  "p1_img": "paradox",
+                  "p2_img": "in4m8"
+                },
+                "11030072": {
+                  "parent_chapter": 11030071,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "mistyver2",
+                  "p2_img": "carlyver2"
+                },
+                "11030106": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030072,
+                  "p1_img": "carlyver2",
+                  "p2_img": "mistyver2"
+                },
+                "11030073": {
+                  "parent_chapter": 11030072,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "darksignermistyver2",
+                  "p2_img": "darksignercarlyver2"
+                },
+                "11030107": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030073,
+                  "p1_img": "darksignercarlyver2",
+                  "p2_img": "darksignermistyver2"
+                },
+                "11030041": {
+                  "parent_chapter": 11030073,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8484,8 +9124,28 @@
                   "p1_img": "halldor",
                   "p2_img": "yuseifudo"
                 },
-                "11030053": {
+                "11030068": {
                   "parent_chapter": 11030051,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "jakob",
+                  "p2_img": "crowhogan"
+                },
+                "11030108": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11030068,
+                  "p1_img": "crowhogan",
+                  "p2_img": "jakob"
+                },
+                "11030053": {
+                  "parent_chapter": 11030068,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -8901,8 +9561,48 @@
                   "p1_img": "drfaker",
                   "p2_img": "yumatsukumo"
                 },
-                "11040029": {
+                "11040053": {
                   "parent_chapter": 11040027,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "rio",
+                  "p2_img": "lotus"
+                },
+                "11040100": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11040053,
+                  "p1_img": "lotus",
+                  "p2_img": "rio"
+                },
+                "11040054": {
+                  "parent_chapter": 11040053,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "rio",
+                  "p2_img": "torimeadows"
+                },
+                "11040101": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11040054,
+                  "p1_img": "torimeadows",
+                  "p2_img": "rio"
+                },
+                "11040029": {
+                  "parent_chapter": 11040054,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -9044,8 +9744,28 @@
                   "p1_img": "rio",
                   "p2_img": "reginaldkastle"
                 },
-                "11040043": {
+                "11040055": {
                   "parent_chapter": 11040041,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "marin",
+                  "p2_img": "bronkstone"
+                },
+                "11040102": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11040055,
+                  "p1_img": "bronkstone",
+                  "p2_img": "marin"
+                },
+                "11040043": {
+                  "parent_chapter": 11040055,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -9644,8 +10364,28 @@
                   "p1_img": "obeliskforce",
                   "p2_img": "alexisrhodes"
                 },
-                "11050049": {
+                "11050069": {
                   "parent_chapter": 11050047,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "gracetyler",
+                  "p2_img": "gloriatyler"
+                },
+                "11050100": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11050069,
+                  "p1_img": "gloriatyler",
+                  "p2_img": "gracetyler"
+                },
+                "11050049": {
+                  "parent_chapter": 11050069,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -9784,8 +10524,48 @@
                   "p1_img": "zarc",
                   "p2_img": "declanakaba"
                 },
-                "11050063": {
+                "11050067": {
                   "parent_chapter": 11050061,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "henriettaakaba",
+                  "p2_img": "leoakaba"
+                },
+                "11050101": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11050067,
+                  "p1_img": "leoakaba",
+                  "p2_img": "henriettaakaba"
+                },
+                "11050068": {
+                  "parent_chapter": 11050067,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "rayakaba",
+                  "p2_img": "rileyakaba"
+                },
+                "11050102": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11050068,
+                  "p1_img": "rileyakaba",
+                  "p2_img": "rayakaba"
+                },
+                "11050063": {
+                  "parent_chapter": 11050068,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
@@ -10158,8 +10938,28 @@
                   "p1_img": "bloodshepherd",
                   "p2_img": "varisver2"
                 },
-                "11060033": {
+                "11060057": {
                   "parent_chapter": 11060031,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "p1_img": "infn8",
+                  "p2_img": "vagrant"
+                },
+                "11060100": {
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 1,
+                  "mydeck_set_id": 1,
+                  "parent_chapter": 11060057,
+                  "p1_img": "vagrant",
+                  "p2_img": "infn8"
+                },
+                "11060033": {
+                  "parent_chapter": 11060057,
                   "unlock_id": 0,
                   "npc_id": 1,
                   "begin_sn": "",
