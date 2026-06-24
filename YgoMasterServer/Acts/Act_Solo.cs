@@ -17,6 +17,33 @@ namespace YgoMaster
 {
     partial class GameServer
     {
+        bool IsLeChapter(int chapterId)
+        {
+            return IsLeCampaignChapter(chapterId) || IsLeDuelistChallengeChapter(chapterId);
+        }
+
+        bool IsLeCampaignChapter(int chapterId)
+        {
+            return 11010000 <= chapterId && chapterId <= 11069999;
+        }
+
+        bool IsLeDuelistChallengeChapter(int chapterId)
+        {
+            return 11110000 <= chapterId && chapterId <= 11169999;
+        }
+
+        bool IsMysteryDuelChapter(int chapterId)
+        {
+            return IsMysteryCampaignChapter(chapterId) || IsMysteryChallengeChapter(chapterId);
+        }
+        bool IsMysteryCampaignChapter(int chapterId)
+        {
+            return chapterId == 11210001;
+        }
+        bool IsMysteryChallengeChapter(int chapterId)
+        {
+            return chapterId == 11210002;
+        }
         internal static int GetChapterGateId(int chapterId)
         {
             return chapterId / 10000;
@@ -686,12 +713,16 @@ namespace YgoMaster
                                 }
                                 break;
                             case ItemID.Category.PROFILE_TAG:
-                                // Ignore (currently all tags are auto added)
-                                valid = false;
+                                if (!SoloRewardsInDuelResult)
+                                {
+                                    request.Player.AddItem(itemId, 1);
+                                }
                                 break;
                             case ItemID.Category.PACK_TICKET:
-                                // Ignore (currently don't handle pack tickets)
-                                valid = false;
+                                if (!SoloRewardsInDuelResult)
+                                {
+                                    request.Player.AddItem((int)ItemID.Value.Gem, count * 10);
+                                }
                                 break;
                             default:
                                 Utils.LogWarning("Unhandled reward category " + category);
@@ -737,7 +768,7 @@ namespace YgoMaster
                 }
             }
             Dictionary<string, object> unlockedPackData = null;
-            if (newStatus == ChapterStatus.COMPLETE)
+            if (newStatus == ChapterStatus.RENTAL_CLEAR || newStatus == ChapterStatus.MYDECK_CLEAR || newStatus == ChapterStatus.COMPLETE)
             {
                 object unlockSecretObj;
                 if (chapterData.TryGetValue("unlock_secret", out unlockSecretObj))// custom
@@ -783,6 +814,23 @@ namespace YgoMaster
                                     break;
                             }
                         }
+                        ShopItemInfo secretDeck;
+                        if (unlockSecretId > 0 && IsMasterPackUnlocked(request.Player.ShopState) && Shop.DecksByShopItemId.TryGetValue(unlockSecretId, out secretDeck))
+                        {
+                            switch (secretDeck.SecretType)
+                            {
+                                case ShopItemSecretType.Find:
+                                case ShopItemSecretType.FindOrCraft:
+                                case ShopItemSecretType.Other:
+                                    bool isHidden = request.Player.ShopState.GetAvailability(Shop, secretDeck) == PlayerShopItemAvailability.Hidden;
+                                    if (isHidden)
+                                    {
+                                        request.Player.ShopState.New(secretDeck);
+                                    }
+                                    request.Player.ShopState.Unlock(secretDeck);
+                                    break;
+                            }
+                        }
                     }
                 }
             }
@@ -817,7 +865,7 @@ namespace YgoMaster
                 if (isChapterGoal)
                 {
                     gateClear["gate"] = gateId;
-                };
+                }
                 if (unlockedPackData != null)
                 {
                     gateClear["pack"] = unlockedPackData;
@@ -1198,6 +1246,7 @@ namespace YgoMaster
                 {
                     if (duel.Deck[DuelSettings.PlayerIndex].MainDeckCards.Count > 0)
                     {
+                        UpgradeLoanerDeckFinish(duel, request.Player);
                         chapterInfo["story_deck"] = duel.Deck[DuelSettings.PlayerIndex].ToDictionary();
                         chapterInfo["story_deck_id"] = duel.story_deck_id != null && duel.story_deck_id.Length > 0 ? duel.story_deck_id[0] : 0;
                     }

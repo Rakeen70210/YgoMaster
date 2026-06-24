@@ -40,10 +40,6 @@ namespace YgoMaster
             {
                 have[item.ToString()] = 1;
             }
-            foreach (int value in ItemID.Values[ItemID.Category.PROFILE_TAG])
-            {
-                have[value.ToString()] = 1;
-            }
             foreach (int item in player.CardFiles.Files.Keys)
             {
                 have[item.ToString()] = 1;
