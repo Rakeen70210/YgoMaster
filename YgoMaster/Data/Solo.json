@@ -11403,6 +11403,150 @@
                   "unlock_secret": [
                     112
                   ]
+                },
+                "11110025": {
+                  "parent_chapter": 11110024,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110026": {
+                  "parent_chapter": 11110025,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110027": {
+                  "parent_chapter": 11110026,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110028": {
+                  "parent_chapter": 11110027,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110029": {
+                  "parent_chapter": 11110028,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110030": {
+                  "parent_chapter": 11110029,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110031": {
+                  "parent_chapter": 11110030,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110032": {
+                  "parent_chapter": 11110031,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110033": {
+                  "parent_chapter": 11110032,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110034": {
+                  "parent_chapter": 11110033,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110035": {
+                  "parent_chapter": 11110034,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110036": {
+                  "parent_chapter": 11110035,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110037": {
+                  "parent_chapter": 11110036,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110038": {
+                  "parent_chapter": 11110037,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110039": {
+                  "parent_chapter": 11110038,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110040": {
+                  "parent_chapter": 11110039,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110041": {
+                  "parent_chapter": 11110040,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11110042": {
+                  "parent_chapter": 11110041,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1112": {
@@ -11624,6 +11768,134 @@
                   "unlock_secret": [
                     212
                   ]
+                },
+                "11120028": {
+                  "parent_chapter": 11120027,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120029": {
+                  "parent_chapter": 11120028,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120030": {
+                  "parent_chapter": 11120029,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120031": {
+                  "parent_chapter": 11120030,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120032": {
+                  "parent_chapter": 11120031,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120033": {
+                  "parent_chapter": 11120032,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120034": {
+                  "parent_chapter": 11120033,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120035": {
+                  "parent_chapter": 11120034,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120036": {
+                  "parent_chapter": 11120035,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120037": {
+                  "parent_chapter": 11120036,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120038": {
+                  "parent_chapter": 11120037,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120039": {
+                  "parent_chapter": 11120038,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120040": {
+                  "parent_chapter": 11120039,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120041": {
+                  "parent_chapter": 11120040,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120042": {
+                  "parent_chapter": 11120041,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11120043": {
+                  "parent_chapter": 11120042,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1113": {
@@ -11861,6 +12133,118 @@
                   "unlock_secret": [
                     312
                   ]
+                },
+                "11130030": {
+                  "parent_chapter": 11130029,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130031": {
+                  "parent_chapter": 11130030,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130032": {
+                  "parent_chapter": 11130031,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130033": {
+                  "parent_chapter": 11130032,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130034": {
+                  "parent_chapter": 11130033,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130035": {
+                  "parent_chapter": 11130034,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130036": {
+                  "parent_chapter": 11130035,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130037": {
+                  "parent_chapter": 11130036,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130038": {
+                  "parent_chapter": 11130037,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130039": {
+                  "parent_chapter": 11130038,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130040": {
+                  "parent_chapter": 11130039,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130041": {
+                  "parent_chapter": 11130040,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130042": {
+                  "parent_chapter": 11130041,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11130043": {
+                  "parent_chapter": 11130042,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1114": {
@@ -12090,6 +12474,30 @@
                   "unlock_secret": [
                     412
                   ]
+                },
+                "11140029": {
+                  "parent_chapter": 11140028,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11140030": {
+                  "parent_chapter": 11140029,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11140031": {
+                  "parent_chapter": 11140030,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1115": {
@@ -12343,6 +12751,54 @@
                   "unlock_secret": [
                     512
                   ]
+                },
+                "11150032": {
+                  "parent_chapter": 11150031,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11150033": {
+                  "parent_chapter": 11150032,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11150034": {
+                  "parent_chapter": 11150033,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11150035": {
+                  "parent_chapter": 11150034,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11150036": {
+                  "parent_chapter": 11150035,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11150037": {
+                  "parent_chapter": 11150036,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1116": {
@@ -12500,6 +12956,22 @@
                   "unlock_secret": [
                     612
                   ]
+                },
+                "11160020": {
+                  "parent_chapter": 11160019,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
+                },
+                "11160021": {
+                  "parent_chapter": 11160020,
+                  "unlock_id": 0,
+                  "npc_id": 1,
+                  "begin_sn": "",
+                  "set_id": 0,
+                  "mydeck_set_id": 2
                 }
               },
               "1121": {

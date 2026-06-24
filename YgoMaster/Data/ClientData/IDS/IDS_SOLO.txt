@@ -2687,3 +2687,297 @@ Riley vs. Ray Akaba
 Final Battle (Reverse Duel)
 [IDS_SOLO.CHAPTER11060100_EXPLANATION]
 The Vagrant vs. Tour Guide
+[IDS_SOLO.CHAPTER11110025_EXPLANATION]
+Ancient Spirits
+
+vs. Noah Kaiba
+
+[IDS_SOLO.CHAPTER11110026_EXPLANATION]
+Releasing The Chains
+
+vs. Lumis And Umbra
+
+[IDS_SOLO.CHAPTER11110027_EXPLANATION]
+Graydle Control
+
+vs. Joey
+
+[IDS_SOLO.CHAPTER11110028_EXPLANATION]
+Blue-Eyes Unleashed
+
+vs. Seto Kaiba
+
+[IDS_SOLO.CHAPTER11110029_EXPLANATION]
+Time Thief
+
+vs. Paradox Brothers
+
+[IDS_SOLO.CHAPTER11150032_EXPLANATION]
+Sacred Nephthys
+
+vs. Grace Tyler
+
+[IDS_SOLO.CHAPTER11150033_EXPLANATION]
+Magnet Conductors
+
+vs. Gloria Tyler
+
+[IDS_SOLO.CHAPTER11120028_EXPLANATION]
+Cyber Angel Squad
+
+vs. Alexis Rhodes
+
+[IDS_SOLO.CHAPTER11110030_EXPLANATION]
+Heavy Mech
+
+vs. Duke Devlin
+
+[IDS_SOLO.CHAPTER11110031_EXPLANATION]
+Sweet Symphony
+
+vs. Sera
+
+[IDS_SOLO.CHAPTER11110032_EXPLANATION]
+Magicians
+
+vs. Rebecca Hawkins
+
+[IDS_SOLO.CHAPTER11120029_EXPLANATION]
+Gentle Fragrance
+
+vs. Jasmine
+
+[IDS_SOLO.CHAPTER11120030_EXPLANATION]
+Madolche
+
+vs. Mindy
+
+[IDS_SOLO.CHAPTER11120031_EXPLANATION]
+CyberDarkWave
+
+vs. Zane Truesdale
+
+[IDS_SOLO.CHAPTER11130030_EXPLANATION]
+Oblivion
+
+vs. Mina Simington
+
+[IDS_SOLO.CHAPTER11120032_EXPLANATION]
+Masked Heroes
+
+vs. Jaden Yuki
+
+[IDS_SOLO.CHAPTER11130031_EXPLANATION]
+Powered Up Machina
+
+vs. Blister
+
+[IDS_SOLO.CHAPTER11120033_EXPLANATION]
+World Chalice
+
+vs. Sarina
+
+[IDS_SOLO.CHAPTER11120034_EXPLANATION]
+Evil Heroes Return
+
+vs. Supreme King
+
+[IDS_SOLO.CHAPTER11120035_EXPLANATION]
+Regal Birds
+
+vs. Fonda Fontaine
+
+[IDS_SOLO.CHAPTER11130032_EXPLANATION]
+Ways Of The Shiranui
+
+vs. Paradox
+
+[IDS_SOLO.CHAPTER11110033_EXPLANATION]
+Mecha Beasts
+
+vs. Anubis
+
+[IDS_SOLO.CHAPTER11130033_EXPLANATION]
+Reptilianne Swarm
+
+vs. Misty Tredwell
+
+[IDS_SOLO.CHAPTER11130034_EXPLANATION]
+Whispers Of Death
+
+vs. Dark Signer Misty
+
+[IDS_SOLO.CHAPTER11130035_EXPLANATION]
+Daily Horoscope
+
+vs. Carly Carmine
+
+[IDS_SOLO.CHAPTER11130036_EXPLANATION]
+Witchcraft
+
+vs. Dark Signer Carly
+
+[IDS_SOLO.CHAPTER11110034_EXPLANATION]
+Folly Of Youth
+
+vs. Espa Roba
+
+[IDS_SOLO.CHAPTER11110035_EXPLANATION]
+World Legacy
+
+vs. Zigfried von Schroeder
+
+[IDS_SOLO.CHAPTER11110036_EXPLANATION]
+Quantum Affinity
+
+vs. Leon von Schroeder
+
+[IDS_SOLO.CHAPTER11120036_EXPLANATION]
+Malice Of The Evilswarm
+
+vs. Yusuke
+
+[IDS_SOLO.CHAPTER11140029_EXPLANATION]
+Friggin' Bees!
+
+vs. Lotus
+
+[IDS_SOLO.CHAPTER11110037_EXPLANATION]
+Fly My Pretties
+
+vs. Mai Valentine
+
+[IDS_SOLO.CHAPTER11130037_EXPLANATION]
+Ghosttrick
+
+vs. Carly Carmine
+
+[IDS_SOLO.CHAPTER11160020_EXPLANATION]
+The Summoned Skull
+
+vs. The Vagrant
+
+[IDS_SOLO.CHAPTER11110038_EXPLANATION]
+Spell It Out
+
+vs. Aigami
+
+[IDS_SOLO.CHAPTER11130038_EXPLANATION]
+The Darklords
+
+vs. Jakob
+
+[IDS_SOLO.CHAPTER11130039_EXPLANATION]
+Comic Book
+
+vs. Lazar
+
+[IDS_SOLO.CHAPTER11130040_EXPLANATION]
+Household Chores
+
+vs. Luna
+
+[IDS_SOLO.CHAPTER11130041_EXPLANATION]
+Genex
+
+vs. Rally Dawson
+
+[IDS_SOLO.CHAPTER11130042_EXPLANATION]
+Master Of The Tenyi
+
+vs. Tenzen Yanagi
+
+[IDS_SOLO.CHAPTER11150034_EXPLANATION]
+Hazy Flame
+
+vs. Leo Akaba (Professor)
+
+[IDS_SOLO.CHAPTER11150035_EXPLANATION]
+Generaider
+
+vs. Henrietta Akaba
+
+[IDS_SOLO.CHAPTER11150036_EXPLANATION]
+Endymion's Lessons
+
+vs. Ray Akaba
+
+[IDS_SOLO.CHAPTER11150037_EXPLANATION]
+Ancient Kings
+
+vs. Riley
+
+[IDS_SOLO.CHAPTER11110039_EXPLANATION]
+Stepping Out Of His Shadow
+
+vs. Mokuba Kaiba
+
+[IDS_SOLO.CHAPTER11110040_EXPLANATION]
+Secrets Of The Mayakashi
+
+vs. Shadi
+
+[IDS_SOLO.CHAPTER11110041_EXPLANATION]
+Danger Nearby
+
+vs. Solomon Muto
+
+[IDS_SOLO.CHAPTER11110042_EXPLANATION]
+Dinowrestling
+
+vs. Tristan Taylor
+
+[IDS_SOLO.CHAPTER11120037_EXPLANATION]
+Power Of The Red-Eyes
+
+vs. Atticus Rhodes
+
+[IDS_SOLO.CHAPTER11120038_EXPLANATION]
+Magical Musketeers
+
+vs. Vice Chancellor Bonaparte
+
+[IDS_SOLO.CHAPTER11120039_EXPLANATION]
+Today's Math Lesson
+
+vs. Prof. Lyman Banner
+
+[IDS_SOLO.CHAPTER11120040_EXPLANATION]
+Kuriboh Chaos
+
+vs. Winged Kuriboh
+
+[IDS_SOLO.CHAPTER11130043_EXPLANATION]
+Monarchs
+
+vs. The Vagabond
+
+[IDS_SOLO.CHAPTER11160021_EXPLANATION]
+Evil Eyes
+
+vs. Tour Guide
+
+[IDS_SOLO.CHAPTER11140030_EXPLANATION]
+Aquaactresses
+
+vs. Marin
+
+[IDS_SOLO.CHAPTER11140031_EXPLANATION]
+Naturia's Blessings
+
+vs. Tori Meadows
+
+[IDS_SOLO.CHAPTER11120041_EXPLANATION]
+Chazz It Up!
+
+vs. Chazz
+
+[IDS_SOLO.CHAPTER11120042_EXPLANATION]
+Megaliths
+
+vs. Abidos the Third
+
+[IDS_SOLO.CHAPTER11120043_EXPLANATION]
+The Don
+
+vs. Don Zaloog
