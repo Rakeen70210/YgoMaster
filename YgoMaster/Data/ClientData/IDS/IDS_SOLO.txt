@@ -1,0 +1,2290 @@
+[IDS_SOLO.GATE1001]
+Yu-Gi-Oh!
+[IDS_SOLO.GATE1001_EXPLANATION]
+Join high school freshman Yugi Muto and experience his various battles.
+[IDS_SOLO.GATE1002]
+Yu-Gi-Oh! GX
+[IDS_SOLO.GATE1002_EXPLANATION]
+Follow the exploits of Jaden Yuki and his companions as he attends Duel Academy.
+[IDS_SOLO.GATE1003]
+Yu-Gi-Oh! 5D's
+[IDS_SOLO.GATE1003_EXPLANATION]
+Follow Yusei Fudo and the story of the five Signer Dragons that when brought together will revive the Crimson Dragon.
+[IDS_SOLO.GATE1004]
+Yu-Gi-Oh! ZEXAL
+[IDS_SOLO.GATE1004_EXPLANATION]
+Follow Yuma Tsukumo as he works with the spirit Astral to gather the scattered and dangerous "Number" cards, which are the missing pieces of Astral's memory.
+[IDS_SOLO.GATE1005]
+Yu-Gi-Oh! ARC-V
+[IDS_SOLO.GATE1005_EXPLANATION]
+Follow Yuya Sakaki as he tries to escape from harsh reality by smiling.
+[IDS_SOLO.GATE1006]
+Yu-Gi-Oh! VRAINS
+[IDS_SOLO.GATE1006_EXPLANATION]
+Follow Yusaku Fujiki as he duels in order to learn the truth of the events surrounding his past.
+[IDS_SOLO.GATE1100]
+A New Beginning
+[IDS_SOLO.GATE1100_EXPLANATION]
+Welcome to Yu-Gi-Oh! MASTER DUEL! Practice dueling using various starter decks and learn the different summoning mechanics.
+[IDS_SOLO.GATE1101]
+Campaign
+[IDS_SOLO.GATE1101_EXPLANATION]
+Play through prominent duels featuring the original Duel Monsters.
+[IDS_SOLO.GATE1102]
+Campaign: GX
+[IDS_SOLO.GATE1102_EXPLANATION]
+Play through prominent duels featuring Fusion Monsters.
+[IDS_SOLO.GATE1103]
+Campaign: 5D's
+[IDS_SOLO.GATE1103_EXPLANATION]
+Play through prominent duels featuring Synchro Monsters.
+[IDS_SOLO.GATE1104]
+Campaign: ZEXAL
+[IDS_SOLO.GATE1104_EXPLANATION]
+Play through prominent duels featuring Xyz Monsters.
+[IDS_SOLO.GATE1105]
+Campaign: ARC-V
+[IDS_SOLO.GATE1105_EXPLANATION]
+Play through prominent duels featuring Pendulum Monsters.
+[IDS_SOLO.GATE1106]
+Campaign: VRAINS
+[IDS_SOLO.GATE1106_EXPLANATION]
+Play through prominent duels featuring Link Monsters.
+[IDS_SOLO.GATE1111]
+Duelist Challenges
+[IDS_SOLO.GATE1111_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1112]
+Duelist Challenges: GX
+[IDS_SOLO.GATE1112_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1113]
+Duelist Challenges: 5D's
+[IDS_SOLO.GATE1113_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1114]
+Duelist Challenges: ZEXAL
+[IDS_SOLO.GATE1114_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1115]
+Duelist Challenges: ARC-V
+[IDS_SOLO.GATE1115_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1116]
+Duelist Challenges: VRAINS
+[IDS_SOLO.GATE1116_EXPLANATION]
+Take on a series of challenges from elite duelists and their advanced decks.
+[IDS_SOLO.GATE1121]
+A Curious Encounter
+[IDS_SOLO.GATE1121_EXPLANATION]
+Someone awaits you beyond these gates...
+[IDS_SOLO.CHAPTER11000001_EXPLANATION]
+Summon low level monsters to the field, then use them to Tribute Summon stronger ones from your hand.
+[IDS_SOLO.CHAPTER11000002_EXPLANATION]
+Activate "Polymerization" and combine the correct monsters to Fusion Summon a monster directly from your Extra Deck.
+[IDS_SOLO.CHAPTER11000003_EXPLANATION]
+Use Tuner and Non-tuner monsters to Synchro Summon a monster whose level equals their sum, directly from your Extra Deck.
+[IDS_SOLO.CHAPTER11000004_EXPLANATION]
+Use monsters of the same level to Xyz Summon a monster of that rank, directly from your Extra Deck. The Xyz Monster can detach Xyz Material used in its summoning to activate its effects.
+[IDS_SOLO.CHAPTER11000005_EXPLANATION]
+Play Pendulum Monsters into the Pendulum Zone, then Pendulum Summon many more monsters at once from your hand or Extra Deck to overwhelm your opponent!
+[IDS_SOLO.CHAPTER11010001_EXPLANATION]
+The Duelist Kingdom
+
+Yugi Muto vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010002_EXPLANATION]
+The Duelist Kingdom (Reverse Duel)
+
+Joey Wheeler vs. Yugi Muto
+[IDS_SOLO.CHAPTER11010003_EXPLANATION]
+The Heart of the Cards
+
+Yami Yugi vs. Seto Kaiba
+
+Unlocks the Grandpa Muto pack in the shop.
+[IDS_SOLO.CHAPTER11010004_EXPLANATION]
+The Heart of the Cards (Reverse Duel)
+
+Seto Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010005_EXPLANATION]
+The Ultimate Great Moth
+
+Yami Yugi vs. Weevil Underwood
+
+Unlocks the Mai Valentine pack in the shop.
+[IDS_SOLO.CHAPTER11010006_EXPLANATION]
+The Ultimate Great Moth (Reverse Duel)
+
+Weevil Underwood vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010007_EXPLANATION]
+The Harpie Lady
+
+Joey Wheeler vs. Mai Valentine
+[IDS_SOLO.CHAPTER11010008_EXPLANATION]
+The Harpie Lady (Reverse Duel)
+
+Mai Valentine vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010009_EXPLANATION]
+Attack from the Deep
+
+Yami Yugi vs. Mako Tsunami
+
+Unlocks the Bakura pack in the shop.
+[IDS_SOLO.CHAPTER11010010_EXPLANATION]
+Attack from the Deep (Reverse Duel)
+
+Mako Tsunami vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010011_EXPLANATION]
+The Dinosaur Duelist
+
+Joey Wheeler vs. Rex Raptor
+[IDS_SOLO.CHAPTER11010012_EXPLANATION]
+The Dinosaur Duelist (Reverse Duel)
+
+Rex Raptor vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010013_EXPLANATION]
+Evil Spirit of the Ring
+
+Yami Yugi vs. Yami Bakura
+[IDS_SOLO.CHAPTER11010014_EXPLANATION]
+Evil Spirit of the Ring (Reverse Duel)
+
+Yami Bakura vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010015_EXPLANATION]
+PaniK Attack
+
+Yami Yugi vs. PaniK
+
+Unlocks the Joey Wheeler pack in the shop.
+[IDS_SOLO.CHAPTER11010016_EXPLANATION]
+PaniK Attack (Reverse Duel)
+
+PaniK vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010017_EXPLANATION]
+Arena of Lost Souls
+
+Joey Wheeler vs. Bonz
+[IDS_SOLO.CHAPTER11010018_EXPLANATION]
+Arena of Lost Souls (Reverse Duel)
+
+Bonz vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010019_EXPLANATION]
+The Face Off
+
+Seto Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010020_EXPLANATION]
+The Face Off (Reverse Duel)
+
+Yami Yugi vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010021_EXPLANATION]
+A Duel of Tears
+
+Téa Gardner vs. Mai Valentine
+
+Unlocks the Seto Kaiba booster pack in the shop.
+[IDS_SOLO.CHAPTER11010022_EXPLANATION]
+A Duel of Tears (Reverse Duel)
+
+Mai Valentine vs. Téa Gardner
+[IDS_SOLO.CHAPTER11010023_EXPLANATION]
+Champion vs. Creator
+
+Maximillion Pegasus vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010024_EXPLANATION]
+Creator (Reverse Duel) vs. Champion
+
+Maximillion Pegasus vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010025_EXPLANATION]
+Duel Identity
+
+Yami Yugi vs. Mai Valentine
+
+Unlocks the Yugi booster pack in the shop.
+[IDS_SOLO.CHAPTER11010026_EXPLANATION]
+Duel Identity (Reverse Duel)
+
+Mai Valentine vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010027_EXPLANATION]
+Keith's Machinations
+
+Joey Wheeler vs. Bandit Keith
+[IDS_SOLO.CHAPTER11010028_EXPLANATION]
+Keith's Machinations (Reverse Duel)
+
+Bandit Keith vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010029_EXPLANATION]
+Best Friends, Best Duelists
+
+Yami Yugi vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010030_EXPLANATION]
+Best Friends, Best Duelists (Reverse Duel)
+
+Joey Wheeler vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010031_EXPLANATION]
+The Match of the Millennium
+
+Yami Yugi vs. Maximillion Pegasus
+[IDS_SOLO.CHAPTER11010032_EXPLANATION]
+The Match of the Millennium (Reverse Duel)
+
+Maximillion Pegasus vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010033_EXPLANATION]
+The Mystery Duelist
+
+Yugi Muto vs. Bandit Keith
+[IDS_SOLO.CHAPTER11010034_EXPLANATION]
+The Mystery Duelist (Reverse Duel)
+
+Bandit Keith vs. Yugi Muto
+[IDS_SOLO.CHAPTER11010035_EXPLANATION]
+Battle City Begins
+
+Yami Yugi vs. Seeker
+[IDS_SOLO.CHAPTER11010036_EXPLANATION]
+Battle City Begins (Reverse Duel)
+
+Seeker vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010037_EXPLANATION]
+The Master of Magicians
+
+Yami Yugi vs. Arkana
+[IDS_SOLO.CHAPTER11010038_EXPLANATION]
+The Master of Magicians (Reverse Duel)
+
+Arkana vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010039_EXPLANATION]
+Playing with a Parasite
+
+Joey Wheeler vs. Weevil Underwood
+[IDS_SOLO.CHAPTER11010040_EXPLANATION]
+Playing with a Parasite (Reverse Duel)
+
+Weevil Underwood vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010041_EXPLANATION]
+Mime Control
+
+Yami Yugi vs. Strings
+[IDS_SOLO.CHAPTER11010042_EXPLANATION]
+Mime Control (Reverse Duel)
+
+Strings vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010043_EXPLANATION]
+The Dark Spirit Revealed
+
+Yami Yugi vs. Yami Bakura
+[IDS_SOLO.CHAPTER11010044_EXPLANATION]
+The Dark Spirit Revealed (Reverse Duel)
+
+Yami Bakura vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010045_EXPLANATION]
+The Awakening of Evil
+
+Joey Wheeler vs. Odion
+[IDS_SOLO.CHAPTER11010046_EXPLANATION]
+The Awakening of Evil (Reverse Duel)
+
+Odion vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010047_EXPLANATION]
+A Duel with Destiny
+
+Seto Kaiba vs. Ishizu Ishtar
+[IDS_SOLO.CHAPTER11010048_EXPLANATION]
+A Duel with Destiny (Reverse Duel)
+
+Ishizu Ishtar vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010049_EXPLANATION]
+Clash in the Colosseum
+
+Yami Yugi vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010050_EXPLANATION]
+Clash in the Colosseum (Reverse Duel)
+
+Seto Kaiba vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010051_EXPLANATION]
+The Final Face Off
+
+Yami Yugi vs. Yami Marik
+[IDS_SOLO.CHAPTER11010052_EXPLANATION]
+The Final Face Off (Reverse Duel)
+
+Yami Marik vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010053_EXPLANATION]
+A New Evil
+
+Joey Wheeler vs. Mai Valentine
+[IDS_SOLO.CHAPTER11010054_EXPLANATION]
+A New Evil (Reverse Duel)
+
+Mai Valentine vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010055_EXPLANATION]
+Deja Duel
+
+Seto Kaiba vs. Alister
+[IDS_SOLO.CHAPTER11010056_EXPLANATION]
+Deja Duel (Reverse Duel)
+
+Alister vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11010057_EXPLANATION]
+Fighting for a Friend
+
+Joey Wheeler vs. Valon
+[IDS_SOLO.CHAPTER11010058_EXPLANATION]
+Fighting for a Friend (Reverse Duel)
+
+Valon vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11010059_EXPLANATION]
+Grappling with a Guardian
+
+Yami Yugi vs. Rafael
+[IDS_SOLO.CHAPTER11010060_EXPLANATION]
+Grappling with a Guardian (Reverse Duel)
+
+Rafael vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010061_EXPLANATION]
+A Duel with Dartz!
+
+Yami Yugi vs. Dartz
+[IDS_SOLO.CHAPTER11010062_EXPLANATION]
+A Duel with Dartz! (Reverse Duel)
+
+Dartz vs. Yami Yugi
+[IDS_SOLO.CHAPTER11010063_EXPLANATION]
+The Final Duel
+
+Yugi Muto vs. Yami Yugi
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11010064_EXPLANATION]
+The Final Duel (Reverse Duel)
+
+Yami Yugi vs. Yugi Muto
+[IDS_SOLO.CHAPTER11020001_EXPLANATION]
+The Next King of Games
+
+Jaden Yuki vs. Dr. Vellian Crowler
+
+Unlocks the Alexis Rhodes pack in the shop.
+[IDS_SOLO.CHAPTER11020002_EXPLANATION]
+The Next King of Games (Reverse Duel)
+
+Dr. Vellian Crowler vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020003_EXPLANATION]
+A Duel in Love
+
+Jaden Yuki vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11020004_EXPLANATION]
+A Duel in Love (Reverse Duel)
+
+Alexis Rhodes vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020005_EXPLANATION]
+The Shadow Duelist
+
+Jaden Yuki vs. Titan
+
+Unlocks the Bastion Misawa pack in the shop.
+[IDS_SOLO.CHAPTER11020006_EXPLANATION]
+The Shadow Duelist (Reverse Duel)
+
+Titan vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020007_EXPLANATION]
+For the Sake of Syrus
+
+Zane Truesdale vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020008_EXPLANATION]
+For the Sake of Syrus (Reverse Duel)
+
+Jaden Yuki vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11020009_EXPLANATION]
+Formula for Success
+
+Bastion Misawa vs. Chazz Princeton
+
+Unlocks the Chazz Princeton pack in the shop.
+[IDS_SOLO.CHAPTER11020010_EXPLANATION]
+Formula for Success (Reverse Duel)
+
+Chazz Princeton vs. Bastion Misawa
+[IDS_SOLO.CHAPTER11020011_EXPLANATION]
+Doomsday Duel
+
+Jaden Yuki vs. Masked Atticus
+[IDS_SOLO.CHAPTER11020012_EXPLANATION]
+Doomsday Duel (Reverse Duel)
+
+Masked Atticus vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020013_EXPLANATION]
+Field of Screams
+
+Jaden Yuki vs. Camula
+
+Unlocks the Syrus Truesdale pack in the shop.
+[IDS_SOLO.CHAPTER11020014_EXPLANATION]
+Field of Screams (Reverse Duel)
+
+Camula vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020015_EXPLANATION]
+Duel Distractions
+
+Jaden Yuki vs. Tania
+[IDS_SOLO.CHAPTER11020016_EXPLANATION]
+Duel Distractions (Reverse Duel)
+
+Tania vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020017_EXPLANATION]
+A Reason to Win
+
+Alexis Rhodes vs. Titan
+
+Unlocks the Jesse Anderson pack in the shop.
+[IDS_SOLO.CHAPTER11020018_EXPLANATION]
+A Reason to Win (Reverse Duel)
+
+Titan vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11020019_EXPLANATION]
+Amnaels Endgame
+
+Jaden Yuki vs. Amnael
+[IDS_SOLO.CHAPTER11020020_EXPLANATION]
+Amnaels Endgame (Reverse Duel)
+
+Amnael vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020021_EXPLANATION]
+Rise of the Sacred Beasts
+
+Jaden Yuki vs. Kagemaru
+[IDS_SOLO.CHAPTER11020022_EXPLANATION]
+Rise of the Sacred Beasts (Reverse Duel)
+
+Kagemaru vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020023_EXPLANATION]
+Magna Chum Laude
+
+Dr. Vellian Crowler vs. Chumley Huffington
+
+Unlocks the Jaden Yuki pack in the shop.
+[IDS_SOLO.CHAPTER11020024_EXPLANATION]
+Magna Chum Laude (Reverse Duel)
+
+Chumley Huffington vs. Dr. Vellian Crowler
+[IDS_SOLO.CHAPTER11020025_EXPLANATION]
+The Graduation Match
+
+Jaden Yuki vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11020026_EXPLANATION]
+The Graduation Match (Reverse Duel)
+
+Zane Truesdale vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020027_EXPLANATION]
+A New Breed of Hero
+
+Aster Phoenix vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020028_EXPLANATION]
+A New Breed of Hero (Reverse Duel)
+
+Jaden Yuki vs. Aster Phoenix
+[IDS_SOLO.CHAPTER11020029_EXPLANATION]
+Schooling the Master
+
+Zane Truesdale vs. Chancellor Sheppard
+[IDS_SOLO.CHAPTER11020030_EXPLANATION]
+Schooling the Master (Reverse Duel)
+
+Chancellor Sheppard vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11020031_EXPLANATION]
+Blinded by the Light
+
+Jaden Yuki vs. Chazz Princeton
+[IDS_SOLO.CHAPTER11020032_EXPLANATION]
+Blinded by the Light (Reverse Duel)
+
+Chazz Princeton vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020033_EXPLANATION]
+Duel for Hire
+
+Maximillion Pegasus vs. Dr. Vellian Crowler
+[IDS_SOLO.CHAPTER11020034_EXPLANATION]
+Duel for Hire (Reverse Duel)
+
+Dr. Vellian Crowler vs. Maximillion Pegasus
+[IDS_SOLO.CHAPTER11020035_EXPLANATION]
+Heart of Ice
+
+Jaden Yuki vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11020036_EXPLANATION]
+Heart of Ice (Reverse Duel)
+
+Alexis Rhodes vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020037_EXPLANATION]
+Tough Love
+
+Zane Truesdale vs. Syrus Truesdale
+[IDS_SOLO.CHAPTER11020038_EXPLANATION]
+Tough Love (Reverse Duel)
+
+Syrus Truesdale vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11020039_EXPLANATION]
+The Hand of Justice
+
+Jaden Yuki vs. Sartorius Kumar
+[IDS_SOLO.CHAPTER11020040_EXPLANATION]
+The Hand of Justice (Reverse Duel)
+
+Sartorius Kumar vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020041_EXPLANATION]
+Future Changes
+
+Chazz Princeton vs. Blair Flannigan
+[IDS_SOLO.CHAPTER11020042_EXPLANATION]
+Future Changes (Reverse Duel)
+
+Blair Flannigan vs. Chazz Princeton
+[IDS_SOLO.CHAPTER11020043_EXPLANATION]
+A Jewel of a Duel
+
+Jaden Yuki vs. Jesse Anderson
+[IDS_SOLO.CHAPTER11020044_EXPLANATION]
+A Jewel of a Duel (Reverse Duel)
+
+Jesse Anderson vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020045_EXPLANATION]
+Hanging with Axel
+
+Jaden Yuki vs. Axel Brodie
+[IDS_SOLO.CHAPTER11020046_EXPLANATION]
+Hanging with Axel (Reverse Duel)
+
+Axel Brodie vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020047_EXPLANATION]
+Primal Instinct
+
+Jim Crocodile Cook vs. Tyranno Hassleberry
+[IDS_SOLO.CHAPTER11020048_EXPLANATION]
+Primal Instinct (Reverse Duel)
+
+Tyranno Hassleberry vs. Jim Crocodile Cook
+[IDS_SOLO.CHAPTER11020049_EXPLANATION]
+Head in the Clouds
+
+Adrian Gecko vs. Chazz Princeton
+[IDS_SOLO.CHAPTER11020050_EXPLANATION]
+Head in the Clouds (Reverse Duel)
+
+Chazz Princeton vs. Adrian Gecko
+[IDS_SOLO.CHAPTER11020051_EXPLANATION]
+A Snake in the Grass
+
+Jaden Yuki vs. Prof. Thelonious Viper
+[IDS_SOLO.CHAPTER11020052_EXPLANATION]
+A Snake in the Grass (Reverse Duel)
+
+Prof. Thelonious Viper vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020053_EXPLANATION]
+A Dimensional Duel
+
+Jesse Anderson vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11020054_EXPLANATION]
+A Dimensional Duel (Reverse Duel)
+
+Zane Truesdale vs. Jesse Anderson
+[IDS_SOLO.CHAPTER11020055_EXPLANATION]
+Unleashing the Dragon
+
+Jaden Yuki vs. Marcel Bonaparte
+[IDS_SOLO.CHAPTER11020056_EXPLANATION]
+Unleashing the Dragon (Reverse Duel)
+
+Marcel Bonaparte vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020057_EXPLANATION]
+The Power Within
+
+Jaden Yuki vs. Jesse Anderson
+[IDS_SOLO.CHAPTER11020058_EXPLANATION]
+The Power Within (Reverse Duel)
+
+Jesse Anderson vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020059_EXPLANATION]
+Return of the Supreme King
+
+Jaden Yuki vs. Yubel
+[IDS_SOLO.CHAPTER11020060_EXPLANATION]
+Return of the Supreme King (Reverse Duel)
+
+Yubel vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020061_EXPLANATION]
+Darkness Returns
+
+Jaden Yuki vs. Nightshroud
+[IDS_SOLO.CHAPTER11020062_EXPLANATION]
+Darkness Returns (Reverse Duel)
+
+Nightshroud vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11020063_EXPLANATION]
+The Legendary Duelist
+
+Jaden Yuki vs. Yami Yugi
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11020064_EXPLANATION]
+The Legendary Duelist (Reverse Duel)
+
+Yami Yugi vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11030001_EXPLANATION]
+Ready, Set, Duel
+
+Yusei Fudo vs. Tetsu Trudge
+
+Unlocks the Tatsu Trudge pack in the shop.
+[IDS_SOLO.CHAPTER11030002_EXPLANATION]
+Ready, Set, Duel (Reverse Duel)
+
+Tetsu Trudge vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030003_EXPLANATION]
+A Blast from the Past
+
+Yusei Fudo vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030004_EXPLANATION]
+A Blast from the Past (Reverse Duel)
+
+Jack Atlas vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030005_EXPLANATION]
+The Facility
+
+Yusei Fudo vs. Bolt Tanner
+[IDS_SOLO.CHAPTER11030006_EXPLANATION]
+The Facility (Reverse Duel)
+
+Bolt Tanner vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030007_EXPLANATION]
+The Lockdown Duel
+
+Yusei Fudo vs. Mr. Armstrong
+
+Unlocks the Leo/Luna pack in the shop.
+[IDS_SOLO.CHAPTER11030008_EXPLANATION]
+The Lockdown Duel (Reverse Duel)
+
+Mr. Armstrong vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030009_EXPLANATION]
+The Take Back
+
+Yusei Fudo vs. Tetsu Trudge
+[IDS_SOLO.CHAPTER11030010_EXPLANATION]
+The Take Back (Reverse Duel)
+
+Tetsu Trudge vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030011_EXPLANATION]
+Welcome to the Fortune Cup
+
+Greiger vs. Leo
+
+Unlocks the Akiza Izinski pack in the shop.
+[IDS_SOLO.CHAPTER11030012_EXPLANATION]
+Welcome to the Fortune Cup (Reverse Duel)
+
+Leo vs. Greiger
+[IDS_SOLO.CHAPTER11030013_EXPLANATION]
+Surprise Surprise
+
+Yusei Fudo vs. Hunter Pace
+[IDS_SOLO.CHAPTER11030014_EXPLANATION]
+Surprise Surprise (Reverse Duel)
+
+Hunter Pace vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030015_EXPLANATION]
+Second Round Showdown
+
+Yusei Fudo vs. Greiger
+
+Unlocks the Jack Atlas pack in the shop.
+[IDS_SOLO.CHAPTER11030016_EXPLANATION]
+Second Round Showdown (Reverse Duel)
+
+Greiger vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030017_EXPLANATION]
+Duel of Dragons
+
+Yusei Fudo vs. Akiza Izinski
+[IDS_SOLO.CHAPTER11030018_EXPLANATION]
+Duel of Dragons (Reverse Duel)
+
+Akiza Izinski vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030019_EXPLANATION]
+The Fortune Cup Finale
+
+Yusei Fudo vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030020_EXPLANATION]
+The Fortune Cup Finale (Reverse Duel)
+
+Jack Atlas vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030021_EXPLANATION]
+Supersensory Shakedown
+
+Sayer vs. Leo
+[IDS_SOLO.CHAPTER11030022_EXPLANATION]
+Supersensory Shakedown (Reverse Duel)
+
+Leo vs. Sayer
+[IDS_SOLO.CHAPTER11030023_EXPLANATION]
+Digging Deeper
+
+Sayer vs. Carly Carmine
+
+Unlocks the Crow pack in the shop.
+[IDS_SOLO.CHAPTER11030024_EXPLANATION]
+Digging Deeper (Reverse Duel)
+
+Carly Carmine vs. Sayer
+[IDS_SOLO.CHAPTER11030025_EXPLANATION]
+Mark of the Monkey
+
+Leo vs. Devack
+[IDS_SOLO.CHAPTER11030026_EXPLANATION]
+Mark of the Monkey (Reverse Duel)
+
+Devack vs. Leo
+[IDS_SOLO.CHAPTER11030027_EXPLANATION]
+A Whale of a Ride
+
+Crow Hogan vs. Greiger
+[IDS_SOLO.CHAPTER11030028_EXPLANATION]
+A Whale of a Ride (Reverse Duel)
+
+Greiger vs. Crow Hogan
+[IDS_SOLO.CHAPTER11030029_EXPLANATION]
+A Score to Settle
+
+Yusei Fudo vs. Kalin Kessler
+
+Unlocks the Yusei Fudo pack in the shop.
+[IDS_SOLO.CHAPTER11030030_EXPLANATION]
+A Score to Settle (Reverse Duel)
+
+Kalin Kessler vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030031_EXPLANATION]
+Destiny's Will
+
+Yusei Fudo vs. Roman Goodwin
+[IDS_SOLO.CHAPTER11030032_EXPLANATION]
+Destiny's Will (Reverse Duel)
+
+Roman Goodwin vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030033_EXPLANATION]
+Shadows of Doubt
+
+Jack Atlas vs. Carly Carmine
+[IDS_SOLO.CHAPTER11030034_EXPLANATION]
+Shadows of Doubt (Reverse Duel)
+
+Carly Carmine vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030035_EXPLANATION]
+Truth and Consequences
+
+Akiza Izinski vs. Misty Tredwell
+[IDS_SOLO.CHAPTER11030036_EXPLANATION]
+Truth and Consequences (Reverse Duel)
+
+Misty Tredwell vs. Akiza Izinski
+[IDS_SOLO.CHAPTER11030037_EXPLANATION]
+Signs of Doom
+
+Yusei Fudo vs. Rex Goodwin
+[IDS_SOLO.CHAPTER11030038_EXPLANATION]
+Signs of Doom (Reverse Duel)
+
+Rex Goodwin vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030039_EXPLANATION]
+French Twist
+
+Yusei Fudo vs. Sherry LeBlanc
+[IDS_SOLO.CHAPTER11030040_EXPLANATION]
+French Twist (Reverse Duel)
+
+Sherry LeBlanc vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030041_EXPLANATION]
+The Edge of Elimination Part 1
+
+Yusei Fudo vs. Andre
+[IDS_SOLO.CHAPTER11030042_EXPLANATION]
+The Edge of Elimination Part 1 (Reverse Duel)
+
+Andre vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030043_EXPLANATION]
+The Edge of Elimination Part 2
+
+Yusei Fudo vs. Breo
+[IDS_SOLO.CHAPTER11030044_EXPLANATION]
+The Edge of Elimination Part 2 (Reverse Duel)
+
+Breo vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030045_EXPLANATION]
+The Edge of Elimination Part 3
+
+Yusei Fudo vs. Jean
+[IDS_SOLO.CHAPTER11030046_EXPLANATION]
+The Edge of Elimination Part 3 (Reverse Duel)
+
+Jean vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030047_EXPLANATION]
+Duel for Redemption
+
+Jack Atlas vs. Dragan
+[IDS_SOLO.CHAPTER11030048_EXPLANATION]
+Duel for Redemption (Reverse Duel)
+
+Dragan vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030049_EXPLANATION]
+Tricking the Trickster
+
+Crow Hogan vs. Broder
+[IDS_SOLO.CHAPTER11030050_EXPLANATION]
+Tricking the Trickster (Reverse Duel)
+
+Broder vs. Crow Hogan
+[IDS_SOLO.CHAPTER11030051_EXPLANATION]
+Tricking the Trickster 2
+
+Yusei Fudo vs. Halldor
+[IDS_SOLO.CHAPTER11030052_EXPLANATION]
+Tricking the Trickster 2 (Reverse Duel)
+
+Halldor vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030053_EXPLANATION]
+The Beginning of the End
+
+Jack Atlas vs. Lester
+[IDS_SOLO.CHAPTER11030054_EXPLANATION]
+The Beginning of the End (Reverse Duel)
+
+Lester vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030055_EXPLANATION]
+Dawn of the Machines
+
+Jack Atlas vs. Primo
+[IDS_SOLO.CHAPTER11030056_EXPLANATION]
+Dawn of the Machines (Reverse Duel)
+
+Primo vs. Jack Atlas
+[IDS_SOLO.CHAPTER11030057_EXPLANATION]
+Victory or Doom
+
+Yusei Fudo vs. Aporia
+[IDS_SOLO.CHAPTER11030058_EXPLANATION]
+Victory or Doom (Reverse Duel)
+
+Aporia vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030059_EXPLANATION]
+Fight for the Future
+
+Yusei Fudo vs. Antinomy
+[IDS_SOLO.CHAPTER11030060_EXPLANATION]
+Fight for the Future (Reverse Duel)
+
+Antinomy vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030061_EXPLANATION]
+Hope
+
+Yusei Fudo vs. Zone
+[IDS_SOLO.CHAPTER11030062_EXPLANATION]
+Hope (Reverse Duel)
+
+Zone vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11030063_EXPLANATION]
+Future Path
+
+Yusei Fudo vs. Jack Atlas
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11030064_EXPLANATION]
+Future Path (Reverse Duel)
+
+Jack Atlas vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11040001_EXPLANATION]
+Go with the Flow
+
+Yuma Tsukumo vs. Reginald Kastle
+
+Unlocks the Cathy Katherine pack in the shop.
+[IDS_SOLO.CHAPTER11040002_EXPLANATION]
+Go with the Flow (Reverse Duel)
+
+Reginald Kastle vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040003_EXPLANATION]
+Flipping Out
+
+Yuma Tsukumo vs. Flip Turner
+[IDS_SOLO.CHAPTER11040004_EXPLANATION]
+Flipping Out (Reverse Duel)
+
+Flip Turner vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040005_EXPLANATION]
+The Sparrow
+
+Yuma Tsukumo vs. Nelson Andrews
+[IDS_SOLO.CHAPTER11040006_EXPLANATION]
+The Sparrow (Reverse Duel)
+
+Nelson Andrews vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040007_EXPLANATION]
+Feline Frenzy
+
+Yuma Tsukumo vs. Cathy Katherine
+
+Unlocks the Quinton pack in the shop.
+[IDS_SOLO.CHAPTER11040008_EXPLANATION]
+Feline Frenzy (Reverse Duel)
+
+Cathy Katherine vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040009_EXPLANATION]
+Roots of the Problem
+
+Bronk Stone vs. Number 96
+[IDS_SOLO.CHAPTER11040010_EXPLANATION]
+Roots of the Problem (Reverse Duel)
+
+Number 96 vs. Bronk Stone
+[IDS_SOLO.CHAPTER11040011_EXPLANATION]
+Love Hurts
+
+Yuma Tsukumo vs. Anna Kaboom
+[IDS_SOLO.CHAPTER11040012_EXPLANATION]
+Love Hurts (Reverse Duel)
+
+Anna Kaboom vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040013_EXPLANATION]
+Double Jeopardy
+
+Yuma Tsukumo vs. Dextra
+
+Unlocks the Kite Tenjo pack in the shop.
+[IDS_SOLO.CHAPTER11040014_EXPLANATION]
+Double Jeopardy (Reverse Duel)
+
+Dextra vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040015_EXPLANATION]
+The Dragon Awakens
+
+Kite Tenjo vs. Trey
+[IDS_SOLO.CHAPTER11040016_EXPLANATION]
+The Dragon Awakens (Reverse Duel)
+
+Trey vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11040017_EXPLANATION]
+Cosmic Chaos
+
+Kite Tenjo vs. Quinton
+[IDS_SOLO.CHAPTER11040018_EXPLANATION]
+Cosmic Chaos (Reverse Duel)
+
+Quinton vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11040019_EXPLANATION]
+Swimming with Sharks
+
+Reginald Kastle vs. Quattro
+[IDS_SOLO.CHAPTER11040020_EXPLANATION]
+Swimming with Sharks (Reverse Duel)
+
+Quattro vs. Reginald Kastle
+[IDS_SOLO.CHAPTER11040021_EXPLANATION]
+Rockin' and Rollin'
+
+Yuma Tsukumo vs. Nistro
+
+Unlocks the Shark pack in the shop.
+[IDS_SOLO.CHAPTER11040022_EXPLANATION]
+Rockin' and Rollin' (Reverse Duel)
+
+Nistro vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040023_EXPLANATION]
+Duel of Destiny
+
+Yuma Tsukumo vs. Reginald Kastle
+[IDS_SOLO.CHAPTER11040024_EXPLANATION]
+Duel of Destiny (Reverse Duel)
+
+Reginald Kastle vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040025_EXPLANATION]
+Sphere of Fear
+
+Yuma Tsukumo vs. Vetrix
+[IDS_SOLO.CHAPTER11040026_EXPLANATION]
+Sphere of Fear (Reverse Duel)
+
+Vetrix vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040027_EXPLANATION]
+A Trio's Challenge
+
+Yuma Tsukumo vs. Dr. Faker
+[IDS_SOLO.CHAPTER11040028_EXPLANATION]
+A Trio's Challenge (Reverse Duel)
+
+Dr. Faker vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040029_EXPLANATION]
+Counter Offensive
+
+ZEXAL vs. Alito
+
+Unlocks the Yuma Tsukumo pack in the shop.
+[IDS_SOLO.CHAPTER11040030_EXPLANATION]
+Counter Offensive (Reverse Duel)
+
+Alito vs. ZEXAL
+[IDS_SOLO.CHAPTER11040031_EXPLANATION]
+Dual Duel
+
+Ray Shadows vs. Girag
+[IDS_SOLO.CHAPTER11040032_EXPLANATION]
+Dual Duel (Reverse Duel)
+
+Girag vs. Ray Shadows
+[IDS_SOLO.CHAPTER11040033_EXPLANATION]
+Search for Shadows, Pt. 1
+
+Reginald Kastle vs. Dumon
+[IDS_SOLO.CHAPTER11040034_EXPLANATION]
+Search for Shadows, Pt. 1 (Reverse Duel)
+
+Dumon vs. Reginald Kastle
+[IDS_SOLO.CHAPTER11040035_EXPLANATION]
+Search for Shadows, Pt. 2
+
+Kite Tenjo vs. Mizar
+[IDS_SOLO.CHAPTER11040036_EXPLANATION]
+Search for Shadows, Pt. 2 (Reverse Duel)
+
+Mizar vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11040037_EXPLANATION]
+Search for Shadows, Pt. 3
+
+Yuma Tsukumo vs. Vector
+[IDS_SOLO.CHAPTER11040038_EXPLANATION]
+Search for Shadows, Pt. 3 (Reverse Duel)
+
+Vector vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040039_EXPLANATION]
+Barian Vengeance
+
+Yuma Tsukumo vs. Nistro
+[IDS_SOLO.CHAPTER11040040_EXPLANATION]
+Barian Vengeance (Reverse Duel)
+
+Nistro vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040041_EXPLANATION]
+A Sea of Troubles
+
+Reginald Kastle vs. Rio Kastle
+[IDS_SOLO.CHAPTER11040042_EXPLANATION]
+A Sea of Troubles (Reverse Duel)
+
+Rio Kastle vs. Reginald Kastle
+[IDS_SOLO.CHAPTER11040043_EXPLANATION]
+A World of Chaos
+
+Yuma Tsukumo vs. Number 96
+[IDS_SOLO.CHAPTER11040044_EXPLANATION]
+A World of Chaos (Reverse Duel)
+
+Number 96 vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040045_EXPLANATION]
+Clash of the Emperors
+
+Nash vs. Vector
+[IDS_SOLO.CHAPTER11040046_EXPLANATION]
+Clash of the Emperors (Reverse Duel)
+
+Vector vs. Nash
+[IDS_SOLO.CHAPTER11040047_EXPLANATION]
+The New World
+
+ZEXAL 3 vs. Don Thousand
+[IDS_SOLO.CHAPTER11040048_EXPLANATION]
+The New World (Reverse Duel)
+
+Don Thousand vs. ZEXAL 3
+[IDS_SOLO.CHAPTER11040049_EXPLANATION]
+The Battle of Three Worlds
+
+Yuma Tsukumo vs. Nash
+[IDS_SOLO.CHAPTER11040050_EXPLANATION]
+The Battle of Three Worlds (Reverse Duel)
+
+Nash vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11040051_EXPLANATION]
+Forever ZEXAL
+
+Yuma Tsukumo vs. Astral
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11040052_EXPLANATION]
+Forever ZEXAL (Reverse Duel)
+
+Astral vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11050001_EXPLANATION]
+Swing Into Action
+
+Yuya Sakaki vs. The Sledgehammer
+
+Unlocks the Gong Strong pack in the shop.
+[IDS_SOLO.CHAPTER11050002_EXPLANATION]
+Swing Into Action (Reverse Duel)
+
+The Sledgehammer vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050003_EXPLANATION]
+Trade Bait
+
+Yuya Sakaki vs. Sylvio Sawatari
+[IDS_SOLO.CHAPTER11050004_EXPLANATION]
+Trade Bait (Reverse Duel)
+
+Sylvio Sawatari vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050005_EXPLANATION]
+Dueling with the Stars
+
+Yuya Sakaki vs. Dipper O'rion
+[IDS_SOLO.CHAPTER11050006_EXPLANATION]
+Dueling with the Stars (Reverse Duel)
+
+Dipper O'rion vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050007_EXPLANATION]
+You Show 'Em!
+
+Julia Krystal vs. Zuzu Boyle
+[IDS_SOLO.CHAPTER11050008_EXPLANATION]
+You Show 'Em! (Reverse Duel)
+
+Zuzu Boyle vs. Julia Krystal
+[IDS_SOLO.CHAPTER11050009_EXPLANATION]
+Going, Going, Gong
+
+Gong Strong vs. Kit Blade
+[IDS_SOLO.CHAPTER11050010_EXPLANATION]
+Going, Going, Gong (Reverse Duel)
+
+Kit Blade vs. Gong Strong
+[IDS_SOLO.CHAPTER11050011_EXPLANATION]
+A Date With Fate
+
+Yuya Sakaki vs. Aura Sentia
+
+Unlocks the Zuzu Boyle pack in the shop.
+[IDS_SOLO.CHAPTER11050012_EXPLANATION]
+A Date With Fate (Reverse Duel)
+
+Aura Sentia vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050013_EXPLANATION]
+Fusion Foes
+
+Zuzu Boyle vs. Julia Krystal
+[IDS_SOLO.CHAPTER11050014_EXPLANATION]
+Fusion Foes (Reverse Duel)
+
+Julia Krystal vs. Zuzu Boyle
+[IDS_SOLO.CHAPTER11050015_EXPLANATION]
+The Pendulum Swings Both Ways
+
+Yuya Sakaki vs. Sylvio Sawatari
+[IDS_SOLO.CHAPTER11050016_EXPLANATION]
+The Pendulum Swings Both Ways (Reverse Duel)
+
+Sylvio Sawatari vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050017_EXPLANATION]
+Making the Cut
+
+Shay Obsidian vs. Sora Perse
+[IDS_SOLO.CHAPTER11050018_EXPLANATION]
+Making the Cut (Reverse Duel)
+
+Sora Perse vs. Shay Obsidian
+[IDS_SOLO.CHAPTER11050019_EXPLANATION]
+A Dark Reflection
+
+Yugo vs. Yuto
+[IDS_SOLO.CHAPTER11050020_EXPLANATION]
+A Dark Reflection (Reverse Duel)
+
+Yuto vs. Yugo
+[IDS_SOLO.CHAPTER11050021_EXPLANATION]
+Obelisk Assault
+
+Celina vs. Dennis McField
+
+Unlocks the Shay pack in the shop.
+[IDS_SOLO.CHAPTER11050022_EXPLANATION]
+Obelisk Assault (Reverse Duel)
+
+Dennis McField vs. Celina
+[IDS_SOLO.CHAPTER11050023_EXPLANATION]
+Battlefronts
+
+Moon Shadow vs. Obelisk Force
+[IDS_SOLO.CHAPTER11050024_EXPLANATION]
+Battlefronts (Reverse Duel)
+
+Obelisk Force vs. Moon Shadow
+[IDS_SOLO.CHAPTER11050025_EXPLANATION]
+Fighting for Fun
+
+Yuya Sakaki vs. Sora Perse
+[IDS_SOLO.CHAPTER11050026_EXPLANATION]
+Fighting for Fun (Reverse Duel)
+
+Sora Perse vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050027_EXPLANATION]
+City 'Scape
+
+Yugo vs. Officer 227
+[IDS_SOLO.CHAPTER11050028_EXPLANATION]
+City 'Scape (Reverse Duel)
+
+Officer 227 vs. Yugo
+[IDS_SOLO.CHAPTER11050029_EXPLANATION]
+Crow's Crew
+
+Crow Hogan vs. Gong Strong
+
+Unlocks the Declan Akaba pack in the shop.
+[IDS_SOLO.CHAPTER11050030_EXPLANATION]
+Crow's Crew (Reverse Duel)
+
+Gong Strong vs. Crow Hogan
+[IDS_SOLO.CHAPTER11050031_EXPLANATION]
+A Concerted Effort
+
+Zuzu Boyle vs. Chojiro Tokumatsu
+[IDS_SOLO.CHAPTER11050032_EXPLANATION]
+A Concerted Effort (Reverse Duel)
+
+Chojiro Tokumatsu vs. Zuzu Boyle
+[IDS_SOLO.CHAPTER11050033_EXPLANATION]
+Turbotainers
+
+Shay Obsidian vs. Dennis McField
+[IDS_SOLO.CHAPTER11050034_EXPLANATION]
+Turbotainers (Reverse Duel)
+
+Dennis McField vs. Shay Obsidian
+[IDS_SOLO.CHAPTER11050035_EXPLANATION]
+Battle Birds
+
+Crow Hogan vs. Shay Obsidian
+[IDS_SOLO.CHAPTER11050036_EXPLANATION]
+Battle Birds (Reverse Duel)
+
+Shay Obsidian vs. Crow Hogan
+[IDS_SOLO.CHAPTER11050037_EXPLANATION]
+The Many Dimensions of Yuya
+
+Yuya Sakaki vs. Crow Hogan
+[IDS_SOLO.CHAPTER11050038_EXPLANATION]
+The Many Dimensions of Yuya (Reverse Duel)
+
+Crow Hogan vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050039_EXPLANATION]
+Chain Game
+
+Yugo vs. Yuri
+[IDS_SOLO.CHAPTER11050040_EXPLANATION]
+Chain Game (Reverse Duel)
+
+Yuri vs. Yugo
+[IDS_SOLO.CHAPTER11050041_EXPLANATION]
+Friendship Finale
+
+Yuya Sakaki vs. Jack Atlas
+
+Unlocks the Yuya Sakaki pack in the shop.
+[IDS_SOLO.CHAPTER11050042_EXPLANATION]
+Friendship Finale (Reverse Duel)
+
+Jack Atlas vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050043_EXPLANATION]
+A Vicious Cycle
+
+Declan Akaba vs. Jean Michel Roget
+[IDS_SOLO.CHAPTER11050044_EXPLANATION]
+A Vicious Cycle (Reverse Duel)
+
+Jean Michel Roget vs. Declan Akaba
+[IDS_SOLO.CHAPTER11050045_EXPLANATION]
+Rush to Revenge
+
+Yuya Sakaki vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11050046_EXPLANATION]
+Rush to Revenge (Reverse Duel)
+
+Kite Tenjo vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050047_EXPLANATION]
+Rise of the Resistance
+
+Alexis Rhodes vs. Obelisk Force
+[IDS_SOLO.CHAPTER11050048_EXPLANATION]
+Rise of the Resistance (Reverse Duel)
+
+Obelisk Force vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11050049_EXPLANATION]
+Last Laugh
+
+Yuya Sakaki vs. Aster Phoenix
+[IDS_SOLO.CHAPTER11050050_EXPLANATION]
+Last Laugh (Reverse Duel)
+
+Aster Phoenix vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050051_EXPLANATION]
+All Duel Hands on Deck
+
+Kite Tenjo vs. Dennis McField
+[IDS_SOLO.CHAPTER11050052_EXPLANATION]
+All Duel Hands on Deck (Reverse Duel)
+
+Dennis McField vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11050053_EXPLANATION]
+Grip of the Parasite
+
+Rin vs. Yugo
+[IDS_SOLO.CHAPTER11050054_EXPLANATION]
+Grip of the Parasite (Reverse Duel)
+
+Yugo vs. Rin
+[IDS_SOLO.CHAPTER11050055_EXPLANATION]
+Family Face Off
+
+Shay Obsidian vs. Lulu
+[IDS_SOLO.CHAPTER11050056_EXPLANATION]
+Family Face Off (Reverse Duel)
+
+Lulu vs. Shay Obsidian
+[IDS_SOLO.CHAPTER11050057_EXPLANATION]
+Duel Interrupted
+
+Yuri vs. Yugo
+[IDS_SOLO.CHAPTER11050058_EXPLANATION]
+Duel Interrupted (Reverse Duel)
+
+Yugo vs. Yuri
+[IDS_SOLO.CHAPTER11050059_EXPLANATION]
+Time to Reunite
+
+Yuya Sakaki vs. Yuri
+[IDS_SOLO.CHAPTER11050060_EXPLANATION]
+Time to Reunite (Reverse Duel)
+
+Yuri vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050061_EXPLANATION]
+A Ray of Hope
+
+Declan Akaba vs. Z-ARC
+[IDS_SOLO.CHAPTER11050062_EXPLANATION]
+A Ray of Hope (Reverse Duel)
+
+Z-ARC vs. Declan Akaba
+[IDS_SOLO.CHAPTER11050063_EXPLANATION]
+One Last Duel
+
+Yuya Sakaki vs. Declan Akaba
+[IDS_SOLO.CHAPTER11050064_EXPLANATION]
+One Last Duel (Reverse Duel)
+
+Declan Akaba vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11050065_EXPLANATION]
+That's a Wrap!
+
+Yuya Sakaki vs. Yusho Sakaki
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11050066_EXPLANATION]
+That's a Wrap! (Reverse Duel)
+
+Yusho Sakaki vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11060001_EXPLANATION]
+My Name Is Playmaker
+
+Playmaker vs. Knight of Hanoi
+
+Unlocks the Playmaker pack in the shop.
+[IDS_SOLO.CHAPTER11060002_EXPLANATION]
+My Name Is Playmaker (Reverse Duel)
+
+Knight of Hanoi vs. Playmaker
+[IDS_SOLO.CHAPTER11060003_EXPLANATION]
+The Three Count Rings
+
+Playmaker vs. The Gore
+[IDS_SOLO.CHAPTER11060004_EXPLANATION]
+The Three Count Rings (Reverse Duel)
+
+The Gore vs. Playmaker
+[IDS_SOLO.CHAPTER11060005_EXPLANATION]
+Hanoi's Angel
+
+Playmaker vs. Blue Angel
+[IDS_SOLO.CHAPTER11060006_EXPLANATION]
+Hanoi's Angel (Reverse Duel)
+
+Blue Angel vs. Playmaker
+[IDS_SOLO.CHAPTER11060007_EXPLANATION]
+A Storm is Coming
+
+Playmaker vs. Varis
+[IDS_SOLO.CHAPTER11060008_EXPLANATION]
+A Storm is Coming (Reverse Duel)
+
+Varis vs. Playmaker
+[IDS_SOLO.CHAPTER11060009_EXPLANATION]
+Ghost Gal's Invitation
+
+Playmaker vs. Ghost Gal
+[IDS_SOLO.CHAPTER11060010_EXPLANATION]
+Ghost Gal's Invitation (Reverse Duel)
+
+Ghost Gal vs. Playmaker
+[IDS_SOLO.CHAPTER11060011_EXPLANATION]
+Dueling for Answers
+
+Playmaker vs. Akira Zaizen
+[IDS_SOLO.CHAPTER11060012_EXPLANATION]
+Dueling for Answers (Reverse Duel)
+
+Akira Zaizen vs. Playmaker
+[IDS_SOLO.CHAPTER11060013_EXPLANATION]
+Under VRAINS
+
+Varis vs. Ghost Gal
+[IDS_SOLO.CHAPTER11060014_EXPLANATION]
+Under VRAINS (Reverse Duel)
+
+Ghost Gal vs. Varis
+[IDS_SOLO.CHAPTER11060015_EXPLANATION]
+Once Upon a Time
+
+Spectre vs. Blue Angel
+
+Unlocks the Blue Angel pack in the shop.
+[IDS_SOLO.CHAPTER11060016_EXPLANATION]
+Once Upon a Time (Reverse Duel)
+
+Blue Angel vs. Spectre
+[IDS_SOLO.CHAPTER11060017_EXPLANATION]
+A Bridge Too Far
+
+Playmaker vs. Spectre
+[IDS_SOLO.CHAPTER11060018_EXPLANATION]
+A Bridge Too Far (Reverse Duel)
+
+Spectre vs. Playmaker
+[IDS_SOLO.CHAPTER11060019_EXPLANATION]
+Gore at War
+
+Varis vs. The Gore
+[IDS_SOLO.CHAPTER11060020_EXPLANATION]
+Gore at War (Reverse Duel)
+
+The Gore vs. Varis
+[IDS_SOLO.CHAPTER11060021_EXPLANATION]
+Link to the Future
+
+Playmaker vs. Varis
+[IDS_SOLO.CHAPTER11060022_EXPLANATION]
+Link to the Future (Reverse Duel)
+
+Varis vs. Playmaker
+[IDS_SOLO.CHAPTER11060023_EXPLANATION]
+The Bounty Hunter
+
+Playmaker vs. The Shepherd
+[IDS_SOLO.CHAPTER11060024_EXPLANATION]
+The Bounty Hunter (Reverse Duel)
+
+The Shepherd vs. Playmaker
+[IDS_SOLO.CHAPTER11060025_EXPLANATION]
+Blue Gal's Here!
+
+Soulburner vs. Blue Gal
+
+Unlocks the Soulburner pack in the shop.
+[IDS_SOLO.CHAPTER11060026_EXPLANATION]
+Blue Gal's Here! (Reverse Duel)
+
+Blue Gal vs. Soulburner
+[IDS_SOLO.CHAPTER11060027_EXPLANATION]
+Tuning Rokkets
+
+Varis vs. Windy
+[IDS_SOLO.CHAPTER11060028_EXPLANATION]
+Tuning Rokkets (Reverse Duel)
+
+Windy vs. Varis
+[IDS_SOLO.CHAPTER11060029_EXPLANATION]
+Battle of the Siblings
+
+The Shepherd vs. Ghost Gal
+[IDS_SOLO.CHAPTER11060030_EXPLANATION]
+Battle of the Siblings (Reverse Duel)
+
+Ghost Gal vs. The Shepherd
+[IDS_SOLO.CHAPTER11060031_EXPLANATION]
+Friend or Foe
+
+Varis vs. The Shepherd
+[IDS_SOLO.CHAPTER11060032_EXPLANATION]
+Friend or Foe (Reverse Duel)
+
+The Shepherd vs. Varis
+[IDS_SOLO.CHAPTER11060033_EXPLANATION]
+Specter's Plan
+
+Lightning vs. Spectre
+[IDS_SOLO.CHAPTER11060034_EXPLANATION]
+Specter's Plan (Reverse Duel)
+
+Spectre vs. Lightning
+[IDS_SOLO.CHAPTER11060035_EXPLANATION]
+Windy's Revenge
+
+Soulburner vs. Windy
+[IDS_SOLO.CHAPTER11060036_EXPLANATION]
+Windy's Revenge (Reverse Duel)
+
+Windy vs. Soulburner
+[IDS_SOLO.CHAPTER11060037_EXPLANATION]
+A New World Coming
+
+Bohman vs. Blue Maiden
+[IDS_SOLO.CHAPTER11060038_EXPLANATION]
+A New World Coming (Reverse Duel)
+
+Blue Maiden vs. Bohman
+[IDS_SOLO.CHAPTER11060039_EXPLANATION]
+Burning Soul
+
+Bohman vs. Soulburner
+[IDS_SOLO.CHAPTER11060040_EXPLANATION]
+Burning Soul (Reverse Duel)
+
+Soulburner vs. Bohman
+[IDS_SOLO.CHAPTER11060041_EXPLANATION]
+Anything to Win
+
+Varis vs. Lightning
+
+Unlocks the Varis pack in the shop.
+[IDS_SOLO.CHAPTER11060042_EXPLANATION]
+Anything to Win (Reverse Duel)
+
+Lightning vs. Varis
+[IDS_SOLO.CHAPTER11060043_EXPLANATION]
+A Wish Entrusted
+
+Playmaker vs. Bohman
+[IDS_SOLO.CHAPTER11060044_EXPLANATION]
+A Wish Entrusted (Reverse Duel)
+
+Bohman vs. Playmaker
+[IDS_SOLO.CHAPTER11060045_EXPLANATION]
+Go Go Roboppi!
+
+Roboppi vs. Ghost Gal
+[IDS_SOLO.CHAPTER11060046_EXPLANATION]
+Go Go Roboppi! (Reverse Duel)
+
+Ghost Gal vs. Roboppi
+[IDS_SOLO.CHAPTER11060047_EXPLANATION]
+Unbreakable Spirit
+
+Ai vs. The Gore
+[IDS_SOLO.CHAPTER11060048_EXPLANATION]
+Unbreakable Spirit (Reverse Duel)
+
+The Gore vs. Ai
+[IDS_SOLO.CHAPTER11060049_EXPLANATION]
+Ai's Conundrum
+
+Ai vs. Blue Maiden
+
+Unlocks the Ai pack in the shop.
+[IDS_SOLO.CHAPTER11060050_EXPLANATION]
+Ai's Conundrum (Reverse Duel)
+
+Blue Maiden vs. Ai
+[IDS_SOLO.CHAPTER11060051_EXPLANATION]
+Roboppi's Dream
+
+Soulburner vs. Roboppi
+[IDS_SOLO.CHAPTER11060052_EXPLANATION]
+Roboppi's Dream (Reverse Duel)
+
+Roboppi vs. Soulburner
+[IDS_SOLO.CHAPTER11060053_EXPLANATION]
+Back to the Beginning
+
+Soulburner vs. Varis
+[IDS_SOLO.CHAPTER11060054_EXPLANATION]
+Back to the Beginning (Reverse Duel)
+
+Varis vs. Soulburner
+[IDS_SOLO.CHAPTER11060055_EXPLANATION]
+Separate Ways
+
+Playmaker vs. Ai
+
+Unlocks a campaign pack in the shop.
+[IDS_SOLO.CHAPTER11060056_EXPLANATION]
+Separate Ways (Reverse Duel)
+
+Ai vs. Playmaker
+[IDS_SOLO.CHAPTER11110001_EXPLANATION]
+Dark Magician Attack
+
+vs. Arkana
+[IDS_SOLO.CHAPTER11110002_EXPLANATION]
+FINAL
+
+vs. Yami Bakura
+[IDS_SOLO.CHAPTER11110003_EXPLANATION]
+The Pendulum Scraps
+
+vs. Bandit Keith
+[IDS_SOLO.CHAPTER11110004_EXPLANATION]
+Armageddon
+
+vs. Bonz
+[IDS_SOLO.CHAPTER11110005_EXPLANATION]
+Spellbook Prophecy
+
+vs. Ishizu Ishtar
+[IDS_SOLO.CHAPTER11110006_EXPLANATION]
+Restraint of Jinzo
+
+vs. Joey Wheeler
+[IDS_SOLO.CHAPTER11110007_EXPLANATION]
+Sign of the Harpie
+
+vs. Mai Valentine
+[IDS_SOLO.CHAPTER11110008_EXPLANATION]
+Ritual of the Gishki
+
+vs. Mako Tsunami
+[IDS_SOLO.CHAPTER11110009_EXPLANATION]
+The Gravekeepers
+
+vs. Odion
+[IDS_SOLO.CHAPTER11110010_EXPLANATION]
+Tricks of the Pumprincess
+
+vs. Panik
+[IDS_SOLO.CHAPTER11110011_EXPLANATION]
+Sweets from Madolche
+
+vs. Maximillion Pegasus
+[IDS_SOLO.CHAPTER11110012_EXPLANATION]
+Rise of the Evolsaur
+
+vs. Rex Raptor
+[IDS_SOLO.CHAPTER11110013_EXPLANATION]
+The Coming of Exodia
+
+vs. Seeker
+[IDS_SOLO.CHAPTER11110014_EXPLANATION]
+Wrath of the Dragon
+
+vs. Seto Kaiba
+[IDS_SOLO.CHAPTER11110015_EXPLANATION]
+Trail of Slime
+
+vs. Strings
+[IDS_SOLO.CHAPTER11110016_EXPLANATION]
+The Master Herald
+
+vs. Tea Gardner
+[IDS_SOLO.CHAPTER11110017_EXPLANATION]
+The Inzektor Swarm
+
+vs. Weevil Underwood
+[IDS_SOLO.CHAPTER11110018_EXPLANATION]
+Legend of the Fiend
+
+vs. Yami Marik
+[IDS_SOLO.CHAPTER11110019_EXPLANATION]
+The Spellcasters' Stone
+
+vs. Yami Yugi
+[IDS_SOLO.CHAPTER11110020_EXPLANATION]
+Rise of the Skull Servants
+
+vs. Yugi Muto
+[IDS_SOLO.CHAPTER11110021_EXPLANATION]
+Dragon Buster
+
+vs. Alister
+[IDS_SOLO.CHAPTER11110022_EXPLANATION]
+Serene Aroma
+
+vs. Dartz
+[IDS_SOLO.CHAPTER11110023_EXPLANATION]
+The Super Soldier
+
+vs. Rafael
+[IDS_SOLO.CHAPTER11110024_EXPLANATION]
+Psy-Frame Assembly
+
+vs. Valon
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11120001_EXPLANATION]
+Eye of the Cloudian
+
+vs. Adrian Gecko
+[IDS_SOLO.CHAPTER11120002_EXPLANATION]
+The Ice Barrier
+
+vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11120003_EXPLANATION]
+A Hero's Destiny
+
+vs. Aster Phoenix
+[IDS_SOLO.CHAPTER11120004_EXPLANATION]
+The Unskilled Beast
+
+vs. Masked Atticus
+[IDS_SOLO.CHAPTER11120005_EXPLANATION]
+The Tri-Blaze Volcanic
+
+vs. Axel Brodie
+[IDS_SOLO.CHAPTER11120006_EXPLANATION]
+The Carbon Formula
+
+vs. Bastion Misawa
+[IDS_SOLO.CHAPTER11120007_EXPLANATION]
+Bad Reactions
+
+vs. Blair Flannigan
+[IDS_SOLO.CHAPTER11120008_EXPLANATION]
+Shadow of the Vampire
+
+vs. Camula
+[IDS_SOLO.CHAPTER11120009_EXPLANATION]
+Last Level of the Dragon
+
+vs. Chazz Princeton
+[IDS_SOLO.CHAPTER11120010_EXPLANATION]
+Sunrise over Oz
+
+vs. Chumley Huffington
+[IDS_SOLO.CHAPTER11120011_EXPLANATION]
+Ancient Gear Rebuilt
+
+vs. Dr. Velian Crowler
+[IDS_SOLO.CHAPTER11120012_EXPLANATION]
+Courage of the Hero
+
+vs. Jaden Yuki
+[IDS_SOLO.CHAPTER11120013_EXPLANATION]
+The Artifact Vault
+
+vs. Jesse Anderson
+[IDS_SOLO.CHAPTER11120014_EXPLANATION]
+Rock Bombardment
+
+vs. Jim Crocodile Cook
+[IDS_SOLO.CHAPTER11120015_EXPLANATION]
+The Strike of the Ninja
+
+vs. Kagemaru
+[IDS_SOLO.CHAPTER11120016_EXPLANATION]
+The Advent of Exodia
+
+vs. Marcel Bonaparte
+[IDS_SOLO.CHAPTER11120017_EXPLANATION]
+The Dark Underworld
+
+vs. Nightshroud
+[IDS_SOLO.CHAPTER11120018_EXPLANATION]
+Obey the Alien
+
+vs. Professor Banner
+[IDS_SOLO.CHAPTER11120019_EXPLANATION]
+Swing of the Pendulum
+
+vs. Sartorious Kumar
+[IDS_SOLO.CHAPTER11120020_EXPLANATION]
+Geargia Karakuri
+
+vs. Syrus Truesdale
+[IDS_SOLO.CHAPTER11120021_EXPLANATION]
+The Brave Amazoness
+
+vs. Tania
+[IDS_SOLO.CHAPTER11120022_EXPLANATION]
+Invasion of the Worms
+
+vs. Professor Thelonious Viper
+[IDS_SOLO.CHAPTER11120023_EXPLANATION]
+The Ghostrick Surpise
+
+vs. Titan
+[IDS_SOLO.CHAPTER11120024_EXPLANATION]
+Heart of the Jurrac
+
+vs. Tyranno Hassleberry
+[IDS_SOLO.CHAPTER11120025_EXPLANATION]
+Lightsworn Judgment
+
+vs. Yubel
+[IDS_SOLO.CHAPTER11120026_EXPLANATION]
+Cyber Dragon Impact
+
+vs. Zane Truesdale
+[IDS_SOLO.CHAPTER11120027_EXPLANATION]
+The Gray Kaiju
+
+vs. Chancellor Sheppard
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11130001_EXPLANATION]
+Black Rose Garden
+
+vs. Akiza Izinski
+[IDS_SOLO.CHAPTER11130002_EXPLANATION]
+The Phoenix Rises
+
+vs. Andre
+[IDS_SOLO.CHAPTER11130003_EXPLANATION]
+The Tech Genius
+
+vs. Antinomy
+[IDS_SOLO.CHAPTER11130004_EXPLANATION]
+Crash of the Qliphort
+
+vs. Aporia
+[IDS_SOLO.CHAPTER11130005_EXPLANATION]
+Power the Batteryman
+
+vs. Mr. Armstrong
+[IDS_SOLO.CHAPTER11130006_EXPLANATION]
+The Fabled Awakening
+
+vs. Bolt Tanner
+[IDS_SOLO.CHAPTER11130007_EXPLANATION]
+The Spiritual Beast
+
+vs. Breo
+[IDS_SOLO.CHAPTER11130008_EXPLANATION]
+The Electrifying Watt
+
+vs. Broder
+[IDS_SOLO.CHAPTER11130009_EXPLANATION]
+Fortune Lady's Luck
+
+vs. Carly Carmine
+[IDS_SOLO.CHAPTER11130010_EXPLANATION]
+Flight of the Blackwing
+
+vs. Crow Hogan
+[IDS_SOLO.CHAPTER11130011_EXPLANATION]
+The Moja King
+
+vs. Devack
+[IDS_SOLO.CHAPTER11130012_EXPLANATION]
+Nordic Beast of Aesir
+
+vs. Dragan
+[IDS_SOLO.CHAPTER11130013_EXPLANATION]
+The Ultimate Athletes
+
+vs. Greiger
+[IDS_SOLO.CHAPTER11130014_EXPLANATION]
+Tribes of the Gusto
+
+vs. Halldor
+[IDS_SOLO.CHAPTER11130015_EXPLANATION]
+Fire King Onslaught
+
+vs. Hunter Pace
+[IDS_SOLO.CHAPTER11130016_EXPLANATION]
+Fires of the Flamvell
+
+vs. Jack Atlas
+[IDS_SOLO.CHAPTER11130017_EXPLANATION]
+The Gladiator Beasts
+
+vs. Jean
+[IDS_SOLO.CHAPTER11130018_EXPLANATION]
+For All Infernity
+
+vs. Kalin Kessler
+[IDS_SOLO.CHAPTER11130019_EXPLANATION]
+Enhance the Genex Ally
+
+vs. Leo
+[IDS_SOLO.CHAPTER11130020_EXPLANATION]
+In Dark World
+
+vs. Lester
+[IDS_SOLO.CHAPTER11130021_EXPLANATION]
+Paralyzing Reptillianne
+
+vs. Misty Tredwell
+[IDS_SOLO.CHAPTER11130022_EXPLANATION]
+The Malefic Truth
+
+vs. Primo
+[IDS_SOLO.CHAPTER11130023_EXPLANATION]
+Yang Zing Radiance
+
+vs. Rex Goodwin
+[IDS_SOLO.CHAPTER11130024_EXPLANATION]
+The Traptrix Ambush
+
+vs. Roman Goodwin
+[IDS_SOLO.CHAPTER11130025_EXPLANATION]
+Mind of the Psychic
+
+vs. Sayer
+[IDS_SOLO.CHAPTER11130026_EXPLANATION]
+The Noble Knights
+
+vs. Sherry LeBlanc
+[IDS_SOLO.CHAPTER11130027_EXPLANATION]
+Legendary Six Samurai
+
+vs. Tetsu Trudge
+[IDS_SOLO.CHAPTER11130028_EXPLANATION]
+Stardust Dragon Assault
+
+vs. Yusei Fudo
+[IDS_SOLO.CHAPTER11130029_EXPLANATION]
+Ascension of the Vylon
+
+vs. Zone
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11140001_EXPLANATION]
+Spirit of the Boxer
+
+vs. Alito
+[IDS_SOLO.CHAPTER11140002_EXPLANATION]
+Mecha Phantom Beasts
+
+vs. Anna Kaboom
+[IDS_SOLO.CHAPTER11140003_EXPLANATION]
+Utopia Force
+
+vs. Astral
+[IDS_SOLO.CHAPTER11140004_EXPLANATION]
+Tin Archduke's Order
+
+vs. Bronk Stone
+[IDS_SOLO.CHAPTER11140005_EXPLANATION]
+Wind-Up the Zenmai
+
+vs. Cathy Katherine
+[IDS_SOLO.CHAPTER11140006_EXPLANATION]
+Evilswarm Annihilation
+
+vs. Darkmist
+[IDS_SOLO.CHAPTER11140007_EXPLANATION]
+The Sylvan Blessings
+
+vs. Dextra
+[IDS_SOLO.CHAPTER11140008_EXPLANATION]
+Void of the Infernoid
+
+vs. Don Thousand
+[IDS_SOLO.CHAPTER11140009_EXPLANATION]
+Hazy Flame Rebirth
+
+vs. Dr. Faker
+[IDS_SOLO.CHAPTER11140010_EXPLANATION]
+Rising Star Seraph
+
+vs. Dumon
+[IDS_SOLO.CHAPTER11140011_EXPLANATION]
+Bite of the Chewbone
+
+vs. Flip Turner
+[IDS_SOLO.CHAPTER11140012_EXPLANATION]
+The Ronin Raccoon
+
+vs. Girag
+[IDS_SOLO.CHAPTER11140013_EXPLANATION]
+Hieratic Sun Dragon
+
+vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11140014_EXPLANATION]
+Dragunity Knights
+
+vs. Mizar
+[IDS_SOLO.CHAPTER11140015_EXPLANATION]
+Atlantean Marksman
+
+vs. Nash
+[IDS_SOLO.CHAPTER11140016_EXPLANATION]
+Wind from Mist Valley
+
+vs. Nelson Andrews
+[IDS_SOLO.CHAPTER11140017_EXPLANATION]
+Fire Fist Brotherhood
+
+vs. Nistro
+[IDS_SOLO.CHAPTER11140018_EXPLANATION]
+Shadow Shaddoll
+
+vs. Quattro
+[IDS_SOLO.CHAPTER11140019_EXPLANATION]
+Dyson Sphere Beast
+
+vs. Quinton
+[IDS_SOLO.CHAPTER11140020_EXPLANATION]
+Serenity of the Naturia
+
+vs. Ray Shadows
+[IDS_SOLO.CHAPTER11140021_EXPLANATION]
+Frog Metamorphosis
+
+vs. Rio Kastle
+[IDS_SOLO.CHAPTER11140022_EXPLANATION]
+Mermail or the Abyss
+
+vs. Shark
+[IDS_SOLO.CHAPTER11140023_EXPLANATION]
+Karakuri
+
+vs. Trey
+[IDS_SOLO.CHAPTER11140024_EXPLANATION]
+Inzektors of Orichalcos
+
+vs. Vector
+[IDS_SOLO.CHAPTER11140025_EXPLANATION]
+Power of the Nekroz
+
+vs. Vetrix
+[IDS_SOLO.CHAPTER11140026_EXPLANATION]
+Rise of Dark Simorgh
+
+vs. Yuma Tsukumo
+[IDS_SOLO.CHAPTER11140027_EXPLANATION]
+The Xyz Warrior
+
+vs. ZEXAL
+[IDS_SOLO.CHAPTER11140028_EXPLANATION]
+Bujin Reincarnation
+
+vs. ZEXAL III
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11150001_EXPLANATION]
+Spirit of the Shinobird
+
+vs. Alexis Rhodes
+[IDS_SOLO.CHAPTER11150002_EXPLANATION]
+Caves of the Subterror
+
+vs. Aster Pheonix
+[IDS_SOLO.CHAPTER11150003_EXPLANATION]
+Shadow Prediction
+
+vs. Aura Sentia
+[IDS_SOLO.CHAPTER11150004_EXPLANATION]
+Draco-Amorphage
+
+vs. Celina
+[IDS_SOLO.CHAPTER11150005_EXPLANATION]
+Rise of the Shiranui
+
+vs. Chojiro Tokumatsu
+[IDS_SOLO.CHAPTER11150006_EXPLANATION]
+Forming the Crystron
+
+vs. Crow Hogan
+[IDS_SOLO.CHAPTER11150007_EXPLANATION]
+Zefra Divine Stone
+
+vs. Declan Akaba
+[IDS_SOLO.CHAPTER11150008_EXPLANATION]
+Rank-Up Clowns
+
+vs. Dennis McField
+[IDS_SOLO.CHAPTER11150009_EXPLANATION]
+Goyo Confiscation
+
+vs. Duelchaser 227
+[IDS_SOLO.CHAPTER11150010_EXPLANATION]
+Superheavy Defender
+
+vs. Gong Strong
+[IDS_SOLO.CHAPTER11150011_EXPLANATION]
+Beyond the Constellar
+
+vs. Hokuto
+[IDS_SOLO.CHAPTER11150012_EXPLANATION]
+The True Draco
+
+vs. Jack Atlas
+[IDS_SOLO.CHAPTER11150013_EXPLANATION]
+Age of the Paleozoic
+
+vs. Jean Michel Roget
+[IDS_SOLO.CHAPTER11150014_EXPLANATION]
+The Burning Abyss
+
+vs. Kite Tenjo
+[IDS_SOLO.CHAPTER11150015_EXPLANATION]
+Monsters Fur Hire
+
+vs. Lulu
+[IDS_SOLO.CHAPTER11150016_EXPLANATION]
+Gem-Knight Resistence
+
+vs. Masumi
+[IDS_SOLO.CHAPTER11150017_EXPLANATION]
+Magnet Warrior Force
+
+vs. Obelisk Force
+[IDS_SOLO.CHAPTER11150018_EXPLANATION]
+Beasts of the Zoodiac
+
+vs. Rin
+[IDS_SOLO.CHAPTER11150019_EXPLANATION]
+Black Raid
+
+vs. Shay Obsidian
+[IDS_SOLO.CHAPTER11150020_EXPLANATION]
+Mega Monarch
+
+vs. Shingo
+[IDS_SOLO.CHAPTER11150021_EXPLANATION]
+Triamid Technology
+
+vs. The Sledgehammer
+[IDS_SOLO.CHAPTER11150022_EXPLANATION]
+The Frightful Fluffal
+
+vs. Sora Perse
+[IDS_SOLO.CHAPTER11150023_EXPLANATION]
+Ninja Transformation
+
+vs. Tsukikage
+[IDS_SOLO.CHAPTER11150024_EXPLANATION]
+XX-Saber Slash
+
+vs. Yaiba
+[IDS_SOLO.CHAPTER11150025_EXPLANATION]
+Clear Wind
+
+vs. Yugo
+[IDS_SOLO.CHAPTER11150026_EXPLANATION]
+Meltdown Invoked
+
+vs. Yuri
+[IDS_SOLO.CHAPTER11150027_EXPLANATION]
+The Spellcasters' Stone
+
+vs. Yusho Sakaki
+[IDS_SOLO.CHAPTER11150028_EXPLANATION]
+Stellarknight Nova Blast
+
+vs. Yuto
+[IDS_SOLO.CHAPTER11150029_EXPLANATION]
+The Pendulum Magicians
+
+vs. Yuya Sakaki
+[IDS_SOLO.CHAPTER11150030_EXPLANATION]
+Melodious Diva's Solo
+
+vs. Yuzu
+[IDS_SOLO.CHAPTER11150031_EXPLANATION]
+Charge of the Dinomist
+
+vs. Z-ARC
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11160001_EXPLANATION]
+Creeping Vendread
+
+vs. Ai
+[IDS_SOLO.CHAPTER11160002_EXPLANATION]
+Creepy Krawler
+
+vs. Akira Zaizen
+[IDS_SOLO.CHAPTER11160003_EXPLANATION]
+International Spyral
+
+vs. The Shepherd
+[IDS_SOLO.CHAPTER11160004_EXPLANATION]
+Trickstar Grand Arena
+
+vs. Blue Angel
+[IDS_SOLO.CHAPTER11160005_EXPLANATION]
+Metaphysical
+
+vs. Blue Gal
+[IDS_SOLO.CHAPTER11160006_EXPLANATION]
+Legendary Fisherman
+
+vs. Blue Maiden
+[IDS_SOLO.CHAPTER11160007_EXPLANATION]
+Elemental Lord
+
+vs. Bohman
+[IDS_SOLO.CHAPTER11160008_EXPLANATION]
+Secret Six
+
+vs. Ghost Gal
+[IDS_SOLO.CHAPTER11160009_EXPLANATION]
+Chemicritter Reaction
+
+vs. The Gore
+[IDS_SOLO.CHAPTER11160010_EXPLANATION]
+Golden Castle
+
+vs. Gore Bounty Hunter
+[IDS_SOLO.CHAPTER11160011_EXPLANATION]
+The Silent Warrior
+
+vs. Knight of Hanoi
+[IDS_SOLO.CHAPTER11160012_EXPLANATION]
+Hunder and Light
+
+vs. Lightning
+[IDS_SOLO.CHAPTER11160013_EXPLANATION]
+Link Light
+
+vs. Playmaker
+[IDS_SOLO.CHAPTER11160014_EXPLANATION]
+Formula Athlete
+
+vs. Roboppi
+[IDS_SOLO.CHAPTER11160015_EXPLANATION]
+Rekindled Laval
+
+vs. Soulburner
+[IDS_SOLO.CHAPTER11160016_EXPLANATION]
+Light and Darkness
+
+vs. Spectre
+[IDS_SOLO.CHAPTER11160017_EXPLANATION]
+Burning Mirrors
+
+vs. Varis
+[IDS_SOLO.CHAPTER11160018_EXPLANATION]
+Avenging Fairies
+
+vs. Varis
+[IDS_SOLO.CHAPTER11160019_EXPLANATION]
+Sky Strikers
+
+vs. Windy
+
+Unlocks an extra pack in the shop.
+[IDS_SOLO.CHAPTER11210001_EXPLANATION]
+An unknown duelist stands before you.
+
+He will loan you a deck if you wish.
+
+Either way, there's no escape.
+
+It's time to duel!
+[IDS_SOLO.CHAPTER11210002_EXPLANATION]
+Who is this challenger? Where did he come from?
+
+But more importantly...
+
+Which deck will he use next?
