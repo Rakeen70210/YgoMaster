@@ -1,69 +1,182 @@
-# YgoMaster
+# YgoMaster LE + Requiem
 
-Offline Yu-Gi-Oh! Master Duel (PC)
+Offline Yu-Gi-Oh! Master Duel (PC) with Link Evolution and Requiem campaign
+content.
 
 *Progress is not shared with the live game.*
 
+## About This Fork
+
+This repository is a community fork of
+[pixeltris/YgoMaster](https://github.com/pixeltris/YgoMaster). It keeps the
+upstream offline server and client while adding the complete LE Combined
+campaign data and the Requiem extensions assembled for this project.
+
+Compared with upstream YgoMaster, this fork includes:
+
+- Link Evolution story, challenge, starter, and mystery gates
+- Requiem story, reverse, optional, and challenge duels
+- Campaign text, character portraits, icons, and pack/shop artwork
+- Enemy-deck card rewards for Link Evolution victories
+- LE Combined shop, secret unlock, alternate-art, loaner, CPU deck, and
+  battlefield behavior ported onto the current upstream source
+- Import, migration, sanitation, and validation tools for maintaining the
+  combined campaign
+
+The custom data depends on the server changes in this fork. Using an upstream
+`YgoMaster.exe` or copying only `Data/` will produce an incomplete setup.
+
+See [Docs/LE-Requiem-Fork.md](Docs/LE-Requiem-Fork.md) for provenance,
+included components, validation commands, and third-party asset notes.
+
 ## Features
 
-- Create decks
-- Open packs
-- Solo content
+- Create decks and open packs
+- Full upstream solo content
+- Link Evolution and Requiem campaigns
 - Custom CPU duels
-- [PvP duels / friends / trading](Docs/PvP.md)
+- [PvP duels, friends, and trading](Docs/PvP.md)
 - Duel replays
-- YDK / YDKe support
-- Card collection stats / deck editor sub menu improvements
+- YDK and YDKe support
+- Card collection statistics and deck editor improvements
 
 ## Requirements
 
+- Yu-Gi-Oh! Master Duel installed through Steam
+- The in-game tutorial completed so Master Duel has downloaded all game data
 - .NET Framework 4.8
-- The game downloaded on Steam (complete the in-game tutorial to download all data)
+- Git
+- Visual Studio 2022 with **Desktop development with C++** to build from source
 
-YgoMaster is portable and can be used on any machine without Steam installed after being fully downloaded
+After Master Duel is fully downloaded, YgoMaster is portable and does not
+require Steam on the destination machine.
 
-## Usage
+## Setup
 
-- Download the latest release from https://github.com/pixeltris/YgoMaster/releases
-- Copy the `YgoMaster` folder (the folder, not the contents of the folder) into the game folder
-- Run `YgoMasterClient.exe` (this should also auto run `YgoMaster.exe`)
-- *[If you see file load error popups, infinite loading screens, corrupt screens, etc follow these instructions](Docs/FileLoadError.md)*
+There is not yet a prebuilt release for this fork. Build this repository so
+the custom server code and campaign data stay together.
 
-Additionally...
+1. Clone the fork:
 
-- [It's recommended that you tailor the server settings to your preferences](Docs/Settings.md)
-- Download [VG.TCG.Decks.7z](https://github.com/pixeltris/YgoMaster/releases/download/v1.4/VG.TCG.Decks.7z) for ~6000 decks from the YGO video games
-- The custom duel starter UI can be accessed using the DUEL button on the home screen
-- When updating copy your `/YgoMaster/Data/Players/` folder
-- [How to change language](Docs/ChangingLanguage.md)
-- [How to run on Linux](Docs/Linux.md)
+   ```bash
+   git clone https://github.com/Rakeen70210/YgoMaster.git
+   cd YgoMaster
+   ```
 
-## Compiling from source
+2. On Windows, run:
 
-- Install Visual Studio with C++ compilers
-- Run `Build.bat`
-- Copy the `YgoMaster` folder into the game folder as mentioned above
+   ```bat
+   Build.bat
+   ```
 
-Running `Build.bat` is the equivilant of:
+   This builds `YgoMaster.exe`, `YgoMasterClient.exe`,
+   `YgoMasterLoader.dll`, and `MonoRun.exe` into the repository's
+   `YgoMaster` folder.
 
-- Compiling `YgoMaster.sln` with Visual Studio
-- Compiling `YgoMasterLoader.cpp` with `cl`
+3. Open the Master Duel installation directory from Steam using
+   **Manage > Browse local files**.
+
+4. Copy the built `YgoMaster` folder itself into the Master Duel installation
+   directory. The result should resemble:
+
+   ```text
+   Yu-Gi-Oh! Master Duel/
+   ├── masterduel.exe
+   └── YgoMaster/
+       ├── Data/
+       ├── YgoMaster.exe
+       ├── YgoMasterClient.exe
+       └── YgoMasterLoader.dll
+   ```
+
+5. Run `YgoMasterClient.exe`. It should start `YgoMaster.exe` automatically.
+
+If the client shows file-load errors, corrupt screens, or an infinite loading
+screen, follow [Docs/FileLoadError.md](Docs/FileLoadError.md).
+
+## Linux Setup
+
+1. Complete the build above on Windows or in a Windows build environment.
+2. Copy the resulting `YgoMaster` folder into the Master Duel installation.
+3. Download
+   [YgoMaster-Linux-Data-v1.zip](https://github.com/pixeltris/YgoMaster/releases/download/v1.50/YgoMaster-Linux-Data-v1.zip)
+   from upstream and merge its `mono/` directory and `MonoRun.exe` into that
+   folder.
+4. Follow [Docs/Linux.md](Docs/Linux.md) to add `MonoRun.exe` to Steam and
+   launch it through Proton.
+
+The resulting folder must contain this fork's compiled executables and data,
+plus the upstream Linux runtime files:
+
+```text
+YgoMaster/
+├── Data/
+├── mono/
+├── MonoRun.exe
+├── YgoMaster.exe
+├── YgoMasterClient.exe
+└── YgoMasterLoader.dll
+```
+
+The machine-specific launch and troubleshooting record used while developing
+this fork is available in
+[Docs/LE-Requiem-Linux-Setup.md](Docs/LE-Requiem-Linux-Setup.md).
+
+## Updating
+
+Back up `YgoMaster/Data/Players/` before changing builds. Player saves are
+intentionally excluded from Git.
+
+Update and rebuild the fork:
+
+```bash
+git pull --ff-only
+```
+
+Then run `Build.bat` again and replace the installed binaries and data. Restore
+the backed-up `Data/Players/` directory afterward if needed.
+
+Do not replace this fork's executables with binaries from an upstream release;
+the LE Combined server behavior is required by the included campaign data.
+
+## Configuration
+
+- [Server settings](Docs/Settings.md)
+- [Changing language](Docs/ChangingLanguage.md)
+- [Requiem import and maintenance](Docs/RequiemImport.md)
+- [Campaign text and portrait notes](Docs/Campaign-Text-And-Icons.md)
+- [Enemy-deck reward behavior](Docs/LE-Enemy-Deck-Rewards.md)
+
+The custom duel starter is available through the **DUEL** button on the home
+screen. The optional
+[VG.TCG.Decks.7z](https://github.com/pixeltris/YgoMaster/releases/download/v1.4/VG.TCG.Decks.7z)
+archive provides approximately 6,000 decks from Yu-Gi-Oh! video games.
+
+## Validation
+
+From the repository root:
+
+```bash
+python3 -m unittest discover -s Tools -p 'test_*.py'
+python3 Tools/validate_requiem_campaigns.py
+python3 Tools/validate_le_enemy_deck_rewards.py
+python3 Tools/validate_campaign_portraits.py
+```
 
 ## Related
 
-- https://www.nexusmods.com/yugiohmasterduel/mods - community mods
-- https://www.nexusmods.com/yugiohmasterduel/articles/3 - modding guide
-- https://github.com/SethPDA/MasterDuel-Modding/wiki - modding guide
-- https://github.com/crazydoomy/MD-Replay-Editor - save / load replays
-- https://github.com/Nauder/ygomd-rush-frames - Rush Duel card frames mod
-- https://code.moenext.com/sherry_chaos/MDPro3 - forked YGOPro2 with Master Duel assets
+- [Upstream YgoMaster](https://github.com/pixeltris/YgoMaster)
+- [Community mods](https://www.nexusmods.com/yugiohmasterduel/mods)
+- [Master Duel modding guide](https://www.nexusmods.com/yugiohmasterduel/articles/3)
+- [Master Duel Modding Wiki](https://github.com/SethPDA/MasterDuel-Modding/wiki)
+- [MD Replay Editor](https://github.com/crazydoomy/MD-Replay-Editor)
 
 ## Screenshots
 
-![Alt text](Docs/Pics/ss1.jpg)
-![Alt text](Docs/Pics/ss2.jpg)
-![Alt text](Docs/Pics/ss3.jpg)
-![Alt text](Docs/Pics/ss4.jpg)
-![Alt text](Docs/Pics/ss5.jpg)
-![Alt text](Docs/Pics/ss6.jpg)
-![Alt text](Docs/Pics/ss7.jpg)
+![YgoMaster screenshot](Docs/Pics/ss1.jpg)
+![YgoMaster screenshot](Docs/Pics/ss2.jpg)
+![YgoMaster screenshot](Docs/Pics/ss3.jpg)
+![YgoMaster screenshot](Docs/Pics/ss4.jpg)
+![YgoMaster screenshot](Docs/Pics/ss5.jpg)
+![YgoMaster screenshot](Docs/Pics/ss6.jpg)
+![YgoMaster screenshot](Docs/Pics/ss7.jpg)
