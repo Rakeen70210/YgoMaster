@@ -798,10 +798,13 @@ namespace YgoMaster
                 case DuelResultType.Draw: minimumTurnsForSurrenderRewards = rewards.MinimumTurnsForSurrenderRewardsDraw; break;
             }
 
-            if ((rewards.Win.Count == 0 && rewards.Lose.Count == 0 && rewards.Draw.Count == 0) ||
+            bool shouldGiveOpponentDeckCardReward = ShouldGiveOpponentDeckCardReward(request.Player, result);
+            bool hasConfiguredRewards = rewards.Win.Count > 0 || rewards.Lose.Count > 0 || rewards.Draw.Count > 0;
+            bool suppressConfiguredRewards =
                 (rewards.ChapterStatusChangedNoRewards && chapterStatusChanged) ||
                 (rewards.ChapterStatusChangedOnly && !chapterStatusChanged) ||
-                (turn >= minimumTurnsForSurrenderRewards && finishType == DuelFinishType.Surrender))
+                (turn >= minimumTurnsForSurrenderRewards && finishType == DuelFinishType.Surrender);
+            if ((!hasConfiguredRewards || suppressConfiguredRewards) && !shouldGiveOpponentDeckCardReward)
             {
                 return;
             }
@@ -840,6 +843,10 @@ namespace YgoMaster
                 case DuelResultType.Lose: rewardInfos = rewards.Lose; break;
                 case DuelResultType.Draw: rewardInfos = rewards.Draw; break;
                 default: return;
+            }
+            if (suppressConfiguredRewards)
+            {
+                rewardInfos = new List<DuelRewardInfo>();
             }
 
             foreach (DuelRewardInfo reward in rewardInfos)
@@ -1073,12 +1080,69 @@ namespace YgoMaster
                         break;
                 }
             }
+            if (shouldGiveOpponentDeckCardReward)
+            {
+                GiveOpponentDeckCardReward(request, duelRewards, ref duelScoreTotal, blueBox, duelScoreRewardValue);
+            }
             duelScore["total"] = duelScoreTotal;
             // Force inventory reload so that gems and items amounts are updated immediately.
             request.Response["Item"] = new Dictionary<string, object>()
             {
                 { "have", GetItemHaveDictionary(request.Player) },
             };
+        }
+
+        bool ShouldGiveOpponentDeckCardReward(Player player, DuelResultType result)
+        {
+            return player != null && player.ActiveDuelSettings != null && result == DuelResultType.Lose;
+        }
+
+        void GiveOpponentDeckCardReward(GameServerWebRequest request, List<object> duelRewards, ref int duelScoreTotal, int rewardBoxType, int duelScoreRewardValue)
+        {
+            DeckInfo opponentDeck = GetOpponentDeckForReward(request.Player);
+            if (opponentDeck == null)
+            {
+                return;
+            }
+
+            List<int> cardIds = opponentDeck.GetAllCards(main: true, extra: true, side: true);
+            cardIds = cardIds
+                .Where(x => CardRare.ContainsKey(x) && request.Player.Cards.GetCount(x) < 3)
+                .Distinct()
+                .ToList();
+            if (cardIds.Count == 0)
+            {
+                return;
+            }
+
+            int cardId = cardIds[rand.Next(cardIds.Count)];
+            request.Player.Cards.Add(cardId, 1, DisableNoDismantle ? PlayerCardKind.Dismantle : PlayerCardKind.NoDismantle, CardStyleRarity.Normal);
+            WriteCards_have(request, cardId);
+            duelScoreTotal += duelScoreRewardValue;
+            duelRewards.Add(new Dictionary<string, object>()
+            {
+                { "type", rewardBoxType },
+                { "category", (int)ItemID.Category.CARD },
+                { "item_id", cardId },
+                { "num", 1 },
+                { "is_prize", true },
+            });
+        }
+
+        DeckInfo GetOpponentDeckForReward(Player player)
+        {
+            if (player == null || player.ActiveDuelSettings == null || player.ActiveDuelSettings.Deck == null)
+            {
+                return null;
+            }
+
+            int playerIndex = player.ActiveDuelSettings.pcode[0] == player.Code || player.ActiveDuelSettings.pcode[0] == 0 ? 0 : 1;
+            int opponentIndex = playerIndex == 0 ? 1 : 0;
+            if (opponentIndex < 0 || opponentIndex >= player.ActiveDuelSettings.Deck.Length)
+            {
+                return null;
+            }
+            return player.ActiveDuelSettings.Deck[opponentIndex];
         }
 
         void UpdateUnlockedSecretsForCompletedDuels(Player player, DuelResultType result, DuelFinishType finishType)
