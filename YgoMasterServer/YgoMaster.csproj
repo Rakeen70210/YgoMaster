@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Acts\Act_CardFile.cs" />
     <Compile Include="Acts\Act_Craft.cs" />
     <Compile Include="Acts\Act_Duel.cs" />
@@ -65,6 +68,20 @@
     <Compile Include="Infos\CardFile.cs" />
     <Compile Include="Lib\LinearCongruentialGenerator.cs" />
     <Compile Include="Lib\ProcessCommandLine.cs" />
+    <Compile Include="Llm\LlmActionCommitPlan.cs" />
+    <Compile Include="Llm\LlmBrokerClient.cs" />
+    <Compile Include="Llm\LlmBrokerControlPolicy.cs" />
+    <Compile Include="Llm\LlmBrokerPlayerResolver.cs" />
+    <Compile Include="Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="Llm\LlmCardDataDirectoryResolver.cs" />
+    <Compile Include="Llm\LlmCardCatalog.cs" />
+    <Compile Include="Llm\ILegalActionQuery.cs" />
+    <Compile Include="Llm\LegalActionExtractor.cs" />
+    <Compile Include="Llm\LegalActionTypes.cs" />
+    <Compile Include="Llm\LlmBrokerProtocol.cs" />
+    <Compile Include="Llm\LlmDecisionLogSerializer.cs" />
+    <Compile Include="Llm\PvpEngineStateLegalActionQuery.cs" />
+    <Compile Include="Llm\YdkLlmCardCatalog.cs" />
     <Compile Include="Net\Message\ConnectionRequestMessage.cs" />
     <Compile Include="Net\Message\ConnectionResponseMessage.cs" />
     <Compile Include="Net\Message\DuelComCancelCommand2Message.cs" />

@@ -306,7 +306,7 @@ namespace YgoMaster
             else
             {
                 DuelRoomTable table = duelRoom.GetTable(request.Player);
-                if (table != null && table.State == DuelRoomTableState.Dueling && table.HasBeginDuel)
+                if (table != null && table.IsDuelComplete)
                 {
                     duelRoom.ResetTableStateIfMatchingOrDueling(request.Player);
                 }

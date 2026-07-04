@@ -67,6 +67,11 @@ namespace YgoMasterClient
         public static float TradeActionDelayInSeconds;
         public static bool PvpLogToConsole;
         public static bool PvpLogToFile;
+        public static bool LlmDecisionLogEnabled;
+        public static bool LlmBrokerEnabled;
+        public static string LlmBrokerUrl;
+        public static int LlmBrokerTimeoutMs;
+        public static int LlmBrokerControlPlayer;
         public static bool PvpDuelTapSyncEnabled;
         public static float EmoteDurationInSeconds;
         public static GameLauncherMode LaunchMode;
@@ -192,6 +197,11 @@ namespace YgoMasterClient
             TradeActionDelayInSeconds = Utils.GetValue<float>(data, "TradeActionDelayInSeconds");
             PvpLogToConsole = Utils.GetValue<bool>(data, "PvpLogToConsole");
             PvpLogToFile = Utils.GetValue<bool>(data, "PvpLogToFile");
+            LlmDecisionLogEnabled = Utils.GetValue<bool>(data, "LlmDecisionLogEnabled");
+            LlmBrokerEnabled = Utils.GetValue<bool>(data, "LlmBrokerEnabled");
+            LlmBrokerUrl = Utils.GetValue<string>(data, "LlmBrokerUrl");
+            LlmBrokerTimeoutMs = Utils.GetValue<int>(data, "LlmBrokerTimeoutMs");
+            LlmBrokerControlPlayer = Utils.GetValue<int>(data, "LlmBrokerControlPlayer", -1);
             PvpDuelTapSyncEnabled = Utils.GetValue<bool>(data, "PvpDuelTapSyncEnabled");
             EmoteDurationInSeconds = Utils.GetValue<float>(data, "EmoteDurationInSeconds");
             LaunchMode = Utils.GetValue<GameLauncherMode>(data, "LaunchMode");

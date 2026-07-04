@@ -195,9 +195,9 @@ namespace YgoMaster
                         case DuelRoomTableState.P1StandingBy:
                         case DuelRoomTableState.P2StandingBy:
                         case DuelRoomTableState.Matched:
+                            table.ClearPlayerMatching(player);
+                            break;
                         case DuelRoomTableState.Dueling:
-                            Console.WriteLine("ResetTableStateIfMatchingOrDueling (" + table.State + ") on table " + Id +
-                                " requester pcode " + player.Code + " name '" + player.Name);
                             table.ClearMatching();
                             break;
                     }
@@ -477,6 +477,53 @@ namespace YgoMaster
             return null;
         }
 
+        public void ClearPlayerMatching(Player player)
+        {
+            lock (Entries)
+            {
+                DuelRoomTableEntry entry = GetEntry(player);
+                if (entry == null)
+                {
+                    return;
+                }
+
+                entry.IsMatchingOrInDuel = false;
+                entry.HasBeginDuel = false;
+                RefreshMatchingStateLocked();
+            }
+        }
+
+        void RefreshMatchingStateLocked()
+        {
+            DuelRoomTableEntry p1Entry = Entries[0];
+            DuelRoomTableEntry p2Entry = Entries[1];
+            bool p1Ready = p1Entry.Player != null && p1Entry.IsMatchingOrInDuel;
+            bool p2Ready = p2Entry.Player != null && p2Entry.IsMatchingOrInDuel;
+
+            if (p1Ready && p2Ready)
+            {
+                return;
+            }
+            else if (p1Ready)
+            {
+                State = DuelRoomTableState.P1StandingBy;
+                MatchedTime = default(DateTime);
+            }
+            else if (p2Ready)
+            {
+                State = DuelRoomTableState.P2StandingBy;
+                MatchedTime = default(DateTime);
+            }
+            else
+            {
+                State = DuelRoomTableState.Joinable;
+                MatchedTime = default(DateTime);
+                SecretKeyForPvpServer = null;
+                FirstPlayer = -1;
+                ClearPvpClient();
+            }
+        }
+
         public void ClearMatching()
         {
             lock (Entries)
@@ -487,9 +534,12 @@ namespace YgoMaster
                     entry.HasBeginDuel = false;
                 }
                 State = DuelRoomTableState.Joinable;
+                MatchedTime = default(DateTime);
                 SecretKeyForPvpServer = null;
+                FirstPlayer = -1;
             }
             ClearSpectators();
+            ClearPvpClient();
         }
 
         public bool InitDuel(int firstPlayer)

@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4C8BD3E5-7A0D-46DD-83FB-23DE306D1F7B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>YgoMaster</RootNamespace>
+    <AssemblyName>YgoMasterLlmTestHarness</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NoWarn>$(NoWarn);0649</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="DuelRoomTestStubs.cs" />
+    <Compile Include="..\YgoMasterServer\Infos\DuelRoom.cs">
+      <Link>Infos\DuelRoom.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Enums\Duel.cs">
+      <Link>Enums\Duel.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Lib\MiniJSON.cs">
+      <Link>Lib\MiniJSON.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\ILegalActionQuery.cs">
+      <Link>Llm\ILegalActionQuery.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LegalActionTypes.cs">
+      <Link>Llm\LegalActionTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LegalActionExtractor.cs">
+      <Link>Llm\LegalActionExtractor.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmActionCommitPlan.cs">
+      <Link>Llm\LlmActionCommitPlan.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerClient.cs">
+      <Link>Llm\LlmBrokerClient.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerControlPolicy.cs">
+      <Link>Llm\LlmBrokerControlPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerPlayerResolver.cs">
+      <Link>Llm\LlmBrokerPlayerResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRequestGate.cs">
+      <Link>Llm\LlmBrokerRequestGate.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs">
+      <Link>Llm\LlmCardDataDirectoryResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmCardCatalog.cs">
+      <Link>Llm\LlmCardCatalog.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs">
+      <Link>Llm\LlmBrokerProtocol.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmDecisionLogSerializer.cs">
+      <Link>Llm\LlmDecisionLogSerializer.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

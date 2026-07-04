@@ -50,6 +50,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="All" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="YgoMasterClient\DuelTutorialSetting.cs" />
     <Compile Include="YgoMasterClient\FixDeleteFile.cs" />
     <Compile Include="YgoMasterClient\HomeViewTweaks.cs" />
@@ -123,6 +126,20 @@
     <Compile Include="YgoMasterServer\Lib\LZ4Codec.Safe64.Dirty.cs" />
     <Compile Include="YgoMasterServer\Lib\LZ4Codec.Safe64HC.Dirty.cs" />
     <Compile Include="YgoMasterServer\Lib\MiniJSON.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmActionCommitPlan.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmBrokerClient.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmBrokerControlPolicy.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmBrokerPlayerResolver.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmCardCatalog.cs" />
+    <Compile Include="YgoMasterServer\Llm\ILegalActionQuery.cs" />
+    <Compile Include="YgoMasterServer\Llm\LegalActionExtractor.cs" />
+    <Compile Include="YgoMasterServer\Llm\LegalActionTypes.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmBrokerProtocol.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmDecisionLogSerializer.cs" />
+    <Compile Include="YgoMasterServer\Llm\PvpEngineStateLegalActionQuery.cs" />
+    <Compile Include="YgoMasterServer\Llm\YdkLlmCardCatalog.cs" />
     <Compile Include="YgoMasterServer\Infos\DeckInfo.cs" />
     <Compile Include="YgoMasterServer\Lib\MiniMessagePacker.cs" />
     <Compile Include="YgoMasterServer\Lib\ProcessCommandLine.cs" />

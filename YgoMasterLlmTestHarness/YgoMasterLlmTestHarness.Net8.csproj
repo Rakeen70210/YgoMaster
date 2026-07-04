@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>YgoMaster</RootNamespace>
+    <AssemblyName>YgoMasterLlmTestHarness.Net8</AssemblyName>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <NoWarn>SYSLIB0014;CS0649</NoWarn>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="DuelRoomTestStubs.cs" />
+    <Compile Include="..\YgoMasterServer\Infos\DuelRoom.cs" Link="Infos\DuelRoom.cs" />
+    <Compile Include="..\YgoMasterServer\Enums\Duel.cs" Link="Enums\Duel.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\MiniJSON.cs" Link="Lib\MiniJSON.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\ILegalActionQuery.cs" Link="Llm\ILegalActionQuery.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LegalActionTypes.cs" Link="Llm\LegalActionTypes.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LegalActionExtractor.cs" Link="Llm\LegalActionExtractor.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmActionCommitPlan.cs" Link="Llm\LlmActionCommitPlan.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerClient.cs" Link="Llm\LlmBrokerClient.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerControlPolicy.cs" Link="Llm\LlmBrokerControlPolicy.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerPlayerResolver.cs" Link="Llm\LlmBrokerPlayerResolver.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRequestGate.cs" Link="Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs" Link="Llm\LlmCardDataDirectoryResolver.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmCardCatalog.cs" Link="Llm\LlmCardCatalog.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs" Link="Llm\LlmBrokerProtocol.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDecisionLogSerializer.cs" Link="Llm\LlmDecisionLogSerializer.cs" />
+  </ItemGroup>
+</Project>
