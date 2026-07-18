@@ -1,0 +1,368 @@
+{
+  "decision_snapshot": {
+    "controlled_player": 1,
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "card_id": 1002,
+        "card_name": "Board Threat Spell",
+        "command": "Activate",
+        "kind": "command",
+        "label": "Activate Board Threat Spell"
+      },
+      {
+        "action_id": 1,
+        "kind": "move_phase",
+        "phase": "End"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8011,
+    "schema_version": 3,
+    "self_resources_summary": {
+      "hand": [
+        {
+          "card_id": 1002,
+          "name": "Board Threat Spell"
+        }
+      ]
+    }
+  },
+  "description": "Search stops at unknown opponent response boundary; no hidden-card assumption.",
+  "expectations": {
+    "acceptable_selected_roots": [
+      0,
+      1
+    ],
+    "coverage_budget_limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "decline": {
+      "acceptable": false,
+      "required": false,
+      "root_action_id": null
+    },
+    "exact_unsupported_reason": null,
+    "forbidden_hidden_facts": [
+      "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+      "99105061",
+      "SENTINEL_OPP_SET_LEAK_LLM005_S4",
+      "99105062",
+      "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+      "99105063",
+      "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+      "99105064"
+    ],
+    "forbidden_rationale_claims": [
+      "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+      "opponent holds",
+      "I know the set card is"
+    ],
+    "required_candidate_lines": [
+      {
+        "boundary": "unknown_opponent_response",
+        "future_steps_not_commit_eligible": true,
+        "line_id": "line:threat_stops_at_opp",
+        "must_contain_step_substrings": [
+          "unknown opponent response"
+        ],
+        "root_action_id": 0
+      }
+    ],
+    "required_outcome_properties": {},
+    "required_root_action_ids": [
+      0,
+      1
+    ],
+    "required_root_identities": [],
+    "required_score_rationale_properties": {},
+    "semantic_gates": []
+  },
+  "family": "stop_unknown_opponent_response",
+  "fixture_id": "unknown_opponent_response_boundary",
+  "hidden_sentinels": {
+    "opponent_deck_card_id": 99105064,
+    "opponent_deck_name": "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+    "opponent_extra_card_id": 99105063,
+    "opponent_extra_name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+    "opponent_hand_card_id": 99105061,
+    "opponent_hand_name": "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+    "opponent_set_card_id": 99105062,
+    "opponent_set_name": "SENTINEL_OPP_SET_LEAK_LLM005_S4"
+  },
+  "provider_visible": {
+    "controlled_player": 1,
+    "kind": "decision_request",
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "card_id": 1002,
+        "card_name": "Board Threat Spell",
+        "command": "Activate",
+        "kind": "command",
+        "label": "Activate Board Threat Spell"
+      },
+      {
+        "action_id": 1,
+        "kind": "move_phase",
+        "phase": "End"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8011,
+    "schema_version": 3,
+    "search_projection": {
+      "coverage": {
+        "boundary_nodes": 1,
+        "continuation_expansion_count": 1,
+        "elapsed_ms": 12,
+        "exclusion_reasons": [],
+        "expanded_nodes": 1,
+        "legal_root_actions": 2,
+        "no_candidate_reasons": [],
+        "non_expansion_reasons": [],
+        "pruned_nodes": 0,
+        "pruning_reasons": [],
+        "represented_root_actions": 2,
+        "root_exclusions": [],
+        "root_shell_count": 2,
+        "transposition_prunes": 0
+      },
+      "limits": {
+        "beam_width": 12,
+        "max_nodes": 96,
+        "max_serialized_bytes": 16384,
+        "max_strategic_depth": 4,
+        "max_wall_ms": 500
+      },
+      "lines": [
+        {
+          "boundary": "unknown_opponent_response",
+          "commit_eligible": true,
+          "is_root_shell": true,
+          "line_id": "root:0",
+          "provenance": "engine_confirmed",
+          "root_action_id": 0,
+          "score": 50,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "Activate Board Threat Spell",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [],
+          "unlocks": []
+        },
+        {
+          "boundary": null,
+          "commit_eligible": true,
+          "is_root_shell": true,
+          "line_id": "root:1",
+          "provenance": "engine_confirmed",
+          "root_action_id": 1,
+          "score": 25,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "End Phase",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [],
+          "unlocks": []
+        },
+        {
+          "boundary": "unknown_opponent_response",
+          "commit_eligible": false,
+          "is_root_shell": false,
+          "line_id": "line:threat_stops_at_opp",
+          "provenance": "rules_inferred",
+          "root_action_id": 0,
+          "score": 50,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "Activate Board Threat Spell",
+              "provenance": "engine_confirmed"
+            },
+            {
+              "commit_eligible": false,
+              "current_legal": false,
+              "label": "STOP: unknown opponent response",
+              "provenance": "rules_inferred"
+            }
+          ],
+          "strategic_depth": 1,
+          "uncertainty": [
+            "opponent may chain unknown set cards"
+          ],
+          "unlocks": []
+        }
+      ],
+      "root_run_effect_seq": 8011,
+      "search_id": "search-8011",
+      "status": "complete"
+    },
+    "self_resources_summary": {
+      "hand": [
+        {
+          "card_id": 1002,
+          "name": "Board Threat Spell"
+        }
+      ]
+    }
+  },
+  "schema": "ygomaster.llm_decision_search_corpus.v1",
+  "search_projection": {
+    "coverage": {
+      "boundary_nodes": 1,
+      "continuation_expansion_count": 1,
+      "elapsed_ms": 12,
+      "exclusion_reasons": [],
+      "expanded_nodes": 1,
+      "legal_root_actions": 2,
+      "no_candidate_reasons": [],
+      "non_expansion_reasons": [],
+      "pruned_nodes": 0,
+      "pruning_reasons": [],
+      "represented_root_actions": 2,
+      "root_exclusions": [],
+      "root_shell_count": 2,
+      "transposition_prunes": 0
+    },
+    "limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "lines": [
+      {
+        "boundary": "unknown_opponent_response",
+        "commit_eligible": true,
+        "is_root_shell": true,
+        "line_id": "root:0",
+        "provenance": "engine_confirmed",
+        "root_action_id": 0,
+        "score": 50,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "Activate Board Threat Spell",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [],
+        "unlocks": []
+      },
+      {
+        "boundary": null,
+        "commit_eligible": true,
+        "is_root_shell": true,
+        "line_id": "root:1",
+        "provenance": "engine_confirmed",
+        "root_action_id": 1,
+        "score": 25,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "End Phase",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [],
+        "unlocks": []
+      },
+      {
+        "boundary": "unknown_opponent_response",
+        "commit_eligible": false,
+        "is_root_shell": false,
+        "line_id": "line:threat_stops_at_opp",
+        "provenance": "rules_inferred",
+        "root_action_id": 0,
+        "score": 50,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "Activate Board Threat Spell",
+            "provenance": "engine_confirmed"
+          },
+          {
+            "commit_eligible": false,
+            "current_legal": false,
+            "label": "STOP: unknown opponent response",
+            "provenance": "rules_inferred"
+          }
+        ],
+        "strategic_depth": 1,
+        "uncertainty": [
+          "opponent may chain unknown set cards"
+        ],
+        "unlocks": []
+      }
+    ],
+    "root_run_effect_seq": 8011,
+    "search_id": "search-8011",
+    "status": "complete"
+  }
+}

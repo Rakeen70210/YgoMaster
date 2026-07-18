@@ -28,6 +28,9 @@
     "MultiplayerPvpClientSysActCallsPerSleep": 5,
     "MultiplayerPvpClientDoCommandUserOffset": 15616,
     "MultiplayerPvpClientRunDialogUserOffset": 15512,
+    // YGOMASTER-LLM-005 Slice 5: server-side Pvp accepted-input transcript (default-off).
+    "LlmPvpAcceptedInputTranscriptEnabled": false,
+    "LlmPvpAcceptedInputTranscriptFlushPath": "Data/ClientData/LlmPvpAcceptedInputTranscript_{room_id}_{table_hash}.json",
     "DisableDeckValidation": false,
     "DontUpdateDeckEditTime": false,
     "DeckListAlphabetical": true,

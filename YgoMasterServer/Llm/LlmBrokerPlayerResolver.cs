@@ -15,6 +15,15 @@ namespace YgoMaster
             switch (viewType)
             {
                 case DuelViewType.WaitInput:
+                    // Contextual prompts can belong to the non-turn player, so
+                    // use the absolute DLL-reported command seat. Phase menus
+                    // retain the turn-player rule because DoCommandUser can be stale.
+                    if (param1 >= (int)DuelMenuActType.CheckTiming &&
+                        param1 <= (int)DuelMenuActType.LockOn)
+                    {
+                        return TryResolveReportedOrRivalTurn(
+                            doCommandUser, myId, turnPlayer, out player);
+                    }
                     player = IsPlayerIndex(turnPlayer) ? turnPlayer : doCommandUser;
                     return IsPlayerIndex(player);
                 case DuelViewType.RunDialog:
@@ -36,19 +45,19 @@ namespace YgoMaster
             int turnPlayer,
             out int player)
         {
-            if (IsPlayerIndex(reportedPlayer) && reportedPlayer != myId)
-            {
-                player = reportedPlayer;
-                return true;
-            }
-            if (IsPlayerIndex(turnPlayer) && turnPlayer != myId)
-            {
-                player = turnPlayer;
-                return true;
-            }
+            // DoCommandUser / RunDialogUser are absolute seat ids broadcast
+            // identically to both clients. Never interpret them relative to myId:
+            // that made the two clients disagree on acting_player for the same
+            // seq (live hang 2026-07-09: ROOT saw RunDialog acting=1 while P2
+            // rewrote the same reported local seat to turnPlayer).
             if (IsPlayerIndex(reportedPlayer))
             {
                 player = reportedPlayer;
+                return true;
+            }
+            if (IsPlayerIndex(turnPlayer))
+            {
+                player = turnPlayer;
                 return true;
             }
             player = -1;

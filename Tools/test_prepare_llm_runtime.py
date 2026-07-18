@@ -82,6 +82,7 @@ class PrepareLlmRuntimeTests(unittest.TestCase):
             self.assertEqual(status["game_processes"], ["123 Z:\\path\\YgoMaster.exe"])
             self.assertEqual(status["decision_log"]["exists"], True)
             self.assertEqual(status["decision_log"]["size"], 3)
+            self.assertEqual(status["reasoning_log"]["exists"], False)
 
     def test_collect_status_reports_broker_tcp_and_identity_health(self):
         runtime_settings = (
@@ -414,7 +415,301 @@ class PrepareLlmRuntimeTests(unittest.TestCase):
         self.assertEqual(settings["LlmDecisionLogEnabled"], False)
         self.assertEqual(settings["LlmBrokerEnabled"], False)
         self.assertEqual(settings["LlmBrokerControlPlayer"], -1)
-        self.assertEqual(settings["LlmBrokerTimeoutMs"], 2000)
+        self.assertEqual(settings["LlmBrokerTimeoutMs"], 55000)
+        # Broker enable/disable must not implicitly flip private self-resources audit.
+        self.assertNotIn("LlmSelfResourcesAuditEnabled", settings)
+
+    def test_broker_settings_enable_does_not_implicitly_enable_self_resources_audit(self):
+        settings = prep.broker_settings(True, 1, "http://127.0.0.1:4991/decide", 2000)
+        self.assertEqual(settings["LlmBrokerEnabled"], True)
+        self.assertNotIn("LlmSelfResourcesAuditEnabled", settings)
+
+    def test_self_resources_audit_explicit_toggle_updates_setting(self):
+        original = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": false,\n'
+            '    "LlmBrokerEnabled": false,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 2000,\n'
+            '    "LlmBrokerControlPlayer": -1,\n'
+            '    "LlmSelfResourcesAuditEnabled": false,\n'
+            '    "PvpLogToFile": false,\n'
+            "}\n"
+        )
+        updated = prep.update_settings_text(
+            original,
+            {"LlmSelfResourcesAuditEnabled": True},
+        )
+        self.assertIn('"LlmSelfResourcesAuditEnabled": true', updated)
+        values = prep.read_settings_values(updated)
+        self.assertEqual(values["LlmSelfResourcesAuditEnabled"], True)
+
+        off = prep.update_settings_text(
+            updated,
+            {"LlmSelfResourcesAuditEnabled": False},
+        )
+        self.assertIn('"LlmSelfResourcesAuditEnabled": false', off)
+        self.assertEqual(prep.read_settings_values(off)["LlmSelfResourcesAuditEnabled"], False)
+
+    def test_read_settings_reports_self_resources_audit_default_false(self):
+        text = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": false,\n'
+            '    "LlmBrokerEnabled": false,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 2000,\n'
+            '    "LlmBrokerControlPlayer": -1,\n'
+            '    "LlmSelfResourcesAuditEnabled": false,\n'
+            '    "PvpLogToFile": false,\n'
+            "}\n"
+        )
+        values = prep.read_settings_values(text)
+        self.assertEqual(values["LlmSelfResourcesAuditEnabled"], False)
+
+    def _old_runtime_settings_without_audit_key(self):
+        # Realistic pre-Slice-1B deployed root ClientSettings.json (no audit key).
+        return (
+            "{\n"
+            '    "MultiplayerPort": 0,// keep comment\n'
+            '    "LlmDecisionLogEnabled": true,// keep comment\n'
+            '    "LlmBrokerEnabled": true,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",// URL keeps //\n'
+            '    "LlmBrokerTimeoutMs": 55000,\n'
+            '    "LlmBrokerControlPlayer": 1,\n'
+            '    "PvpLogToFile": true,\n'
+            '    "EmoteDurationInSeconds": 4.0,\n'
+            "}\n"
+        )
+
+    def test_migrate_self_resources_audit_on_old_runtime_inserts_true(self):
+        original = self._old_runtime_settings_without_audit_key()
+        self.assertIsNone(
+            prep.read_settings_values(original)["LlmSelfResourcesAuditEnabled"]
+        )
+
+        updated = prep.update_settings_text(
+            original,
+            {"LlmSelfResourcesAuditEnabled": True},
+        )
+        values = prep.read_settings_values(updated)
+        self.assertEqual(values["LlmSelfResourcesAuditEnabled"], True)
+        self.assertEqual(prep.count_setting_keys(updated, "LlmSelfResourcesAuditEnabled"), 1)
+        self.assertIn('    "LlmBrokerControlPlayer": 1,', updated)
+        self.assertIn('    "LlmSelfResourcesAuditEnabled": true,', updated)
+        # Preserve comments and unrelated keys.
+        self.assertIn("// keep comment", updated)
+        self.assertIn("// URL keeps //", updated)
+        self.assertIn('"MultiplayerPort": 0', updated)
+        self.assertIn('"EmoteDurationInSeconds": 4.0', updated)
+
+    def test_migrate_self_resources_audit_off_writes_false_and_is_idempotent(self):
+        original = self._old_runtime_settings_without_audit_key()
+        once = prep.update_settings_text(
+            original,
+            {"LlmSelfResourcesAuditEnabled": False},
+        )
+        self.assertEqual(
+            prep.read_settings_values(once)["LlmSelfResourcesAuditEnabled"], False
+        )
+        twice = prep.update_settings_text(
+            once,
+            {"LlmSelfResourcesAuditEnabled": False},
+        )
+        self.assertEqual(
+            prep.read_settings_values(twice)["LlmSelfResourcesAuditEnabled"], False
+        )
+        self.assertEqual(prep.count_setting_keys(twice, "LlmSelfResourcesAuditEnabled"), 1)
+
+        inserted_on = prep.update_settings_text(
+            original,
+            {"LlmSelfResourcesAuditEnabled": True},
+        )
+        flipped_off = prep.update_settings_text(
+            inserted_on,
+            {"LlmSelfResourcesAuditEnabled": False},
+        )
+        self.assertEqual(
+            prep.read_settings_values(flipped_off)["LlmSelfResourcesAuditEnabled"], False
+        )
+        self.assertEqual(
+            prep.count_setting_keys(flipped_off, "LlmSelfResourcesAuditEnabled"), 1
+        )
+
+    def test_broker_enable_without_audit_flag_does_not_insert_audit_key(self):
+        original = self._old_runtime_settings_without_audit_key()
+        settings = prep.broker_settings(True, 1, "http://127.0.0.1:4991/decide", 55000)
+        self.assertNotIn("LlmSelfResourcesAuditEnabled", settings)
+        updated = prep.update_settings_text(original, settings)
+        self.assertIsNone(
+            prep.read_settings_values(updated)["LlmSelfResourcesAuditEnabled"]
+        )
+        self.assertEqual(
+            prep.count_setting_keys(updated, "LlmSelfResourcesAuditEnabled"), 0
+        )
+        self.assertIn('"LlmBrokerEnabled": true', updated)
+
+    def test_apply_settings_audit_toggle_leaves_source_untouched_without_include_flag(self):
+        old_runtime = self._old_runtime_settings_without_audit_key()
+        source_with_key = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": false,\n'
+            '    "LlmBrokerEnabled": false,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 2000,\n'
+            '    "LlmBrokerControlPlayer": -1,\n'
+            '    "LlmSelfResourcesAuditEnabled": false,\n'
+            '    "PvpLogToFile": false,\n'
+            "}\n"
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            runtime_dir = Path(tmp)
+            runtime_path = runtime_dir / "Data" / "ClientData" / "ClientSettings.json"
+            source_path = (
+                runtime_dir / "YgoMaster" / "Data" / "ClientData" / "ClientSettings.json"
+            )
+            runtime_path.parent.mkdir(parents=True)
+            source_path.parent.mkdir(parents=True)
+            runtime_path.write_text(old_runtime, encoding="utf-8")
+            source_path.write_text(source_with_key, encoding="utf-8")
+
+            prep.apply_settings(
+                runtime_dir,
+                include_source=False,
+                settings={"LlmSelfResourcesAuditEnabled": True},
+                backup_dir=runtime_dir / "backup",
+                write=True,
+            )
+
+            runtime_text = runtime_path.read_text(encoding="utf-8")
+            source_text = source_path.read_text(encoding="utf-8")
+            self.assertEqual(
+                prep.read_settings_values(runtime_text)["LlmSelfResourcesAuditEnabled"],
+                True,
+            )
+            self.assertEqual(source_text, source_with_key)
+            self.assertEqual(
+                prep.read_settings_values(source_text)["LlmSelfResourcesAuditEnabled"],
+                False,
+            )
+
+    def test_status_rejects_self_resources_audit_as_mutating_option(self):
+        stderr = io.StringIO()
+        with self.assertRaises(SystemExit) as raised:
+            with contextlib.redirect_stderr(stderr):
+                prep.main(
+                    [
+                        "--status",
+                        "--self-resources-audit",
+                        "on",
+                    ]
+                )
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn(
+            "--status cannot be combined with mutating options",
+            stderr.getvalue(),
+        )
+
+    def test_planning_search_audit_migration_and_toggle(self):
+        original = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": true,\n'
+            '    "LlmBrokerEnabled": true,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 55000,\n'
+            '    "LlmBrokerControlPlayer": 1,\n'
+            '    "LlmSelfResourcesAuditEnabled": false,\n'
+            '    "PvpLogToFile": true,\n'
+            "}\n"
+        )
+        self.assertIsNone(
+            prep.read_settings_values(original).get("LlmPlanningSearchAuditEnabled")
+        )
+        on = prep.update_settings_text(
+            original, {"LlmPlanningSearchAuditEnabled": True}
+        )
+        self.assertEqual(
+            prep.read_settings_values(on)["LlmPlanningSearchAuditEnabled"], True
+        )
+        self.assertEqual(
+            prep.count_setting_keys(on, "LlmPlanningSearchAuditEnabled"), 1
+        )
+        off = prep.update_settings_text(on, {"LlmPlanningSearchAuditEnabled": False})
+        self.assertEqual(
+            prep.read_settings_values(off)["LlmPlanningSearchAuditEnabled"], False
+        )
+        again = prep.update_settings_text(
+            off, {"LlmPlanningSearchAuditEnabled": False}
+        )
+        self.assertEqual(
+            prep.count_setting_keys(again, "LlmPlanningSearchAuditEnabled"), 1
+        )
+        # Broker enable must not insert planning audit.
+        broker = prep.broker_settings(True, 1, "http://127.0.0.1:4991/decide", 55000)
+        self.assertNotIn("LlmPlanningSearchAuditEnabled", broker)
+
+    def test_status_rejects_planning_search_audit_as_mutating_option(self):
+        stderr = io.StringIO()
+        with self.assertRaises(SystemExit) as raised:
+            with contextlib.redirect_stderr(stderr):
+                prep.main(["--status", "--planning-search-audit", "on"])
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn(
+            "--status cannot be combined with mutating options",
+            stderr.getvalue(),
+        )
+
+    def test_search_limit_defaults_migration_and_broker_does_not_imply(self):
+        original = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": true,\n'
+            '    "LlmBrokerEnabled": true,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 55000,\n'
+            '    "LlmBrokerControlPlayer": 1,\n'
+            '    "LlmSelfResourcesAuditEnabled": false,\n'
+            '    "LlmPlanningSearchAuditEnabled": false,\n'
+            '    "PvpLogToFile": true,\n'
+            "}\n"
+        )
+        self.assertIsNone(
+            prep.read_settings_values(original).get("LlmSearchMaxNodes")
+        )
+        migrated = prep.update_settings_text(
+            original, dict(prep.LLM_SEARCH_LIMIT_DEFAULTS)
+        )
+        values = prep.read_settings_values(migrated)
+        self.assertEqual(values["LlmSearchMaxStrategicDepth"], 4)
+        self.assertEqual(values["LlmSearchMaxNodes"], 96)
+        self.assertEqual(values["LlmSearchBeamWidth"], 12)
+        self.assertEqual(values["LlmSearchMaxWallMs"], 500)
+        self.assertEqual(values["LlmSearchMaxSerializedBytes"], 16384)
+        for key in prep.LLM_SEARCH_LIMIT_DEFAULTS:
+            self.assertEqual(prep.count_setting_keys(migrated, key), 1)
+
+        # Broker enable must not insert search limits or planning audit.
+        broker = prep.broker_settings(True, 1, "http://127.0.0.1:4991/decide", 55000)
+        self.assertNotIn("LlmPlanningSearchAuditEnabled", broker)
+        for key in prep.LLM_SEARCH_LIMIT_DEFAULTS:
+            self.assertNotIn(key, broker)
+
+        overridden = prep.update_settings_text(
+            migrated, {"LlmSearchMaxNodes": 48, "LlmSearchBeamWidth": 6}
+        )
+        ov = prep.read_settings_values(overridden)
+        self.assertEqual(ov["LlmSearchMaxNodes"], 48)
+        self.assertEqual(ov["LlmSearchBeamWidth"], 6)
+        self.assertEqual(prep.count_setting_keys(overridden, "LlmSearchMaxNodes"), 1)
+
+    def test_status_rejects_search_limit_mutating_option(self):
+        stderr = io.StringIO()
+        with self.assertRaises(SystemExit) as raised:
+            with contextlib.redirect_stderr(stderr):
+                prep.main(["--status", "--ensure-search-limit-defaults"])
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn(
+            "--status cannot be combined with mutating options",
+            stderr.getvalue(),
+        )
 
     def test_deploy_dry_run_does_not_require_game_to_be_closed(self):
         original_guard = prep.ensure_game_not_running

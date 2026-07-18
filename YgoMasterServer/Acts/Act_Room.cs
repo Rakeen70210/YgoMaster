@@ -1258,6 +1258,12 @@ namespace YgoMaster
                     data["KeepConsoleAlive"] = MultiplayerPvpClientShowConsole && MultiplayerPvpClientKeepConsoleAlive;
                     data["DoCommandUserOffset"] = MultiplayerPvpClientDoCommandUserOffset;
                     data["RunDialogUserOffset"] = MultiplayerPvpClientRunDialogUserOffset;
+                    // Layer B Pvp accepted-input transcript launch keys only (no deck/transcript broadcast).
+                    // Exact lowercase keys required by harness wiring contract (and match authority constants).
+                    data["llm_pvp_accepted_input_transcript_enabled"] =
+                        LlmPvpAcceptedInputTranscriptEnabled;
+                    data["llm_pvp_accepted_input_transcript_flush_path"] =
+                        FormatLlmPvpAcceptedInputTranscriptFlushPath(duelRoom, table);
 
                     process.StartInfo.Arguments = "--pvp \"" + Convert.ToBase64String(Encoding.UTF8.GetBytes(MiniJSON.Json.Serialize(data))) + "\"";
                     if (Program.IsMonoRun)
@@ -1318,6 +1324,25 @@ namespace YgoMaster
             request.Response["Duel"] = duelData;
 
             request.Remove("Duel", "DuelResult", "Result");
+        }
+
+        /// <summary>
+        /// Resolve flush path template for Pvp authority capture. Launch keys only — never decks/transcript body.
+        /// </summary>
+        string FormatLlmPvpAcceptedInputTranscriptFlushPath(DuelRoom duelRoom, DuelRoomTable table)
+        {
+            string template = LlmPvpAcceptedInputTranscriptFlushPath;
+            if (string.IsNullOrEmpty(template))
+            {
+                return string.Empty;
+            }
+            string roomId = duelRoom != null ? duelRoom.Id.ToString() : "0";
+            string tableHash = table != null && !string.IsNullOrEmpty(table.TableHash)
+                ? table.TableHash
+                : Guid.NewGuid().ToString("N");
+            return template
+                .Replace("{room_id}", roomId)
+                .Replace("{table_hash}", tableHash);
         }
 
         void Act_RoomGetResultList(GameServerWebRequest request)

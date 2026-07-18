@@ -1,0 +1,148 @@
+{
+  "duel_settings": {
+    "decks": {
+      "player0_extra": [
+        10
+      ],
+      "player0_main": [
+        1,
+        2,
+        3
+      ],
+      "player1_extra": [
+        11,
+        12
+      ],
+      "player1_main": [
+        4,
+        5,
+        6
+      ]
+    },
+    "first_player": 1,
+    "limited_type": 0,
+    "seed": 10558693
+  },
+  "entries": [
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 1,
+      "actor": 1,
+      "kind": "DoCommand",
+      "payload": {
+        "command_id": 5,
+        "index": 0,
+        "player": 1,
+        "position": 13
+      },
+      "run_effect_seq": 9000
+    },
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 2,
+      "actor": 1,
+      "kind": "MovePhase",
+      "payload": {
+        "phase": "Battle"
+      },
+      "run_effect_seq": 9000
+    },
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 3,
+      "actor": 1,
+      "kind": "Dialog",
+      "payload": {
+        "dialog": "Confirm",
+        "result": "Yes"
+      },
+      "run_effect_seq": 9001
+    },
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 4,
+      "actor": 1,
+      "kind": "List",
+      "payload": {
+        "list_id": 3,
+        "selected_indexes": [
+          0
+        ]
+      },
+      "run_effect_seq": 9001
+    },
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 5,
+      "actor": 1,
+      "kind": "Cancel",
+      "payload": {
+        "cancel_decide": true,
+        "semantics": "decline_response"
+      },
+      "run_effect_seq": 9001
+    },
+    {
+      "acceptance_provenance": "engine_accepted",
+      "accepted": true,
+      "accepted_sequence": 6,
+      "actor": 0,
+      "kind": "Automatic",
+      "payload": {
+        "auto_commit": true,
+        "kind": "single_decide"
+      },
+      "run_effect_seq": 9001
+    }
+  ],
+  "excluded_attempts": [
+    {
+      "accepted": false,
+      "kind": "DoCommand",
+      "run_effect_seq": 8999,
+      "status": "rejected_stale_seq"
+    },
+    {
+      "accepted": false,
+      "kind": "DoCommand",
+      "run_effect_seq": 9001,
+      "status": "rejected_illegal"
+    }
+  ],
+  "expectations": {
+    "checkpoint_match_required": true,
+    "information_set_invariance": true,
+    "layer_a_budget_hard_fail": false,
+    "layer_a_budget_ms": 500,
+    "never_synthesize_opponent_pass": true,
+    "p95_latency_reported_separately": true
+  },
+  "fixture_id": "excludes_rejected_stale",
+  "hidden_sentinels_private": {
+    "opponent_deck_card_id": 99106003,
+    "opponent_deck_name": "SENTINEL_OPP_DECK_LEAK_LLM005_S5",
+    "opponent_extra_card_id": 99106004,
+    "opponent_extra_name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S5",
+    "opponent_hand_card_id": 99106001,
+    "opponent_hand_name": "SENTINEL_OPP_HAND_LEAK_LLM005_S5",
+    "opponent_set_card_id": 99106002,
+    "opponent_set_name": "SENTINEL_OPP_SET_LEAK_LLM005_S5"
+  },
+  "required_boundary_cases": [
+    "opponent_wait_input",
+    "optional_response",
+    "multi_select",
+    "random_result",
+    "unsupported_mode",
+    "checkpoint_mismatch",
+    "stale_generation",
+    "timeout",
+    "crash"
+  ],
+  "schema": "ygomaster.llm_accepted_input_transcript.v1"
+}

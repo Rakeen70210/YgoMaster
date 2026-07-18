@@ -1,0 +1,51 @@
+{
+  "controlled_self": {
+    "field": [
+      {
+        "card_id": 5136,
+        "face": 1
+      }
+    ],
+    "hand_count": 4,
+    "player": 1
+  },
+  "expectations": {
+    "fingerprint_must_ignore_opponent_hidden": true,
+    "pair_id": "visible_equiv_s5"
+  },
+  "fixture_id": "pair_b_visible_equivalent",
+  "opponent_hidden_private": {
+    "deck_top": [
+      {
+        "card_id": 88206003,
+        "name": "ALT_OPP_DECK_HIDDEN_S5"
+      }
+    ],
+    "extra": [
+      {
+        "card_id": 88206004,
+        "name": "ALT_OPP_EXTRA_HIDDEN_S5"
+      }
+    ],
+    "hand": [
+      {
+        "card_id": 88206001,
+        "name": "ALT_OPP_HAND_HIDDEN_S5"
+      }
+    ],
+    "set": [
+      {
+        "card_id": 88206002,
+        "name": "ALT_OPP_SET_HIDDEN_S5"
+      }
+    ]
+  },
+  "schema": "ygomaster.llm_accepted_input_transcript.v1",
+  "visible_public": {
+    "known_public_cards": [],
+    "lp0": 8000,
+    "lp1": 8000,
+    "phase": "Main1",
+    "turn": 3
+  }
+}

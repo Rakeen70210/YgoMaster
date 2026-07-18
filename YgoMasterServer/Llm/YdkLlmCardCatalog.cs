@@ -4,7 +4,12 @@ using System.IO;
 
 namespace YgoMaster
 {
-    static class YdkLlmCardCatalog
+    /// <summary>
+    /// YDK-backed card catalog. Structured-fact mapping lives in the partial
+    /// <c>YdkLlmCardCatalog.StructuredFacts.cs</c> so harnesses can link-compile
+    /// the pure mapping without YdkHelper/Utils.
+    /// </summary>
+    static partial class YdkLlmCardCatalog
     {
         const int DefaultMaxTextLength = 1000;
         static readonly object locker = new object();
@@ -54,6 +59,8 @@ namespace YgoMaster
                 {
                     continue;
                 }
+                CardFrame frame = card.Frame;
+                bool usesRank = frame == CardFrame.Xyz || frame == CardFrame.XyzPend;
                 result[pair.Key] = new LlmCardMetadata()
                 {
                     CardId = card.Id,
@@ -65,6 +72,14 @@ namespace YgoMaster
                     Atk = card.Atk,
                     Def = card.Def,
                     Scale = card.Scale,
+                    Frame = frame.ToString(),
+                    SummonFamily = ResolveSummonFamily(frame),
+                    IsExtraDeck = card.IsExtraDeck,
+                    IsTuner = IsTunerKind(card.Kind),
+                    UsesRank = usesRank,
+                    // GameCardInfo has no grounded link-rating field distinct from DEF.
+                    // Leave null rather than misusing DEF/display text.
+                    LinkRating = null,
                 };
             }
             return result;

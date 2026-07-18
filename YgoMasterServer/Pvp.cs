@@ -742,6 +742,15 @@ namespace YgoMaster
         int doCommandUserOffset;
         int runDialogUserOffset;
         PvpEngineState engineState;
+        ulong nextPublicEventId;
+        ulong nextRawEvidenceId;
+        ulong nextFaceProbeId;
+        LlmPublicStateProjection lastPublicProjection;
+        LlmPublicProjectionQueryBudget lastProjectionBudget = new LlmPublicProjectionQueryBudget();
+#if !YGO_MASTER_CLIENT
+        LlmPvpAcceptedInputTranscriptAuthority acceptedInputAuthority;
+#endif
+        LlmPendingAcceptedIntentCause pendingAcceptedIntentCause;
 
         RunEffect runEffect;
         IsBusyEffect isBusyEffect;
@@ -754,6 +763,8 @@ namespace YgoMaster
         byte[] bufferGenre;
         byte[] bufferNamed;
         byte[] bufferLink;
+        readonly LlmTemporaryCpuSelectionCoordinator temporaryCpuSelection =
+            new LlmTemporaryCpuSelectionCoordinator();
 
         public Pvp()
         {
@@ -817,6 +828,8 @@ namespace YgoMaster
             runDialogUserOffset = Utils.GetValue<int>(data, "RunDialogUserOffset");
             DuelSettings duelSettings = new DuelSettings();
             duelSettings.FromDictionary(Utils.GetDictionary(data, "Duel"));
+            // Stash launch data for post-normalization BeginFromPvpLaunch (must match engine init values).
+            Dictionary<string, object> pvpLaunchData = data;
 
             lastPing = DateTime.UtcNow;
 
@@ -825,6 +838,9 @@ namespace YgoMaster
             netClient.Disconnected += (NetClient nc) =>
             {
                 Console.WriteLine("netClient.Disconnected");
+#if !YGO_MASTER_CLIENT
+                LlmPvpAcceptedInputTranscriptAuthority.SafeFlushOnProcessExit(acceptedInputAuthority);
+#endif
                 if (!keepConsoleAlive)
                 {
                     Environment.Exit(0);
@@ -840,6 +856,9 @@ namespace YgoMaster
             if (!netClient.IsConnected)
             {
                 Console.WriteLine("!netClient.IsConnected (make sure MultiplayerPvpClientConnectIP is correct)");
+#if !YGO_MASTER_CLIENT
+                LlmPvpAcceptedInputTranscriptAuthority.SafeFlushOnProcessExit(acceptedInputAuthority);
+#endif
                 if (!keepConsoleAlive)
                 {
                     Environment.Exit(0);
@@ -851,6 +870,14 @@ namespace YgoMaster
             {
                 engineState = new PvpEngineState();
                 engineState.Client = netClient;
+                // New duel generation: reset public-history baseline and raw evidence ids.
+                LlmPublicOutcomePipeline.ResetDuelGeneration(
+                    ref lastPublicProjection,
+                    ref nextRawEvidenceId,
+                    ref nextFaceProbeId,
+                    ref nextPublicEventId);
+                pendingAcceptedIntentCause = null;
+                LlmFaceProbeCapture.LastProbes = new System.Collections.Generic.List<LlmFaceProbeEvidence>();
 
                 netClient.Send(new PvpServerConnectionRequestMessage()
                 {
@@ -870,6 +897,31 @@ namespace YgoMaster
                     if (duelSettings.hnum[i] == 0) duelSettings.hnum[i] = 5;
                     if (duelSettings.life[i] == 0) duelSettings.life[i] = 8000;
                 }
+
+#if !YGO_MASTER_CLIENT
+                // Authoritative session AFTER life/hnum normalization and immediately before engine init,
+                // so captured values exactly match the DLL_* call arguments.
+                try
+                {
+                    Dictionary<string, object> settingsSnapshot =
+                        BuildPvpAuthoritySettingsSnapshot(duelSettings, tag: false);
+                    acceptedInputAuthority = LlmPvpAcceptedInputTranscriptAuthority.BeginFromPvpLaunch(
+                        pvpLaunchData, settingsSnapshot);
+                }
+                catch (Exception beginEx)
+                {
+                    Utils.LogWarning("[Pvp] BeginFromPvpLaunch failed (capture only): " + beginEx.Message);
+                    try
+                    {
+                        acceptedInputAuthority = LlmPvpAcceptedInputTranscriptAuthority.BeginFromPvpLaunch(
+                            new Dictionary<string, object>(),
+                            BuildPvpAuthoritySettingsSnapshot(duelSettings, tag: false));
+                    }
+                    catch
+                    {
+                    }
+                }
+#endif
 
                 int num = DLL_SetWorkMemory(IntPtr.Zero);
                 engineWork = Marshal.AllocHGlobal(num);
@@ -947,7 +999,18 @@ namespace YgoMaster
                 Console.WriteLine(e);
                 CloseClient();
             }
+#if !YGO_MASTER_CLIENT
+            finally
+            {
+                // Common / finally shutdown path: flush accepted-input transcript (default-off no-op).
+                LlmPvpAcceptedInputTranscriptAuthority.SafeFlushOnProcessExit(acceptedInputAuthority);
+            }
+#endif
 
+            lock (engineState)
+            {
+                RestoreTemporaryCpuSelection("worker_shutdown");
+            }
             CloseClient();
             Thread.Sleep(2000);
             if (keepConsoleAlive)
@@ -957,17 +1020,167 @@ namespace YgoMaster
             }
             else
             {
+#if !YGO_MASTER_CLIENT
+                LlmPvpAcceptedInputTranscriptAuthority.SafeFlushOnProcessExit(acceptedInputAuthority);
+#endif
                 Environment.Exit(0);
             }
         }
 
         unsafe int DoRunEffect(int id, int param1, int param2, int param3)
         {
+            DuelViewType viewType = (DuelViewType)id;
+            if (temporaryCpuSelection.ShouldRestore(viewType, param1))
+            {
+                RestoreTemporaryCpuSelection(
+                    "view:" + viewType + " seq:" + engineState.RunEffectSeq);
+            }
             int doCommandUser = *(int*)(engineWork + doCommandUserOffset);
             int runDialogUser = *(int*)(engineWork + runDialogUserOffset);
-            engineState.RunEffect((DuelViewType)id, param1, param2, param3, doCommandUser, runDialogUser);
+            LlmPublicStateProjection beforeProjection = lastPublicProjection;
+            engineState.RunEffect(viewType, param1, param2, param3, doCommandUser, runDialogUser);
             //Console.WriteLine("DoRun " + (DuelViewType)id);
+            // Slice 3: raw view audit + proven public outcomes share PvP event-id authority.
+            // Inside the same PvP process ordering as RunEffect (before next command lock work).
+            try
+            {
+                EmitRawViewEvidenceAndPublicOutcomes(
+                    viewType,
+                    param1,
+                    param2,
+                    param3,
+                    beforeProjection);
+            }
+            catch
+            {
+            }
             return 0;
+        }
+
+        void EmitRawViewEvidenceAndPublicOutcomes(
+            DuelViewType viewType,
+            int param1,
+            int param2,
+            int param3,
+            LlmPublicStateProjection beforeProjection)
+        {
+            int turn = (int)DLL_DuelGetTurnNum();
+            int phase = (int)DLL_DuelGetCurrentPhase();
+            ulong runEffectSeq = engineState != null ? engineState.RunEffectSeq : 0;
+
+            if (LlmAbsolutePublicVisibility.IsTargetRawEvidenceFamily(viewType) && netClient != null)
+            {
+                nextRawEvidenceId++;
+                LlmRawDuelViewEvidence evidence = LlmRawDuelViewEvidence.Create(
+                    nextRawEvidenceId,
+                    runEffectSeq,
+                    viewType,
+                    param1,
+                    param2,
+                    param3,
+                    turn,
+                    phase);
+                netClient.Send(DuelRawViewEvidenceMessage.FromEvidence(evidence));
+                EmitIdentityFreeFaceProbes(runEffectSeq);
+            }
+
+            LlmPublicProjectionQueryBudget budget = new LlmPublicProjectionQueryBudget();
+            LlmPublicStateProjection afterProjection = CapturePublicStateProjection(turn, phase, budget);
+            lastProjectionBudget = budget;
+
+            // First capture only establishes baseline — no synthetic +8000 LP / initial turn events.
+            List<LlmPublicDuelEvent> outcomes = LlmPublicOutcomePipeline.Transition(
+                ref lastPublicProjection,
+                afterProjection,
+                viewType,
+                runEffectSeq,
+                nextPublicEventId + 1,
+                pendingAcceptedIntentCause);
+            foreach (LlmPublicDuelEvent outcome in outcomes)
+            {
+                if (outcome == null)
+                {
+                    continue;
+                }
+                nextPublicEventId = outcome.EventId;
+                DuelPublicActionEventMessage message = DuelPublicActionEventMessage.FromEvent(outcome);
+                if (message != null && netClient != null)
+                {
+                    netClient.Send(message);
+                }
+            }
+            // Drop consumed/expired pending intent (matched appearance or past causal window).
+            if (pendingAcceptedIntentCause != null && pendingAcceptedIntentCause.IsTerminal)
+            {
+                pendingAcceptedIntentCause = null;
+            }
+        }
+
+        /// <summary>
+        /// Runtime projection: LP/turn/phase + field 0..12 (DLL face==1 only) + graveyard.
+        /// Banished identity remains disabled. Face gate before any identity query.
+        /// Card loops use index &lt; count (never &lt;=).
+        /// </summary>
+        LlmPublicStateProjection CapturePublicStateProjection(
+            int turn,
+            int phase,
+            LlmPublicProjectionQueryBudget budget)
+        {
+            int lp0 = 0;
+            int lp1 = 0;
+            try { lp0 = DLL_DuelGetLP(0); } catch { }
+            try { lp1 = DLL_DuelGetLP(1); } catch { }
+            return LlmPublicRuntimeProjectionCapture.Capture(
+                turn,
+                phase,
+                lp0,
+                lp1,
+                budget,
+                (player, pos) => DLL_DuelGetCardNum(player, pos),
+                (player, pos, index) => DLL_DuelGetCardFace(player, pos, index),
+                (player, pos, index) => DLL_DuelGetCardUniqueID(player, pos, index),
+                (uid) => (int)DLL_DuelGetCardIDByUniqueID2(uid),
+                null,
+                null);
+        }
+
+        /// <summary>
+        /// Identity-free face probes for known field positions only (audit / live face mapping).
+        /// Never includes card id/name/unique id and never enters public history.
+        /// Fan-out via DuelFaceProbeEvidenceMessage so clients can log llm_face_probe to JSONL.
+        /// </summary>
+        void EmitIdentityFreeFaceProbes(ulong runEffectSeq)
+        {
+            List<LlmFaceProbeEvidence> probes = LlmFaceProbeCapture.CaptureFieldProbes(
+                runEffectSeq,
+                ref nextFaceProbeId,
+                (player, pos) =>
+                {
+                    try { return DLL_DuelGetCardNum(player, pos); }
+                    catch { return 0; }
+                },
+                (player, pos, index) =>
+                {
+                    try { return DLL_DuelGetCardFace(player, pos, index); }
+                    catch { return 0; }
+                });
+            LlmFaceProbeCapture.LastProbes = probes;
+            if (netClient == null || probes == null)
+            {
+                return;
+            }
+            foreach (LlmFaceProbeEvidence probe in probes)
+            {
+                if (probe == null)
+                {
+                    continue;
+                }
+                DuelFaceProbeEvidenceMessage message = DuelFaceProbeEvidenceMessage.FromProbe(probe);
+                if (message != null)
+                {
+                    netClient.Send(message);
+                }
+            }
         }
 
         int DoIsBusyEffect(int id)
@@ -1041,7 +1254,45 @@ namespace YgoMaster
                 case NetMessageType.DuelListSetCardExData: OnDuelListSetCardExData((DuelListSetCardExDataMessage)message); break;
                 case NetMessageType.DuelListSetIndex: OnDuelListSetIndex((DuelListSetIndexMessage)message); break;
                 case NetMessageType.DuelListInitString: OnDuelListInitString((DuelListInitStringMessage)message); break;
+                case NetMessageType.DuelComSetTemporaryCpu: OnDuelComSetTemporaryCpu((DuelComSetTemporaryCpuMessage)message); break;
             }
+        }
+
+        void OnDuelComSetTemporaryCpu(DuelComSetTemporaryCpuMessage message)
+        {
+            lock (engineState)
+            {
+                if (!LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                        message.RunEffectSeq,
+                        engineState.RunEffectSeq,
+                        engineState.ViewType,
+                        engineState.Param1,
+                        engineState.DoCommandUser,
+                        message.ActorPlayer,
+                        message.Player) ||
+                    !temporaryCpuSelection.TryBegin(message.RunEffectSeq, message.Player))
+                {
+                    return;
+                }
+
+                DLL_DuelSetPlayerType(message.Player, (int)DuelPlayerType.CPU);
+                Console.WriteLine("Temporary CPU selection enabled player:" + message.Player +
+                    " seq:" + message.RunEffectSeq);
+            }
+        }
+
+        void RestoreTemporaryCpuSelection(string reason)
+        {
+            if (!temporaryCpuSelection.IsActive)
+            {
+                return;
+            }
+
+            int player = temporaryCpuSelection.Player;
+            DLL_DuelSetPlayerType(player, (int)DuelPlayerType.Human);
+            temporaryCpuSelection.MarkRestored();
+            Console.WriteLine("Temporary CPU selection restored human player:" + player +
+                " " + reason);
         }
 
         void OnPing(PingMessage message)
@@ -1083,10 +1334,31 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
+                    EmitPublicAcceptedMovePhase(message);
                     DLL_DuelComMovePhase(message.Phase);
                 }
+#else
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    EmitPublicAcceptedMovePhase(message);
+                }
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "MovePhase" },
+                    { "phase", message.Phase },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "MovePhase",
+                    payload,
+                    () => DLL_DuelComMovePhase(message.Phase));
+#endif
             }
         }
 
@@ -1094,15 +1366,133 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     Console.WriteLine("OnDuelComDoCommand player:" + message.Player + " pos:" + message.Position + " indx:" + message.Index + " cmd:" + message.CommandId + " seq:" + engineState.RunEffectSeq + " mseq:" + message.RunEffectSeq);
+                    EmitPublicAcceptedDoCommand(message);
                     DLL_DuelComDoCommand(message.Player, message.Position, message.Index, message.CommandId);
                 }
                 else
                 {
                     Utils.LogWarning("OnDuelComDoCommand bad seq expected:" + engineState.RunEffectSeq + " got:" + message.RunEffectSeq);
                 }
+#else
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    Console.WriteLine("OnDuelComDoCommand player:" + message.Player + " pos:" + message.Position + " indx:" + message.Index + " cmd:" + message.CommandId + " seq:" + engineState.RunEffectSeq + " mseq:" + message.RunEffectSeq);
+                    EmitPublicAcceptedDoCommand(message);
+                }
+                else
+                {
+                    Utils.LogWarning("OnDuelComDoCommand bad seq expected:" + engineState.RunEffectSeq + " got:" + message.RunEffectSeq);
+                }
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "DoCommand" },
+                    { "player", message.Player },
+                    { "position", message.Position },
+                    { "index", message.Index },
+                    { "command_id", message.CommandId },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "DoCommand",
+                    payload,
+                    () => DLL_DuelComDoCommand(message.Player, message.Position, message.Index, message.CommandId));
+#endif
+            }
+        }
+
+        void EmitPublicAcceptedMovePhase(DuelComMovePhaseMessage message)
+        {
+            ulong eventId = nextPublicEventId + 1;
+            LlmPublicDuelEventCreationResult result = LlmPublicActionEventFactory.TryCreateFromMovePhase(
+                message.RunEffectSeq,
+                engineState.RunEffectSeq,
+                message.ActorPlayer,
+                message.Phase,
+                (int)DLL_DuelGetTurnNum(),
+                eventId);
+            SendPublicActionEventIfAccepted(result, eventId);
+        }
+
+        void EmitPublicAcceptedDoCommand(DuelComDoCommandMessage message)
+        {
+            LlmAcceptedCommandCapture capture = BuildAcceptedCommandCapture(message);
+            ulong eventId = nextPublicEventId + 1;
+            LlmPublicDuelEventCreationResult result =
+                LlmPublicActionEventFactory.TryCreateFromAcceptedCommand(capture, eventId);
+            SendPublicActionEventIfAccepted(result, eventId, capture);
+        }
+
+        LlmAcceptedCommandCapture BuildAcceptedCommandCapture(DuelComDoCommandMessage message)
+        {
+            LlmAcceptedCommandCapture capture = new LlmAcceptedCommandCapture()
+            {
+                RunEffectSeq = message.RunEffectSeq,
+                EngineRunEffectSeq = engineState.RunEffectSeq,
+                ActorPlayer = message.ActorPlayer,
+                CommandPlayer = message.Player,
+                Position = message.Position,
+                Index = message.Index,
+                Command = (DuelCommandType)message.CommandId,
+                Turn = (int)DLL_DuelGetTurnNum(),
+                Phase = (int)DLL_DuelGetCurrentPhase(),
+                HandIndex = message.Index,
+                SourceFromHand = message.Position == LlmPublicHistoryRedactionPolicy.PosHand,
+            };
+
+            try
+            {
+                int uniqueId = DLL_DuelGetCardUniqueID(message.Player, message.Position, message.Index);
+                if (uniqueId > 0)
+                {
+                    capture.CardUniqueId = uniqueId;
+                    capture.CardId = (int)DLL_DuelGetCardIDByUniqueID2(uniqueId);
+                    capture.CardFace = DLL_DuelGetCardFace(message.Player, message.Position, message.Index);
+                }
+            }
+            catch
+            {
+                // Fail closed: leave identity fields unset so factory redacts.
+            }
+
+            return capture;
+        }
+
+        void SendPublicActionEventIfAccepted(
+            LlmPublicDuelEventCreationResult result,
+            ulong eventId,
+            LlmAcceptedCommandCapture capture = null)
+        {
+            if (result == null || !result.Accepted || result.Event == null)
+            {
+                return;
+            }
+
+            nextPublicEventId = eventId;
+            // Pending cause only when accept-time UID is available (never card-id-only).
+            if (result.Event.Kind == LlmPublicDuelEventKind.NormalSummon &&
+                capture != null &&
+                capture.CardUniqueId > 0 &&
+                capture.CardId > 0 &&
+                result.Event.ActorPlayer >= 0)
+            {
+                pendingAcceptedIntentCause = LlmPendingAcceptedIntentCause.ForNormalSummon(
+                    result.Event.EventId,
+                    result.Event.RunEffectSeq,
+                    result.Event.ActorPlayer,
+                    capture.CardId,
+                    capture.CardUniqueId);
+            }
+            DuelPublicActionEventMessage message = DuelPublicActionEventMessage.FromEvent(result.Event);
+            if (message != null && netClient != null)
+            {
+                netClient.Send(message);
             }
         }
 
@@ -1110,10 +1500,27 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelComCancelCommand();
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "CancelCommand" },
+                };
+                StampCommitmentOrigin(payload, message);
+                int nativeResult;
+                EnsureAcceptedInputAuthority().TryAcceptReturnAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "CancelCommand",
+                    payload,
+                    () => DLL_DuelComCancelCommand(),
+                    out nativeResult);
+#endif
             }
         }
 
@@ -1121,10 +1528,28 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelComCancelCommand2(message.Decide);
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "CancelCommand2" },
+                    { "decide", message.Decide },
+                };
+                StampCommitmentOrigin(payload, message);
+                int nativeResult;
+                EnsureAcceptedInputAuthority().TryAcceptReturnAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "CancelCommand2",
+                    payload,
+                    () => DLL_DuelComCancelCommand2(message.Decide),
+                    out nativeResult);
+#endif
             }
         }
 
@@ -1132,10 +1557,26 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelDlgSetResult(message.Result);
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "Dialog" },
+                    { "result", message.Result },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "Dialog",
+                    payload,
+                    () => DLL_DuelDlgSetResult(message.Result));
+#endif
             }
         }
 
@@ -1143,10 +1584,27 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelListSetCardExData(message.Index, message.Data);
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "ListCardExData" },
+                    { "index", message.Index },
+                    { "data", message.Data },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "ListCardExData",
+                    payload,
+                    () => DLL_DuelListSetCardExData(message.Index, message.Data));
+#endif
             }
         }
 
@@ -1154,10 +1612,26 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelListSetIndex(message.Index);
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "ListIndex" },
+                    { "index", message.Index },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "ListIndex",
+                    payload,
+                    () => DLL_DuelListSetIndex(message.Index));
+#endif
             }
         }
 
@@ -1165,12 +1639,130 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+#if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelListInitString();
                 }
+#else
+                Dictionary<string, object> payload = new Dictionary<string, object>()
+                {
+                    { "input_subtype", "ListInitString" },
+                };
+                StampCommitmentOrigin(payload, message);
+                EnsureAcceptedInputAuthority().TryAcceptVoidAfterNative(
+                    engineState.RunEffectSeq,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    "ListInitString",
+                    payload,
+                    () => DLL_DuelListInitString());
+#endif
             }
         }
+
+#if !YGO_MASTER_CLIENT
+        LlmPvpAcceptedInputTranscriptAuthority EnsureAcceptedInputAuthority()
+        {
+            if (acceptedInputAuthority == null)
+            {
+                acceptedInputAuthority = LlmPvpAcceptedInputTranscriptAuthority.BeginFromPvpLaunch(
+                    new Dictionary<string, object>(),
+                    new Dictionary<string, object>());
+            }
+            return acceptedInputAuthority;
+        }
+
+        static void StampCommitmentOrigin(Dictionary<string, object> payload, DuelComMessage message)
+        {
+            if (payload == null || message == null || string.IsNullOrEmpty(message.CommitmentOrigin))
+            {
+                return;
+            }
+            payload["commitment_origin"] = message.CommitmentOrigin;
+        }
+
+        static Dictionary<string, object> BuildPvpAuthoritySettingsSnapshot(DuelSettings duelSettings, bool tag)
+        {
+            if (duelSettings == null)
+            {
+                return new Dictionary<string, object>();
+            }
+            List<object> main0 = DeckIdsToList(duelSettings.Deck, 0, main: true, extra: false, side: false);
+            List<object> main1 = DeckIdsToList(duelSettings.Deck, 1, main: true, extra: false, side: false);
+            List<object> extra0 = DeckIdsToList(duelSettings.Deck, 0, main: false, extra: true, side: false);
+            List<object> extra1 = DeckIdsToList(duelSettings.Deck, 1, main: false, extra: true, side: false);
+            List<object> side0 = DeckIdsToList(duelSettings.Deck, 0, main: false, extra: false, side: true);
+            List<object> side1 = DeckIdsToList(duelSettings.Deck, 1, main: false, extra: false, side: true);
+            // Exact separation: regulation_id from DuelSettings; duel_limited_type from the actual
+            // DLL_DuelSetDuelLimitedType argument (currently DuelLimitedType.None).
+            int regulationId = duelSettings.regulation_id;
+            int duelLimitedType = (int)DuelLimitedType.None;
+            uint cpu0 = GetCpuParamStatic(100);
+            uint cpu1 = GetCpuParamStatic(100);
+            return LlmPvpAcceptedInputTranscriptAuthority.BuildSnapshotFromEngineInit(
+                duelSettings.RandSeed,
+                duelSettings.FirstPlayer,
+                regulationId,
+                duelLimitedType,
+                myPlayerNum: 0,
+                duelType: (int)DuelType.Normal,
+                tag: tag,
+                life0: duelSettings.life[0],
+                life1: duelSettings.life[1],
+                hnum0: duelSettings.hnum[0],
+                hnum1: duelSettings.hnum[1],
+                noshuffle: duelSettings.noshuffle,
+                player0Type: (int)DuelPlayerType.Human,
+                player1Type: (int)DuelPlayerType.Human,
+                cpu0Param: cpu0,
+                cpu1Param: cpu1,
+                main0, main1, extra0, extra1, side0, side1);
+        }
+
+        static uint GetCpuParamStatic(int val, DuelCpuParam param = DuelCpuParam.None)
+        {
+            val = Math.Min(100, Math.Max(-100, val));
+            if (val < 0)
+            {
+                param |= DuelCpuParam.Def;
+                val = -val;
+            }
+            return (uint)(val | (int)param);
+        }
+
+        static List<object> DeckIdsToList(DeckInfo[] decks, int seat, bool main, bool extra, bool side)
+        {
+            List<object> ids = new List<object>();
+            if (decks == null || seat < 0 || seat >= decks.Length || decks[seat] == null)
+            {
+                return ids;
+            }
+            DeckInfo deck = decks[seat];
+            IEnumerable<int> source = null;
+            if (main)
+            {
+                source = deck.MainDeckCards.GetIds();
+            }
+            else if (extra)
+            {
+                source = deck.ExtraDeckCards.GetIds();
+            }
+            else if (side)
+            {
+                source = deck.SideDeckCards.GetIds();
+            }
+            if (source == null)
+            {
+                return ids;
+            }
+            foreach (int id in source)
+            {
+                ids.Add(id);
+            }
+            return ids;
+        }
+#endif
 
         void CloseClient()
         {
@@ -1187,6 +1779,9 @@ namespace YgoMaster
                 Thread.Sleep(2000);
                 if (!keepConsoleAlive)
                 {
+#if !YGO_MASTER_CLIENT
+                    LlmPvpAcceptedInputTranscriptAuthority.SafeFlushOnProcessExit(acceptedInputAuthority);
+#endif
                     Environment.Exit(0);
                 }
             }).Start();

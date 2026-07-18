@@ -1,0 +1,147 @@
+{
+  "corpus_id": "llm005_slice4_offline_v1",
+  "description": "YGOMASTER-LLM-005 Slice 4 offline decision-search corpus. Frozen legal windows with consideration requirements (not brittle always-pick).",
+  "families_required": [
+    "xyz_setup",
+    "destroy_vs_negate_activated_oneshot",
+    "remain_face_up_control",
+    "value_zero_primary_without_secondary",
+    "value_zero_primary_with_secondary",
+    "synchro_setup",
+    "link_setup_unsupported",
+    "lethal_vs_setup",
+    "board_wipe_before_development",
+    "bait_vs_direct_commitment",
+    "preserve_once_per_turn_resource",
+    "stop_unknown_opponent_response",
+    "phase_sequencing",
+    "no_viable_continuation",
+    "timeout_incomplete_budget",
+    "unknown_semantics_control"
+  ],
+  "fixture_file_pattern": "*.fixture.json",
+  "fixtures": [
+    {
+      "family": "xyz_setup",
+      "file": "xyz_girochin_cave_rank4.fixture.json",
+      "fixture_id": "xyz_girochin_cave_rank4"
+    },
+    {
+      "family": "destroy_vs_negate_activated_oneshot",
+      "file": "destroy_vs_negate_dust_foolish_zero_primary.fixture.json",
+      "fixture_id": "destroy_vs_negate_dust_foolish_zero_primary"
+    },
+    {
+      "family": "destroy_vs_negate_activated_oneshot",
+      "file": "negate_positive_grounded_activation.fixture.json",
+      "fixture_id": "negate_positive_grounded_activation"
+    },
+    {
+      "family": "remain_face_up_control",
+      "file": "remain_faceup_continuous_destroy.fixture.json",
+      "fixture_id": "remain_faceup_continuous_destroy"
+    },
+    {
+      "family": "remain_face_up_control",
+      "file": "remain_faceup_field_destroy.fixture.json",
+      "fixture_id": "remain_faceup_field_destroy"
+    },
+    {
+      "family": "remain_face_up_control",
+      "file": "remain_faceup_equip_destroy.fixture.json",
+      "fixture_id": "remain_faceup_equip_destroy"
+    },
+    {
+      "family": "value_zero_primary_with_secondary",
+      "file": "value_zero_primary_with_secondary_benefit.fixture.json",
+      "fixture_id": "value_zero_primary_with_secondary_benefit"
+    },
+    {
+      "family": "synchro_setup",
+      "file": "synchro_exact_tuner_nontuner_level_sum.fixture.json",
+      "fixture_id": "synchro_exact_tuner_nontuner_level_sum"
+    },
+    {
+      "family": "link_setup_unsupported",
+      "file": "link_unsupported_linkrating_unavailable.fixture.json",
+      "fixture_id": "link_unsupported_linkrating_unavailable"
+    },
+    {
+      "family": "xyz_setup",
+      "file": "duplicate_extra_deck_identities_distinct.fixture.json",
+      "fixture_id": "duplicate_extra_deck_identities_distinct"
+    },
+    {
+      "family": "stop_unknown_opponent_response",
+      "file": "unknown_opponent_response_boundary.fixture.json",
+      "fixture_id": "unknown_opponent_response_boundary"
+    },
+    {
+      "family": "timeout_incomplete_budget",
+      "file": "timeout_incomplete_budget.fixture.json",
+      "fixture_id": "timeout_incomplete_budget"
+    },
+    {
+      "family": "no_viable_continuation",
+      "file": "no_viable_continuation.fixture.json",
+      "fixture_id": "no_viable_continuation"
+    },
+    {
+      "family": "lethal_vs_setup",
+      "file": "lethal_vs_setup.fixture.json",
+      "fixture_id": "lethal_vs_setup"
+    },
+    {
+      "family": "board_wipe_before_development",
+      "file": "board_wipe_before_development.fixture.json",
+      "fixture_id": "board_wipe_before_development"
+    },
+    {
+      "family": "bait_vs_direct_commitment",
+      "file": "bait_vs_direct_commitment.fixture.json",
+      "fixture_id": "bait_vs_direct_commitment"
+    },
+    {
+      "family": "preserve_once_per_turn_resource",
+      "file": "preserve_once_per_turn_resource.fixture.json",
+      "fixture_id": "preserve_once_per_turn_resource"
+    },
+    {
+      "family": "phase_sequencing",
+      "file": "phase_sequencing_main1_before_battle.fixture.json",
+      "fixture_id": "phase_sequencing_main1_before_battle"
+    },
+    {
+      "family": "unknown_semantics_control",
+      "file": "unknown_semantics_fail_open.fixture.json",
+      "fixture_id": "unknown_semantics_fail_open"
+    },
+    {
+      "family": "xyz_setup",
+      "file": "comparison_callback_does_not_force_choice.fixture.json",
+      "fixture_id": "comparison_callback_does_not_force_choice"
+    },
+    {
+      "family": "value_zero_primary_without_secondary",
+      "file": "value_zero_primary_without_secondary.fixture.json",
+      "fixture_id": "value_zero_primary_without_secondary"
+    },
+    {
+      "family": "destroy_vs_negate_activated_oneshot",
+      "file": "destroy_vs_negate_negative_control.fixture.json",
+      "fixture_id": "destroy_vs_negate_negative_control"
+    }
+  ],
+  "min_fixture_count": 20,
+  "schema": "ygomaster.llm_decision_search_corpus.v1",
+  "thresholds": {
+    "destroy_vs_negate_semantic_pass_min": 1.0,
+    "grounded_outcome_contradictions_max": 0,
+    "hidden_leaks_max": 0,
+    "invalid_selections_max": 0,
+    "remain_face_up_semantic_pass_min": 1.0,
+    "required_line_recall_min": 0.95,
+    "root_coverage_min": 1.0,
+    "root_regrets_max": 0
+  }
+}

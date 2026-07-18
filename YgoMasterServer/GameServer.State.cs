@@ -398,6 +398,15 @@ namespace YgoMaster
         /// </summary>
         public int MultiplayerPvpClientDuelDllSize;
         /// <summary>
+        /// Default-off: enable server-side Pvp accepted-input transcript capture (Layer B authority).
+        /// </summary>
+        public bool LlmPvpAcceptedInputTranscriptEnabled;
+        /// <summary>
+        /// Optional flush path template for Pvp accepted-input transcripts.
+        /// Supports {room_id} and {table_hash} placeholders. Empty disables file flush.
+        /// </summary>
+        public string LlmPvpAcceptedInputTranscriptFlushPath;
+        /// <summary>
         /// Doesn't update the deck edit time when the deck is edited (this will preserve the deck order of the deck list)
         /// </summary>
         public bool DontUpdateDeckEditTime;
@@ -577,6 +586,9 @@ namespace YgoMaster
             MultiplayerPvpClientDoCommandUserOffset = Utils.GetValue<int>(values, "MultiplayerPvpClientDoCommandUserOffset");
             MultiplayerPvpClientRunDialogUserOffset = Utils.GetValue<int>(values, "MultiplayerPvpClientRunDialogUserOffset");
             MultiplayerPvpClientDuelDllSize = Utils.GetValue<int>(values, "MultiplayerPvpClientDuelDllSize");
+            // Default-off Layer B Pvp authority transcript (never on unless Settings.json enables it).
+            LlmPvpAcceptedInputTranscriptEnabled = Utils.GetValue<bool>(values, "LlmPvpAcceptedInputTranscriptEnabled");
+            LlmPvpAcceptedInputTranscriptFlushPath = Utils.GetValue<string>(values, "LlmPvpAcceptedInputTranscriptFlushPath") ?? string.Empty;
             if (MultiplayerPvpClientDuelDllSize != 0 && MultiplayerEnabled)
             {
                 FileInfo duelDllFile = new FileInfo(Path.Combine("..", "masterduel_Data", "Plugins", "x86_64", "duel.dll"));

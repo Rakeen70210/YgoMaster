@@ -13,9 +13,78 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="DuelRoomTestStubs.cs" />
+    <Compile Include="Llm004\Llm004Slice0Tests.cs" />
+    <Compile Include="Llm004\Llm004Slice2Tests.cs" />
+    <Compile Include="Llm004\Llm004Slice3Tests.cs" />
+    <Compile Include="Llm004\Llm004Slice4Tests.cs" />
+    <Compile Include="Llm004\Llm004Slice5Tests.cs" />
+    <Compile Include="Llm005\Llm005Slice1ATests.cs" />
+    <Compile Include="Llm005\Llm005Slice1BTests.cs" />
+    <Compile Include="Llm005\Llm005LiveGateFixTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2ATests.cs" />
+    <Compile Include="Llm005\Llm005Slice0Tests.cs" />
+    <Compile Include="Llm005\Llm005Slice0BTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2BIntegrationTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2CTests.cs" />
+    <Compile Include="Llm005\Llm005Slice5Tests.cs" />
+    <Compile Include="Llm005\Llm005Slice5ReviewRegressionTests.cs" />
+    <Compile Include="Llm005\Llm005Slice5PvpAuthorityRegressionTests.cs" />
+    <Compile Include="Llm005\Llm005Slice5PvpAuthorityRemediationTests.cs" />
+    <Compile Include="Llm005\Llm005Slice6BTests.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSelfResourceProjection.cs" Link="Llm\LlmSelfResourceProjection.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSelfResourcesAuditPolicy.cs" Link="Llm\LlmSelfResourcesAuditPolicy.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPlanningTypes.cs" Link="Llm\LlmPlanningTypes.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmTacticalAffordanceGraph.cs" Link="Llm\LlmTacticalAffordanceGraph.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBoundedLineSearch.cs" Link="Llm\LlmBoundedLineSearch.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSearchProjection.cs" Link="Llm\LlmSearchProjection.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPlanningSearchAudit.cs" Link="Llm\LlmPlanningSearchAudit.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmComboTemplateTypes.cs" Link="Llm\LlmComboTemplateTypes.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmComboTemplateCatalog.cs" Link="Llm\LlmComboTemplateCatalog.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmComboTemplateMatcher.cs" Link="Llm\LlmComboTemplateMatcher.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmModelHypothesisLineAdmission.cs" Link="Llm\LlmModelHypothesisLineAdmission.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmIntendedFollowupMemory.cs" Link="Llm\LlmIntendedFollowupMemory.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSlice6BCorpusCoverageManifest.cs" Link="Llm\LlmSlice6BCorpusCoverageManifest.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmImmediateOutcomeAnalyzer.cs" Link="Llm\LlmImmediateOutcomeAnalyzer.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmCardEffectCapabilityCatalog.cs" Link="Llm\LlmCardEffectCapabilityCatalog.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscript.cs" Link="Llm\LlmAcceptedInputTranscript.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscriptRecorder.cs" Link="Llm\LlmAcceptedInputTranscriptRecorder.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPvpAcceptedInputTranscriptAuthority.cs" Link="Llm\LlmPvpAcceptedInputTranscriptAuthority.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelDllLocator.cs" Link="Llm\LlmDuelDllLocator.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmCheckpointFingerprint.cs" Link="Llm\LlmCheckpointFingerprint.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSearchWorkerProtocol.cs" Link="Llm\LlmSearchWorkerProtocol.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmReplayBranchResult.cs" Link="Llm\LlmReplayBranchResult.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmReplayWorkerSupervisor.cs" Link="Llm\LlmReplayWorkerSupervisor.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmLayerBFeasibility.cs" Link="Llm\LlmLayerBFeasibility.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\YdkLlmCardCatalog.StructuredFacts.cs" Link="Llm\YdkLlmCardCatalog.StructuredFacts.cs" />
+    <Compile Include="..\YgoMasterServer\Enums\Card.cs" Link="Enums\Card.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelHistoryTypes.cs" Link="Llm\LlmDuelHistoryTypes.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicHistoryRedactionPolicy.cs" Link="Llm\LlmPublicHistoryRedactionPolicy.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicActionEventFactory.cs" Link="Llm\LlmPublicActionEventFactory.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelHistoryTracker.cs" Link="Llm\LlmDuelHistoryTracker.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicActionEventRouting.cs" Link="Llm\LlmPublicActionEventRouting.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicDuelEventClientIngest.cs" Link="Llm\LlmPublicDuelEventClientIngest.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelHistoryLifecycle.cs" Link="Llm\LlmDuelHistoryLifecycle.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmAbsolutePublicVisibility.cs" Link="Llm\LlmAbsolutePublicVisibility.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicStateProjection.cs" Link="Llm\LlmPublicStateProjection.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmRawDuelViewEvidence.cs" Link="Llm\LlmRawDuelViewEvidence.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPublicOutcomeEventFactory.cs" Link="Llm\LlmPublicOutcomeEventFactory.cs" />
     <Compile Include="..\YgoMasterServer\Infos\DuelRoom.cs" Link="Infos\DuelRoom.cs" />
     <Compile Include="..\YgoMasterServer\Enums\Duel.cs" Link="Enums\Duel.cs" />
     <Compile Include="..\YgoMasterServer\Lib\MiniJSON.cs" Link="Lib\MiniJSON.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4.cs" Link="Lib\LZ4.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.cs" Link="Lib\LZ4Codec.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.Safe.cs" Link="Lib\LZ4Codec.Safe.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.Safe32.Dirty.cs" Link="Lib\LZ4Codec.Safe32.Dirty.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.Safe32HC.Dirty.cs" Link="Lib\LZ4Codec.Safe32HC.Dirty.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.Safe64.Dirty.cs" Link="Lib\LZ4Codec.Safe64.Dirty.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\LZ4Codec.Safe64HC.Dirty.cs" Link="Lib\LZ4Codec.Safe64HC.Dirty.cs" />
+    <Compile Include="..\YgoMasterServer\Net\NetMessage.cs" Link="Net\NetMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\NetMessageType.cs" Link="Net\NetMessageType.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComMessage.cs" Link="Net\Message\DuelComMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComDoCommandMessage.cs" Link="Net\Message\DuelComDoCommandMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelPublicActionEventMessage.cs" Link="Net\Message\DuelPublicActionEventMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelRawViewEvidenceMessage.cs" Link="Net\Message\DuelRawViewEvidenceMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelFaceProbeEvidenceMessage.cs" Link="Net\Message\DuelFaceProbeEvidenceMessage.cs" />
     <Compile Include="..\YgoMasterServer\Llm\ILegalActionQuery.cs" Link="Llm\ILegalActionQuery.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LegalActionTypes.cs" Link="Llm\LegalActionTypes.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LegalActionExtractor.cs" Link="Llm\LegalActionExtractor.cs" />
@@ -24,9 +93,12 @@
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerControlPolicy.cs" Link="Llm\LlmBrokerControlPolicy.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerPlayerResolver.cs" Link="Llm\LlmBrokerPlayerResolver.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRequestGate.cs" Link="Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRecovery.cs" Link="Llm\LlmBrokerRecovery.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs" Link="Llm\LlmCardDataDirectoryResolver.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmCardCatalog.cs" Link="Llm\LlmCardCatalog.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs" Link="Llm\LlmBrokerProtocol.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmDecisionLogSerializer.cs" Link="Llm\LlmDecisionLogSerializer.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDecisionWindowPlanner.cs" Link="Llm\LlmDecisionWindowPlanner.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmTurnMemoryTracker.cs" Link="Llm\LlmTurnMemoryTracker.cs" />
   </ItemGroup>
 </Project>

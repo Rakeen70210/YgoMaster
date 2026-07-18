@@ -37,6 +37,14 @@ namespace YgoMaster.Net
         DuelListSetCardExData,
         DuelListSetIndex,
         DuelListInitString,
+        DuelComSetTemporaryCpu,
+
+        // Authoritative public accepted-action events (PvP worker → session → duelists)
+        DuelPublicActionEvent,
+        // Raw DuelView audit evidence (PvP worker → session → duelists; audit-only)
+        DuelRawViewEvidence,
+        // Identity-free face probes (PvP worker → session → duelists; audit-only live face mapping)
+        DuelFaceProbeEvidence,
 
         // Trade messages
         TradeEnterRoom,

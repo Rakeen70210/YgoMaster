@@ -1,0 +1,112 @@
+{
+  "capture_integration": {
+    "allowed_in_live_sources": [
+      "LlmAcceptedInputTranscript",
+      "LlmAcceptedInputTranscriptRecorder",
+      "LlmAcceptedInputEntry",
+      "LlmAcceptedInputKind"
+    ],
+    "default_off": true,
+    "forbidden_live_worker_consumers": [
+      "LlmSearchWorkerRequest",
+      "LlmSearchWorkerResponse",
+      "LlmSearchWorkerProtocol",
+      "LlmReplayWorkerSupervisor",
+      "LlmReplayBranchResult",
+      "LlmLayerBFeasibilityResult",
+      "YgoMasterSearchWorker",
+      "EngineConfirmedSearch"
+    ],
+    "record_only_after_native_or_server_acceptance": true,
+    "recorder_type": "LlmAcceptedInputTranscriptRecorder"
+  },
+  "corpus_id": "llm005_slice5_scripted_replay_v1",
+  "description": "YGOMASTER-LLM-005 Slice 5 scripted accepted-input / information-set fixtures (offline; no duel.dll). Artifact contract validates these without production types.",
+  "feasibility_go_requires": {
+    "RealEngineProbeAttempted": true,
+    "RealEngineReplayValidated": true,
+    "ScriptedOnly": false,
+    "scripted_fixtures_alone": "automatic_no_go"
+  },
+  "fixture_file_pattern": "*.fixture.json",
+  "fixtures": [
+    {
+      "file": "base_checkpoint_match.fixture.json",
+      "fixture_id": "base_checkpoint_match"
+    },
+    {
+      "file": "excludes_rejected_stale.fixture.json",
+      "fixture_id": "excludes_rejected_stale"
+    },
+    {
+      "file": "pair_a_visible_base.fixture.json",
+      "fixture_id": "pair_a_visible_base"
+    },
+    {
+      "file": "pair_b_visible_equivalent.fixture.json",
+      "fixture_id": "pair_b_visible_equivalent"
+    },
+    {
+      "file": "terminal_boundaries_catalog.fixture.json",
+      "fixture_id": "terminal_boundaries_catalog"
+    }
+  ],
+  "go_criteria": {
+    "checkpoint_match_rate": 1.0,
+    "hidden_information_differences": 0,
+    "hidden_state_dependent_output": "automatic_no_go",
+    "layer_a_budget_hard_fail": false,
+    "layer_a_budget_ms": 500,
+    "live_process_mutation": 0,
+    "p95_latency_separate_from_layer_a_ms": 500,
+    "worker_orphans_after_forced_failure": 0
+  },
+  "required_accepted_input_kinds": [
+    "DoCommand",
+    "MovePhase",
+    "Dialog",
+    "List",
+    "Cancel",
+    "Automatic"
+  ],
+  "required_boundary_cases": [
+    "opponent_wait_input",
+    "optional_response",
+    "multi_select",
+    "random_result",
+    "unsupported_mode",
+    "checkpoint_mismatch",
+    "stale_generation",
+    "timeout",
+    "crash"
+  ],
+  "required_fixture_ids": [
+    "base_checkpoint_match",
+    "excludes_rejected_stale",
+    "pair_a_visible_base",
+    "pair_b_visible_equivalent",
+    "terminal_boundaries_catalog"
+  ],
+  "schema": "ygomaster.llm_accepted_input_transcript.v1",
+  "worker_memory": {
+    "live_pvp_must_not_copy_or_speculate_work_memory": true,
+    "protocol_forbids": [
+      "work_memory_bytes",
+      "live_duel_state",
+      "FromLiveDuel",
+      "CopyNativeWorkMemory"
+    ],
+    "worker_may_dll_set_work_memory": "fresh_local_allocation_with_cleanup_only"
+  },
+  "worker_project": {
+    "csproj_path": "YgoMasterSearchWorker/YgoMasterSearchWorker.csproj",
+    "default_off": true,
+    "must_not_be_project_reference_of": [
+      "YgoMasterClient.csproj",
+      "YgoMasterServer/YgoMaster.csproj"
+    ],
+    "name": "YgoMasterSearchWorker",
+    "no_duel_dll_in_tests": true,
+    "output_type": "Exe"
+  }
+}

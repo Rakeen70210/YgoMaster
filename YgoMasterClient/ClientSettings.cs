@@ -69,9 +69,33 @@ namespace YgoMasterClient
         public static bool PvpLogToFile;
         public static bool LlmDecisionLogEnabled;
         public static bool LlmBrokerEnabled;
+        /// <summary>
+        /// Default-off accepted-input transcript capture (YGOMASTER-LLM-005 Slice 5).
+        /// Enables LlmAcceptedInputTranscriptRecorder after native acceptance only.
+        /// </summary>
+        public static bool LlmAcceptedInputTranscriptEnabled;
+        /// <summary>
+        /// Optional path for duel-end transcript flush (empty = no auto flush).
+        /// </summary>
+        public static string LlmAcceptedInputTranscriptFlushPath;
         public static string LlmBrokerUrl;
         public static int LlmBrokerTimeoutMs;
         public static int LlmBrokerControlPlayer;
+        /// <summary>
+        /// Default-off private self-resources audit log (YGOMASTER-LLM-005 Slice 1B).
+        /// Does not change /decide or default decision_window serialization.
+        /// </summary>
+        public static bool LlmSelfResourcesAuditEnabled;
+        /// <summary>
+        /// Default-off Layer A planning search audit (YGOMASTER-LLM-005 Slice 2A).
+        /// Logs llm_search_* for the configured control seat only; never changes /decide.
+        /// </summary>
+        public static bool LlmPlanningSearchAuditEnabled;
+        public static int LlmSearchMaxStrategicDepth = LlmSearchLimits.DefaultMaxStrategicDepth;
+        public static int LlmSearchMaxNodes = LlmSearchLimits.DefaultMaxNodes;
+        public static int LlmSearchBeamWidth = LlmSearchLimits.DefaultBeamWidth;
+        public static int LlmSearchMaxWallMs = LlmSearchLimits.DefaultMaxWallMs;
+        public static int LlmSearchMaxSerializedBytes = LlmSearchLimits.DefaultMaxSerializedBytes;
         public static bool PvpDuelTapSyncEnabled;
         public static float EmoteDurationInSeconds;
         public static GameLauncherMode LaunchMode;
@@ -199,9 +223,41 @@ namespace YgoMasterClient
             PvpLogToFile = Utils.GetValue<bool>(data, "PvpLogToFile");
             LlmDecisionLogEnabled = Utils.GetValue<bool>(data, "LlmDecisionLogEnabled");
             LlmBrokerEnabled = Utils.GetValue<bool>(data, "LlmBrokerEnabled");
+            LlmAcceptedInputTranscriptEnabled = Utils.GetValue<bool>(data, "LlmAcceptedInputTranscriptEnabled");
+            LlmAcceptedInputTranscriptFlushPath = Utils.GetValue<string>(data, "LlmAcceptedInputTranscriptFlushPath");
+
             LlmBrokerUrl = Utils.GetValue<string>(data, "LlmBrokerUrl");
             LlmBrokerTimeoutMs = Utils.GetValue<int>(data, "LlmBrokerTimeoutMs");
             LlmBrokerControlPlayer = Utils.GetValue<int>(data, "LlmBrokerControlPlayer", -1);
+            LlmSelfResourcesAuditEnabled = Utils.GetValue<bool>(data, "LlmSelfResourcesAuditEnabled");
+            LlmPlanningSearchAuditEnabled = Utils.GetValue<bool>(data, "LlmPlanningSearchAuditEnabled");
+            // Clamp-validated search limits (invalid JSON values never crash Load).
+            LlmSearchLimits searchLimits = LlmSearchLimits.FromClientSettings(
+                Utils.GetValue<int>(
+                    data,
+                    "LlmSearchMaxStrategicDepth",
+                    LlmSearchLimits.DefaultMaxStrategicDepth),
+                Utils.GetValue<int>(
+                    data,
+                    "LlmSearchMaxNodes",
+                    LlmSearchLimits.DefaultMaxNodes),
+                Utils.GetValue<int>(
+                    data,
+                    "LlmSearchBeamWidth",
+                    LlmSearchLimits.DefaultBeamWidth),
+                Utils.GetValue<int>(
+                    data,
+                    "LlmSearchMaxWallMs",
+                    LlmSearchLimits.DefaultMaxWallMs),
+                Utils.GetValue<int>(
+                    data,
+                    "LlmSearchMaxSerializedBytes",
+                    LlmSearchLimits.DefaultMaxSerializedBytes));
+            LlmSearchMaxStrategicDepth = searchLimits.MaxStrategicDepth;
+            LlmSearchMaxNodes = searchLimits.MaxNodes;
+            LlmSearchBeamWidth = searchLimits.BeamWidth;
+            LlmSearchMaxWallMs = searchLimits.MaxWallMs;
+            LlmSearchMaxSerializedBytes = searchLimits.MaxSerializedBytes;
             PvpDuelTapSyncEnabled = Utils.GetValue<bool>(data, "PvpDuelTapSyncEnabled");
             EmoteDurationInSeconds = Utils.GetValue<float>(data, "EmoteDurationInSeconds");
             LaunchMode = Utils.GetValue<GameLauncherMode>(data, "LaunchMode");

@@ -7,11 +7,14 @@ namespace YgoMaster
         MovePhase,
         Command,
         DialogResult,
-        ListIndex
+        ListIndex,
+        Cancel
     }
 
     class LlmActionCommitPlan
     {
+        const int PosSelect = 18;
+
         public LlmActionCommitKind Kind { get; private set; }
         public int PhaseId { get; private set; }
         public int Player { get; private set; }
@@ -19,6 +22,7 @@ namespace YgoMaster
         public int Index { get; private set; }
         public int CommandId { get; private set; }
         public uint DialogResult { get; private set; }
+        public bool CancelDecide { get; private set; }
 
         public static LlmActionCommitPlan FromLegalAction(LegalAction action)
         {
@@ -51,13 +55,24 @@ namespace YgoMaster
                     Index = action.Index,
                 };
             }
+            if (action.Kind == LegalActionKind.Cancel)
+            {
+                return new LlmActionCommitPlan()
+                {
+                    Kind = LlmActionCommitKind.Cancel,
+                    CancelDecide = action.CancelDecide,
+                };
+            }
 
+            bool isSummonPlacement =
+                action.Command == DuelCommandType.Decide &&
+                action.TargetScope == "summon_placement";
             return new LlmActionCommitPlan()
             {
                 Kind = LlmActionCommitKind.Command,
                 Player = action.Player,
-                Position = action.Position,
-                Index = action.Index,
+                Position = isSummonPlacement ? PosSelect : action.Position,
+                Index = isSummonPlacement ? action.Position : action.Index,
                 CommandId = (int)action.Command,
             };
         }

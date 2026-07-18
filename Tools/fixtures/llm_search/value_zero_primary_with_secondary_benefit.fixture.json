@@ -1,0 +1,420 @@
+{
+  "decision_snapshot": {
+    "chain_state": {
+      "chain": [
+        {
+          "already_activated": true,
+          "card_id": 12800,
+          "name": "Foolish Burial Goods",
+          "player": 0
+        }
+      ],
+      "chain_size": 1
+    },
+    "controlled_player": 1,
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "card_id": 4988,
+        "card_name": "Dust Tornado",
+        "command": "Activate",
+        "kind": "command",
+        "label": "Activate Dust Tornado",
+        "target_card_id": 12800
+      },
+      {
+        "action_id": 1,
+        "command": "NoResponse",
+        "kind": "command",
+        "label": "Decline / No response"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [
+            {
+              "card_id": 12800,
+              "face": 1,
+              "name": "Foolish Burial Goods",
+              "player": 0,
+              "position": 5
+            }
+          ],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8007,
+    "schema_version": 3,
+    "self_resources_summary": {
+      "field": [
+        {
+          "card_id": 4988,
+          "face": 0,
+          "name": "Dust Tornado",
+          "position": 5
+        }
+      ],
+      "hand": [
+        {
+          "card_id": 1001,
+          "face": 0,
+          "name": "GENERIC_SET_CANDIDATE"
+        }
+      ]
+    }
+  },
+  "description": "Same Dust-style zero-primary with qualifying secondary set-from-hand benefit.",
+  "expectations": {
+    "acceptable_selected_roots": [
+      0,
+      1
+    ],
+    "coverage_budget_limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "decline": {
+      "acceptable": true,
+      "required": false,
+      "root_action_id": 1
+    },
+    "exact_unsupported_reason": null,
+    "forbidden_hidden_facts": [
+      "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+      "99105061",
+      "SENTINEL_OPP_SET_LEAK_LLM005_S4",
+      "99105062",
+      "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+      "99105063",
+      "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+      "99105064"
+    ],
+    "forbidden_rationale_claims": [
+      "negate",
+      "stops Foolish Burial Goods",
+      "prevents Foolish Burial Goods from resolving"
+    ],
+    "required_candidate_lines": [],
+    "required_outcome_properties": {
+      "by_root_action_id": {
+        "0": {
+          "primary_disruption_value": 0,
+          "primary_effect_stopped": false,
+          "secondary_benefits_include": [
+            "set_from_hand"
+          ]
+        }
+      }
+    },
+    "required_root_action_ids": [
+      0,
+      1
+    ],
+    "required_root_identities": [
+      {
+        "action_id": 0,
+        "card_id": 4988
+      }
+    ],
+    "required_score_rationale_properties": {
+      "secondary_benefit_scored_separately": true
+    },
+    "semantic_gates": [
+      "destroy_vs_negate"
+    ]
+  },
+  "family": "value_zero_primary_with_secondary",
+  "fixture_id": "value_zero_primary_with_secondary_benefit",
+  "hidden_sentinels": {
+    "opponent_deck_card_id": 99105064,
+    "opponent_deck_name": "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+    "opponent_extra_card_id": 99105063,
+    "opponent_extra_name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+    "opponent_hand_card_id": 99105061,
+    "opponent_hand_name": "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+    "opponent_set_card_id": 99105062,
+    "opponent_set_name": "SENTINEL_OPP_SET_LEAK_LLM005_S4"
+  },
+  "provider_visible": {
+    "controlled_player": 1,
+    "kind": "decision_request",
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "card_id": 4988,
+        "card_name": "Dust Tornado",
+        "command": "Activate",
+        "kind": "command",
+        "label": "Activate Dust Tornado",
+        "target_card_id": 12800
+      },
+      {
+        "action_id": 1,
+        "command": "NoResponse",
+        "kind": "command",
+        "label": "Decline / No response"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [
+            {
+              "card_id": 12800,
+              "face": 1,
+              "name": "Foolish Burial Goods",
+              "player": 0,
+              "position": 5
+            }
+          ],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8007,
+    "schema_version": 3,
+    "search_projection": {
+      "coverage": {
+        "boundary_nodes": 0,
+        "continuation_expansion_count": 0,
+        "elapsed_ms": 12,
+        "exclusion_reasons": [],
+        "expanded_nodes": 0,
+        "legal_root_actions": 2,
+        "no_candidate_reasons": [],
+        "non_expansion_reasons": [],
+        "pruned_nodes": 0,
+        "pruning_reasons": [],
+        "represented_root_actions": 2,
+        "root_exclusions": [],
+        "root_shell_count": 2,
+        "transposition_prunes": 0
+      },
+      "limits": {
+        "beam_width": 12,
+        "max_nodes": 96,
+        "max_serialized_bytes": 16384,
+        "max_strategic_depth": 4,
+        "max_wall_ms": 500
+      },
+      "lines": [
+        {
+          "boundary": null,
+          "commit_eligible": true,
+          "immediate_outcome": {
+            "primary_disruption_value": 0,
+            "primary_effect_stopped": false,
+            "provenance": "rules_inferred",
+            "response_capabilities": [
+              "destroy"
+            ],
+            "secondary_benefit_scores": {
+              "set_from_hand": 50
+            },
+            "secondary_benefits": [
+              "set_from_hand"
+            ],
+            "target_already_activated": true,
+            "target_card_id": 12800,
+            "target_effect_expected_to_resolve": true,
+            "target_is_one_shot_spell_or_trap": true,
+            "unknown_card_semantics": false,
+            "value_zero_primary_penalty": 80
+          },
+          "is_root_shell": true,
+          "line_id": "root:0",
+          "provenance": "engine_confirmed",
+          "root_action_id": 0,
+          "score": 55,
+          "score_features": {
+            "primary_disruption_value": 0,
+            "secondary_benefit_set_from_hand": 50,
+            "value_zero_primary_penalty": -80
+          },
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "Activate Dust Tornado",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [],
+          "unlocks": []
+        },
+        {
+          "boundary": null,
+          "commit_eligible": true,
+          "is_root_shell": true,
+          "line_id": "root:1",
+          "provenance": "engine_confirmed",
+          "root_action_id": 1,
+          "score": 40,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "Decline / No response",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [],
+          "unlocks": []
+        }
+      ],
+      "root_run_effect_seq": 8007,
+      "search_id": "search-8007",
+      "status": "complete"
+    },
+    "self_resources_summary": {
+      "field": [
+        {
+          "card_id": 4988,
+          "face": 0,
+          "name": "Dust Tornado",
+          "position": 5
+        }
+      ],
+      "hand": [
+        {
+          "card_id": 1001,
+          "face": 0,
+          "name": "GENERIC_SET_CANDIDATE"
+        }
+      ]
+    }
+  },
+  "schema": "ygomaster.llm_decision_search_corpus.v1",
+  "search_projection": {
+    "coverage": {
+      "boundary_nodes": 0,
+      "continuation_expansion_count": 0,
+      "elapsed_ms": 12,
+      "exclusion_reasons": [],
+      "expanded_nodes": 0,
+      "legal_root_actions": 2,
+      "no_candidate_reasons": [],
+      "non_expansion_reasons": [],
+      "pruned_nodes": 0,
+      "pruning_reasons": [],
+      "represented_root_actions": 2,
+      "root_exclusions": [],
+      "root_shell_count": 2,
+      "transposition_prunes": 0
+    },
+    "limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "lines": [
+      {
+        "boundary": null,
+        "commit_eligible": true,
+        "immediate_outcome": {
+          "primary_disruption_value": 0,
+          "primary_effect_stopped": false,
+          "provenance": "rules_inferred",
+          "response_capabilities": [
+            "destroy"
+          ],
+          "secondary_benefit_scores": {
+            "set_from_hand": 50
+          },
+          "secondary_benefits": [
+            "set_from_hand"
+          ],
+          "target_already_activated": true,
+          "target_card_id": 12800,
+          "target_effect_expected_to_resolve": true,
+          "target_is_one_shot_spell_or_trap": true,
+          "unknown_card_semantics": false,
+          "value_zero_primary_penalty": 80
+        },
+        "is_root_shell": true,
+        "line_id": "root:0",
+        "provenance": "engine_confirmed",
+        "root_action_id": 0,
+        "score": 55,
+        "score_features": {
+          "primary_disruption_value": 0,
+          "secondary_benefit_set_from_hand": 50,
+          "value_zero_primary_penalty": -80
+        },
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "Activate Dust Tornado",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [],
+        "unlocks": []
+      },
+      {
+        "boundary": null,
+        "commit_eligible": true,
+        "is_root_shell": true,
+        "line_id": "root:1",
+        "provenance": "engine_confirmed",
+        "root_action_id": 1,
+        "score": 40,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "Decline / No response",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [],
+        "unlocks": []
+      }
+    ],
+    "root_run_effect_seq": 8007,
+    "search_id": "search-8007",
+    "status": "complete"
+  }
+}

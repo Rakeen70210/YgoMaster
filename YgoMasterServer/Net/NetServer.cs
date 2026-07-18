@@ -281,7 +281,18 @@ namespace YgoMaster.Net
                 case NetMessageType.DuelListSetCardExData:
                 case NetMessageType.DuelListSetIndex:
                 case NetMessageType.DuelListInitString:
+                case NetMessageType.DuelComSetTemporaryCpu:
                     OnDuelCom(client, message);
+                    break;
+
+                case NetMessageType.DuelPublicActionEvent:
+                    OnDuelPublicActionEvent(client, (DuelPublicActionEventMessage)message);
+                    break;
+                case NetMessageType.DuelRawViewEvidence:
+                    OnDuelRawViewEvidence(client, (DuelRawViewEvidenceMessage)message);
+                    break;
+                case NetMessageType.DuelFaceProbeEvidence:
+                    OnDuelFaceProbeEvidence(client, (DuelFaceProbeEvidenceMessage)message);
                     break;
 
                 case NetMessageType.DuelError: OnDuelError(client, (DuelErrorMessage)message); break;
@@ -639,7 +650,60 @@ namespace YgoMaster.Net
                 return;
             }
 
+            DuelComMessage comMessage = message as DuelComMessage;
+            if (comMessage != null)
+            {
+                int actorSeat = LlmPublicActionEventRouting.ResolveActorSeatFromTable(table, player);
+                if (actorSeat < 0)
+                {
+                    return;
+                }
+                // Overwrite any client-supplied actor; table membership is sole authority.
+                comMessage.ActorPlayer = actorSeat;
+            }
+
             pvpClient.Send(message);
+        }
+
+        void OnDuelPublicActionEvent(NetClient client, DuelPublicActionEventMessage message)
+        {
+            FanOutPvpAuthoritativeMessage(client, message);
+        }
+
+        void OnDuelRawViewEvidence(NetClient client, DuelRawViewEvidenceMessage message)
+        {
+            FanOutPvpAuthoritativeMessage(client, message);
+        }
+
+        void OnDuelFaceProbeEvidence(NetClient client, DuelFaceProbeEvidenceMessage message)
+        {
+            FanOutPvpAuthoritativeMessage(client, message);
+        }
+
+        void FanOutPvpAuthoritativeMessage(NetClient client, NetMessage message)
+        {
+            DuelRoomTable table = client.Table;
+            if (table == null)
+            {
+                return;
+            }
+
+            LlmPublicActionEventRoutingResult route = LlmPublicActionEventRouting.RouteIncoming(
+                table,
+                client,
+                message);
+            if (route.Decision != LlmPublicActionEventRoutingDecision.FanOutToDuelists)
+            {
+                return;
+            }
+
+            foreach (NetClient recipient in route.Recipients)
+            {
+                if (recipient != null)
+                {
+                    recipient.Send(message);
+                }
+            }
         }
 
         void OnDuelEngineState(NetClient client, DuelEngineStateMessage message)

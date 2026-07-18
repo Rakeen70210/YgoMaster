@@ -75,6 +75,16 @@ namespace YgoMaster
             return state.GetValue(PvpOperationType.DLL_DuelWhichTurnNow);
         }
 
+        public int GetAttackTargetMask(int player, int locate)
+        {
+            return state.GetValue(PvpOperationType.DLL_DuelGetAttackTargetMask, player, locate);
+        }
+
+        public int GetDialogCanYesNoSkip()
+        {
+            return state.GetValue(PvpOperationType.DLL_DuelDlgCanYesNoSkip);
+        }
+
         public int GetDialogSelectItemEnable(int index)
         {
             return state.GetValue(PvpOperationType.DLL_DuelDlgGetSelectItemEnable, index);

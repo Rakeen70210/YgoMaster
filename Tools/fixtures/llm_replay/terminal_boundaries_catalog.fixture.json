@@ -1,0 +1,78 @@
+{
+  "boundary_cases": [
+    {
+      "boundary": "opponent_wait_input",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "optional_response",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "multi_select",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "random_result",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "unsupported_mode",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "checkpoint_mismatch",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "stale_generation",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "timeout",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    },
+    {
+      "boundary": "crash",
+      "never_synthesize_opponent_pass": true,
+      "terminal": true
+    }
+  ],
+  "expectations": {
+    "layer_a_budget_hard_fail": false,
+    "layer_a_budget_ms": 500,
+    "never_synthesize_opponent_pass": true,
+    "p95_latency_reported_separately": true
+  },
+  "fixture_id": "terminal_boundaries_catalog",
+  "hidden_sentinels_private": {
+    "opponent_deck_card_id": 99106003,
+    "opponent_deck_name": "SENTINEL_OPP_DECK_LEAK_LLM005_S5",
+    "opponent_extra_card_id": 99106004,
+    "opponent_extra_name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S5",
+    "opponent_hand_card_id": 99106001,
+    "opponent_hand_name": "SENTINEL_OPP_HAND_LEAK_LLM005_S5",
+    "opponent_set_card_id": 99106002,
+    "opponent_set_name": "SENTINEL_OPP_SET_LEAK_LLM005_S5"
+  },
+  "required_boundary_cases": [
+    "opponent_wait_input",
+    "optional_response",
+    "multi_select",
+    "random_result",
+    "unsupported_mode",
+    "checkpoint_mismatch",
+    "stale_generation",
+    "timeout",
+    "crash"
+  ],
+  "schema": "ygomaster.llm_accepted_input_transcript.v1"
+}

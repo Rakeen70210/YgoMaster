@@ -19,6 +19,14 @@
         ulong completedSeq;
         bool completedSeqSuppressConsumed;
 
+        public bool IsRequestInFlight()
+        {
+            lock (locker)
+            {
+                return requestInFlight;
+            }
+        }
+
         public LlmBrokerRequestGateDecision Evaluate(ulong runEffectSeq)
         {
             lock (locker)
@@ -65,6 +73,13 @@
                 hasCompletedSeq = true;
                 completedSeq = runEffectSeq;
                 completedSeqSuppressConsumed = false;
+                // Successful recovery (or a late success after MarkFailed) must not leave
+                // the same seq stuck in FallbackToDefault forever.
+                if (hasFailedSeq && failedSeq == runEffectSeq)
+                {
+                    hasFailedSeq = false;
+                    failedSeq = 0;
+                }
             }
         }
 

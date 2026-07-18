@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>YgoMaster</RootNamespace>
+    <AssemblyName>YgoMasterSearchWorker</AssemblyName>
+    <ImplicitUsings>false</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <!-- Layer B research worker: default-off; not referenced by client/server. -->
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="WorkerOwnedWorkMemory.cs" />
+    <Compile Include="..\YgoMasterServer\Lib\MiniJSON.cs" Link="Lib\MiniJSON.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscript.cs" Link="Llm\LlmAcceptedInputTranscript.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscriptRecorder.cs" Link="Llm\LlmAcceptedInputTranscriptRecorder.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPvpAcceptedInputTranscriptAuthority.cs" Link="Llm\LlmPvpAcceptedInputTranscriptAuthority.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelDllLocator.cs" Link="Llm\LlmDuelDllLocator.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmCheckpointFingerprint.cs" Link="Llm\LlmCheckpointFingerprint.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSearchWorkerProtocol.cs" Link="Llm\LlmSearchWorkerProtocol.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmReplayBranchResult.cs" Link="Llm\LlmReplayBranchResult.cs" />
+  </ItemGroup>
+</Project>

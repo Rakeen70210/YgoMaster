@@ -38,6 +38,14 @@ Tools/**/*.pyc
 scratch/
 /backup-llm-runtime-*/
 
+# Project memory is vault-only (do not recreate mirrors)
+/INDEX.md
+/decisions.md
+/work/
+/Docs/INDEX.md
+/Docs/decisions.md
+/Docs/work/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/

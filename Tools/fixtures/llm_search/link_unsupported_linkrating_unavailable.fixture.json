@@ -1,0 +1,343 @@
+{
+  "decision_snapshot": {
+    "controlled_player": 1,
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "kind": "move_phase",
+        "label": "End Phase",
+        "phase": "End"
+      },
+      {
+        "action_id": 1,
+        "card_id": 5136,
+        "card_name": "Girochin Kuwagata",
+        "command": "Summon",
+        "kind": "command",
+        "label": "Normal Summon Girochin Kuwagata"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8009,
+    "schema_version": 3,
+    "self_resources_summary": {
+      "extra_deck": [
+        {
+          "card_id": 9901,
+          "copy_index": 0,
+          "link_rating": null,
+          "name": "LINK_CANDIDATE_NO_RATING"
+        }
+      ],
+      "field": [],
+      "hand": [
+        {
+          "card_id": 5136,
+          "level": 4,
+          "name": "Girochin Kuwagata"
+        }
+      ]
+    }
+  },
+  "description": "Link setup unsupported while LinkRating unavailable (explicit reason).",
+  "expectations": {
+    "acceptable_selected_roots": [
+      0,
+      1
+    ],
+    "coverage_budget_limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "decline": {
+      "acceptable": false,
+      "required": false,
+      "root_action_id": null
+    },
+    "exact_unsupported_reason": "link_rating_unavailable",
+    "forbidden_hidden_facts": [
+      "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+      "99105061",
+      "SENTINEL_OPP_SET_LEAK_LLM005_S4",
+      "99105062",
+      "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+      "99105063",
+      "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+      "99105064"
+    ],
+    "forbidden_rationale_claims": [
+      "Link Summon is currently legal"
+    ],
+    "required_candidate_lines": [],
+    "required_outcome_properties": {},
+    "required_root_action_ids": [
+      0,
+      1
+    ],
+    "required_root_identities": [
+      {
+        "action_id": 1,
+        "card_id": 5136
+      }
+    ],
+    "required_score_rationale_properties": {},
+    "semantic_gates": []
+  },
+  "family": "link_setup_unsupported",
+  "fixture_id": "link_unsupported_linkrating_unavailable",
+  "hidden_sentinels": {
+    "opponent_deck_card_id": 99105064,
+    "opponent_deck_name": "SENTINEL_OPP_DECK_LEAK_LLM005_S4",
+    "opponent_extra_card_id": 99105063,
+    "opponent_extra_name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S4",
+    "opponent_hand_card_id": 99105061,
+    "opponent_hand_name": "SENTINEL_OPP_HAND_LEAK_LLM005_S4",
+    "opponent_set_card_id": 99105062,
+    "opponent_set_name": "SENTINEL_OPP_SET_LEAK_LLM005_S4"
+  },
+  "provider_visible": {
+    "controlled_player": 1,
+    "kind": "decision_request",
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "kind": "move_phase",
+        "label": "End Phase",
+        "phase": "End"
+      },
+      {
+        "action_id": 1,
+        "card_id": 5136,
+        "card_name": "Girochin Kuwagata",
+        "command": "Summon",
+        "kind": "command",
+        "label": "Normal Summon Girochin Kuwagata"
+      }
+    ],
+    "phase": "Main1",
+    "public_state": {
+      "phase": "Main1",
+      "players": [
+        {
+          "deck_count": 30,
+          "extra_count": 15,
+          "hand_count": 5,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 0
+        },
+        {
+          "deck_count": 31,
+          "extra_count": 14,
+          "hand_count": 4,
+          "known_cards": [],
+          "lp": 8000,
+          "player": 1
+        }
+      ],
+      "turn": 3
+    },
+    "run_effect_seq": 8009,
+    "schema_version": 3,
+    "search_projection": {
+      "coverage": {
+        "boundary_nodes": 0,
+        "continuation_expansion_count": 0,
+        "elapsed_ms": 12,
+        "exclusion_reasons": [],
+        "expanded_nodes": 0,
+        "legal_root_actions": 2,
+        "no_candidate_reasons": [
+          "link_rating_unavailable"
+        ],
+        "non_expansion_reasons": [
+          "link_rating_unavailable"
+        ],
+        "pruned_nodes": 0,
+        "pruning_reasons": [],
+        "represented_root_actions": 2,
+        "root_exclusions": [],
+        "root_shell_count": 2,
+        "transposition_prunes": 0
+      },
+      "limits": {
+        "beam_width": 12,
+        "max_nodes": 96,
+        "max_serialized_bytes": 16384,
+        "max_strategic_depth": 4,
+        "max_wall_ms": 500
+      },
+      "lines": [
+        {
+          "boundary": null,
+          "commit_eligible": true,
+          "is_root_shell": true,
+          "line_id": "root:0",
+          "provenance": "engine_confirmed",
+          "root_action_id": 0,
+          "score": 20,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "End Phase",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [],
+          "unlocks": []
+        },
+        {
+          "boundary": null,
+          "commit_eligible": true,
+          "is_root_shell": true,
+          "line_id": "root:1",
+          "no_candidate_reason": "link_rating_unavailable",
+          "provenance": "engine_confirmed",
+          "root_action_id": 1,
+          "score": 40,
+          "steps": [
+            {
+              "commit_eligible": true,
+              "current_legal": true,
+              "label": "Normal Summon Girochin Kuwagata",
+              "provenance": "engine_confirmed"
+            }
+          ],
+          "strategic_depth": 0,
+          "uncertainty": [
+            "LinkRating unavailable; Link candidacy unsupported"
+          ],
+          "unlocks": []
+        }
+      ],
+      "root_run_effect_seq": 8009,
+      "search_id": "search-8009",
+      "status": "complete"
+    },
+    "self_resources_summary": {
+      "extra_deck": [
+        {
+          "card_id": 9901,
+          "copy_index": 0,
+          "link_rating": null,
+          "name": "LINK_CANDIDATE_NO_RATING"
+        }
+      ],
+      "field": [],
+      "hand": [
+        {
+          "card_id": 5136,
+          "level": 4,
+          "name": "Girochin Kuwagata"
+        }
+      ]
+    },
+    "unsupported_reason": "link_rating_unavailable"
+  },
+  "schema": "ygomaster.llm_decision_search_corpus.v1",
+  "search_projection": {
+    "coverage": {
+      "boundary_nodes": 0,
+      "continuation_expansion_count": 0,
+      "elapsed_ms": 12,
+      "exclusion_reasons": [],
+      "expanded_nodes": 0,
+      "legal_root_actions": 2,
+      "no_candidate_reasons": [
+        "link_rating_unavailable"
+      ],
+      "non_expansion_reasons": [
+        "link_rating_unavailable"
+      ],
+      "pruned_nodes": 0,
+      "pruning_reasons": [],
+      "represented_root_actions": 2,
+      "root_exclusions": [],
+      "root_shell_count": 2,
+      "transposition_prunes": 0
+    },
+    "limits": {
+      "beam_width": 12,
+      "max_nodes": 96,
+      "max_serialized_bytes": 16384,
+      "max_strategic_depth": 4,
+      "max_wall_ms": 500
+    },
+    "lines": [
+      {
+        "boundary": null,
+        "commit_eligible": true,
+        "is_root_shell": true,
+        "line_id": "root:0",
+        "provenance": "engine_confirmed",
+        "root_action_id": 0,
+        "score": 20,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "End Phase",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [],
+        "unlocks": []
+      },
+      {
+        "boundary": null,
+        "commit_eligible": true,
+        "is_root_shell": true,
+        "line_id": "root:1",
+        "no_candidate_reason": "link_rating_unavailable",
+        "provenance": "engine_confirmed",
+        "root_action_id": 1,
+        "score": 40,
+        "steps": [
+          {
+            "commit_eligible": true,
+            "current_legal": true,
+            "label": "Normal Summon Girochin Kuwagata",
+            "provenance": "engine_confirmed"
+          }
+        ],
+        "strategic_depth": 0,
+        "uncertainty": [
+          "LinkRating unavailable; Link candidacy unsupported"
+        ],
+        "unlocks": []
+      }
+    ],
+    "root_run_effect_seq": 8009,
+    "search_id": "search-8009",
+    "status": "complete"
+  },
+  "unsupported_reason": "link_rating_unavailable"
+}

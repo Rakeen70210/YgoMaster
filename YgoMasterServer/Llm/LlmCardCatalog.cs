@@ -91,6 +91,13 @@ namespace YgoMaster
                     Atk = card.Atk,
                     Def = card.Def,
                     Scale = card.Scale,
+                    Frame = NormalizeWhitespace(card.Frame),
+                    SummonFamily = NormalizeWhitespace(card.SummonFamily),
+                    IsExtraDeck = card.IsExtraDeck,
+                    IsTuner = card.IsTuner,
+                    UsesRank = card.UsesRank,
+                    // Preserve null; never invent a link rating during normalization.
+                    LinkRating = card.LinkRating,
                 };
             }
             return result;

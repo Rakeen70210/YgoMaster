@@ -14,6 +14,8 @@
         int GetCurrentStep();
         int GetTurnNum();
         int GetTurnPlayer();
+        int GetAttackTargetMask(int player, int locate);
+        int GetDialogCanYesNoSkip();
         int GetDialogSelectItemEnable(int index);
         int GetDialogSelectItemNum();
         int GetDialogSelectItemTextId(int index);

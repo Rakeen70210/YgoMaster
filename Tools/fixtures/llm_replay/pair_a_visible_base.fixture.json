@@ -1,0 +1,51 @@
+{
+  "controlled_self": {
+    "field": [
+      {
+        "card_id": 5136,
+        "face": 1
+      }
+    ],
+    "hand_count": 4,
+    "player": 1
+  },
+  "expectations": {
+    "fingerprint_must_ignore_opponent_hidden": true,
+    "pair_id": "visible_equiv_s5"
+  },
+  "fixture_id": "pair_a_visible_base",
+  "opponent_hidden_private": {
+    "deck_top": [
+      {
+        "card_id": 99106003,
+        "name": "SENTINEL_OPP_DECK_LEAK_LLM005_S5"
+      }
+    ],
+    "extra": [
+      {
+        "card_id": 99106004,
+        "name": "SENTINEL_OPP_EXTRA_LEAK_LLM005_S5"
+      }
+    ],
+    "hand": [
+      {
+        "card_id": 99106001,
+        "name": "SENTINEL_OPP_HAND_LEAK_LLM005_S5"
+      }
+    ],
+    "set": [
+      {
+        "card_id": 99106002,
+        "name": "SENTINEL_OPP_SET_LEAK_LLM005_S5"
+      }
+    ]
+  },
+  "schema": "ygomaster.llm_accepted_input_transcript.v1",
+  "visible_public": {
+    "known_public_cards": [],
+    "lp0": 8000,
+    "lp1": 8000,
+    "phase": "Main1",
+    "turn": 3
+  }
+}

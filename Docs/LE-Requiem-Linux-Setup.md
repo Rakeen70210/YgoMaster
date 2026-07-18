@@ -2,6 +2,16 @@
 
 This document records the working setup on this machine for running YgoMaster on Linux/Steam and playing the Link Evolution-style campaign content through the LE Combined mod.
 
+> **Update 2026-06-30:** Valve Proton 10.0 no longer launches `masterduel.exe`
+> (it aborts on `coremessaging.dll.DllGetActivationFactory`). The launchers now
+> pin **GE-Proton10-34** and use a client-first startup order (client
+> immediately, server and forwarders after a short delay). The tracked
+> `YgoMasterLaunch.sh` and `Tools/launch_p2_client.sh` are authoritative;
+> Proton 10.0 references below are the original historical record. See
+> vault `[[YGOMASTER-LLM-001]]`
+> (`/home/rakeenhuq/Onedrive/Obsidian Vault/projects/ygomaster/work/`) for the
+> 2026-06-30 change record.
+
 ## Final Working Result
 
 The Steam library shortcut named `YgoMaster` launches this script:
@@ -13,9 +23,9 @@ The Steam library shortcut named `YgoMaster` launches this script:
 That script launches:
 
 ```text
-Proton 10.0 -> MonoRun.exe -> YgoMaster.exe
+GE-Proton10-34 -> MonoRun.exe -> YgoMasterClient.exe -> masterduel.exe   (immediately)
+GE-Proton10-34 -> MonoRun.exe -> YgoMaster.exe                           (after a 5 s delay)
 systemd user services -> socat LAN forwarders for 4988/4989
-Proton 10.0 -> MonoRun.exe -> YgoMasterClient.exe -> masterduel.exe
 ```
 
 The active YgoMaster install now contains LE Combined v1.3.0, including:
@@ -150,7 +160,12 @@ Those files were merged into the active YgoMaster folder.
 
 ### 3. Local Linux Launch Script
 
-The following launcher was created as `YgoMasterLaunch.sh`:
+The following launcher was originally created as `YgoMasterLaunch.sh`. This
+snippet is the historical version — the tracked `YgoMasterLaunch.sh` in the
+repository root has since replaced Proton 10.0 with GE-Proton10-34, launches
+the client first (server and forwarders start in the background after 5
+seconds), and detects the LAN IP dynamically. Use the tracked script; do not
+copy this snippet:
 
 ```bash
 #!/usr/bin/env bash
@@ -205,7 +220,7 @@ Its launch options were cleared:
 
 ```
 
-Steam does not need a specific Proton version set for this shortcut because the launcher script explicitly runs Proton 10.0.
+Steam does not need a specific Proton version set for this shortcut because the launcher script explicitly runs its own pinned Proton (GE-Proton10-34 in the current tracked script).
 
 ### 5. LE Combined v1.3.0 Download
 
@@ -350,7 +365,7 @@ Fallback Non-Steam shortcut:
 2. Go to the `YgoMaster` Non-Steam shortcut.
 3. Click Play.
 4. The shortcut should run `YgoMasterLaunch.sh`.
-5. The script starts YgoMaster through Proton 10.0.
+5. The script starts YgoMaster through its pinned Proton (GE-Proton10-34).
 6. Master Duel should open with YgoMaster active.
 
 Do not manually set the shortcut target back to `YgoMasterClient.exe`.

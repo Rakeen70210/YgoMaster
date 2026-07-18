@@ -15,7 +15,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_BUILD_DIR = Path("/tmp/ygomaster-build/solution")
-DEFAULT_BROKER_TIMEOUT_MS = 2000
+DEFAULT_BROKER_TIMEOUT_MS = 55000
 RUNTIME_BINARIES = ("YgoMaster.exe", "YgoMasterClient.exe")
 STATUS_SETTINGS_KEYS = (
     "PvpLogToFile",
@@ -24,6 +24,41 @@ STATUS_SETTINGS_KEYS = (
     "LlmBrokerUrl",
     "LlmBrokerTimeoutMs",
     "LlmBrokerControlPlayer",
+    "LlmSelfResourcesAuditEnabled",
+    "LlmPlanningSearchAuditEnabled",
+    "LlmSearchMaxStrategicDepth",
+    "LlmSearchMaxNodes",
+    "LlmSearchBeamWidth",
+    "LlmSearchMaxWallMs",
+    "LlmSearchMaxSerializedBytes",
+)
+# Known optional keys that may be absent from older deployed ClientSettings.json.
+# update_settings_text may insert these (once) when a write explicitly targets them.
+MIGRATABLE_OPTIONAL_SETTINGS = frozenset(
+    {
+        "LlmSelfResourcesAuditEnabled",
+        "LlmPlanningSearchAuditEnabled",
+        "LlmSearchMaxStrategicDepth",
+        "LlmSearchMaxNodes",
+        "LlmSearchBeamWidth",
+        "LlmSearchMaxWallMs",
+        "LlmSearchMaxSerializedBytes",
+    }
+)
+# Plan defaults (YGOMASTER-LLM-005 Slice 2A). Broker enable never implies these.
+LLM_SEARCH_LIMIT_DEFAULTS = {
+    "LlmSearchMaxStrategicDepth": 4,
+    "LlmSearchMaxNodes": 96,
+    "LlmSearchBeamWidth": 12,
+    "LlmSearchMaxWallMs": 500,
+    "LlmSearchMaxSerializedBytes": 16384,
+}
+LLM_SETTING_INSERT_ANCHORS = (
+    "LlmBrokerControlPlayer",
+    "LlmBrokerTimeoutMs",
+    "LlmBrokerUrl",
+    "LlmBrokerEnabled",
+    "LlmDecisionLogEnabled",
 )
 GAME_PROCESS_PATTERNS = (
     re.compile(r"masterduel\.exe(?:\s|$)", re.IGNORECASE),
@@ -56,16 +91,82 @@ def jsonc_literal(value):
     raise TypeError("unsupported setting value type: %s" % type(value).__name__)
 
 
-def update_settings_text(text, settings):
+def setting_key_present(text, key):
+    pattern = re.compile(r'(?m)^\s*"%s"\s*:' % re.escape(key))
+    return pattern.search(text) is not None
+
+
+def count_setting_keys(text, key):
+    pattern = re.compile(r'(?m)^\s*"%s"\s*:' % re.escape(key))
+    return len(pattern.findall(text))
+
+
+def _setting_line_pattern(key):
+    return re.compile(
+        r'(?m)^(?P<indent>\s*)"%s"\s*:\s*'
+        r'(?P<old>"(?:\\.|[^"\\])*"|true|false|null|-?\d+(?:\.\d+)?)'
+        r'(?P<comma>\s*,?)(?P<comment>\s*(?://.*)?)$'
+        % re.escape(key)
+    )
+
+
+def insert_optional_setting(text, key, value):
+    """
+    Insert a single known optional setting near other LLM keys.
+    JSONC-preserving: keeps comments, indentation, and unrelated values.
+    Idempotent when the key is already present.
+    """
+    if key not in MIGRATABLE_OPTIONAL_SETTINGS:
+        raise ValueError("Refusing to migrate unknown setting: %s" % key)
+    if setting_key_present(text, key):
+        return text
+
+    literal = jsonc_literal(value)
+    for anchor in LLM_SETTING_INSERT_ANCHORS:
+        match = _setting_line_pattern(anchor).search(text)
+        if match is None:
+            continue
+        indent = match.group("indent")
+        # Anchor must have a trailing comma so the new property is valid JSONC.
+        fixed_anchor = (
+            '%s"%s": %s,%s'
+            % (
+                indent,
+                anchor,
+                match.group("old"),
+                match.group("comment"),
+            )
+        )
+        new_line = '%s"%s": %s,' % (indent, key, literal)
+        insertion = fixed_anchor + "\n" + new_line
+        return text[: match.start()] + insertion + text[match.end() :]
+
+    raise ValueError(
+        "Cannot migrate missing setting %s: no LLM anchor keys found to insert near"
+        % key
+    )
+
+
+def migrate_optional_settings_for_update(text, settings):
+    """
+    When an update targets a known optional key absent from older runtime files,
+    insert it once before replacement. Broker enable paths that omit the key do nothing.
+    """
     updated = text
+    for key, value in settings.items():
+        if key not in MIGRATABLE_OPTIONAL_SETTINGS:
+            continue
+        if setting_key_present(updated, key):
+            continue
+        updated = insert_optional_setting(updated, key, value)
+    return updated
+
+
+def update_settings_text(text, settings):
+    updated = migrate_optional_settings_for_update(text, settings)
     missing = []
     for key, value in settings.items():
-        pattern = re.compile(
-            r'(?m)^(?P<indent>\s*)"%s"\s*:\s*'
-            r'(?P<old>"(?:\\.|[^"\\])*"|true|false|null|-?\d+(?:\.\d+)?)'
-            r'(?P<comma>\s*,?)(?P<comment>\s*(?://.*)?)$'
-            % re.escape(key)
-        )
+        pattern = _setting_line_pattern(key)
         literal = jsonc_literal(value)
         replaced = 0
 
@@ -120,6 +221,8 @@ def broker_settings(enable, control_player, broker_url, timeout_ms):
         effective_timeout_ms = (
             int(timeout_ms) if timeout_ms > 0 else DEFAULT_BROKER_TIMEOUT_MS
         )
+    # LlmSelfResourcesAuditEnabled is intentionally omitted: broker enable/disable must
+    # never implicitly turn private self-resources audit on (YGOMASTER-LLM-005 Slice 1B).
     return {
         "LlmDecisionLogEnabled": bool(enable),
         "LlmBrokerEnabled": bool(enable),
@@ -285,6 +388,7 @@ def collect_status(runtime_dir, build_dir, ps_text=None, check_broker=True):
         runtime_dir / "YgoMaster" / "Data" / "ClientData" / "ClientSettings.json"
     )
     decision_log_path = runtime_dir / "Data" / "ClientData" / "LlmDecisionLog.jsonl"
+    reasoning_log_path = runtime_dir / "Data" / "ClientData" / "LlmReasoningLog.jsonl"
     if ps_text is None:
         ps_text = get_process_table()
 
@@ -327,6 +431,7 @@ def collect_status(runtime_dir, build_dir, ps_text=None, check_broker=True):
         "broker": broker,
         "game_processes": detect_running_game_processes(ps_text),
         "decision_log": file_status(decision_log_path),
+        "reasoning_log": file_status(reasoning_log_path),
     }
 
 
@@ -438,16 +543,86 @@ def main(argv=None):
     parser.add_argument("--control-player", type=int, default=1)
     parser.add_argument("--broker-url", default="http://127.0.0.1:4991/decide")
     parser.add_argument("--timeout-ms", type=int, default=DEFAULT_BROKER_TIMEOUT_MS)
+    parser.add_argument(
+        "--self-resources-audit",
+        choices=("on", "off"),
+        default=None,
+        help="explicitly enable/disable LlmSelfResourcesAuditEnabled (default-off; never implied by broker enable)",
+    )
+    parser.add_argument(
+        "--planning-search-audit",
+        choices=("on", "off"),
+        default=None,
+        help="explicitly enable/disable LlmPlanningSearchAuditEnabled (default-off; never implied by broker enable)",
+    )
+    parser.add_argument(
+        "--search-max-strategic-depth",
+        type=int,
+        default=None,
+        help="set LlmSearchMaxStrategicDepth (plan default 4; never implied by broker enable)",
+    )
+    parser.add_argument(
+        "--search-max-nodes",
+        type=int,
+        default=None,
+        help="set LlmSearchMaxNodes (plan default 96)",
+    )
+    parser.add_argument(
+        "--search-beam-width",
+        type=int,
+        default=None,
+        help="set LlmSearchBeamWidth (plan default 12)",
+    )
+    parser.add_argument(
+        "--search-max-wall-ms",
+        type=int,
+        default=None,
+        help="set LlmSearchMaxWallMs (plan default 500)",
+    )
+    parser.add_argument(
+        "--search-max-serialized-bytes",
+        type=int,
+        default=None,
+        help="set LlmSearchMaxSerializedBytes (plan default 16384)",
+    )
+    parser.add_argument(
+        "--ensure-search-limit-defaults",
+        action="store_true",
+        help="insert missing LlmSearch* plan defaults without enabling planning audit",
+    )
     parser.add_argument("--allow-running", action="store_true")
     parser.add_argument("--write", action="store_true", help="apply changes; otherwise dry-run only")
     args = parser.parse_args(argv)
 
+    search_limit_args_set = any(
+        v is not None
+        for v in (
+            args.search_max_strategic_depth,
+            args.search_max_nodes,
+            args.search_beam_width,
+            args.search_max_wall_ms,
+            args.search_max_serialized_bytes,
+        )
+    ) or args.ensure_search_limit_defaults
+
     if not args.status and not args.settings and not args.deploy_binaries:
         parser.error("choose --settings and/or --deploy-binaries")
     if args.status and (
-        args.settings or args.deploy_binaries or args.include_source_settings or args.write
+        args.settings
+        or args.deploy_binaries
+        or args.include_source_settings
+        or args.write
+        or args.self_resources_audit is not None
+        or args.planning_search_audit is not None
+        or search_limit_args_set
     ):
         parser.error("--status cannot be combined with mutating options")
+    if args.self_resources_audit is not None and not args.settings:
+        parser.error("--self-resources-audit requires --settings")
+    if args.planning_search_audit is not None and not args.settings:
+        parser.error("--planning-search-audit requires --settings")
+    if search_limit_args_set and not args.settings:
+        parser.error("search limit options require --settings")
 
     runtime_dir = args.runtime_dir.resolve()
     build_dir = args.build_dir.resolve()
@@ -464,6 +639,29 @@ def main(argv=None):
             args.broker_url,
             args.timeout_ms,
         )
+        if args.self_resources_audit is not None:
+            settings["LlmSelfResourcesAuditEnabled"] = args.self_resources_audit == "on"
+        elif args.disable:
+            # Clean disable path: turn private audit off without requiring a separate flag.
+            settings["LlmSelfResourcesAuditEnabled"] = False
+        if args.planning_search_audit is not None:
+            settings["LlmPlanningSearchAuditEnabled"] = args.planning_search_audit == "on"
+        elif args.disable:
+            settings["LlmPlanningSearchAuditEnabled"] = False
+
+        # Search limits: explicit only. Broker enable must not imply planning audit or limits.
+        if args.ensure_search_limit_defaults:
+            settings.update(LLM_SEARCH_LIMIT_DEFAULTS)
+        if args.search_max_strategic_depth is not None:
+            settings["LlmSearchMaxStrategicDepth"] = args.search_max_strategic_depth
+        if args.search_max_nodes is not None:
+            settings["LlmSearchMaxNodes"] = args.search_max_nodes
+        if args.search_beam_width is not None:
+            settings["LlmSearchBeamWidth"] = args.search_beam_width
+        if args.search_max_wall_ms is not None:
+            settings["LlmSearchMaxWallMs"] = args.search_max_wall_ms
+        if args.search_max_serialized_bytes is not None:
+            settings["LlmSearchMaxSerializedBytes"] = args.search_max_serialized_bytes
 
         if args.write and args.deploy_binaries:
             if not args.allow_running:

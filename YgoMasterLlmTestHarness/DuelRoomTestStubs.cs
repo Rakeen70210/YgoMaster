@@ -17,6 +17,7 @@ namespace YgoMaster
         public DuelRoom DuelRoom;
         public DuelSettings ActiveDuelSettings = new DuelSettings();
         public uint SpectatingPlayerCode;
+        public Net.NetClient NetClient;
     }
 
     class DuelSettings
@@ -40,6 +41,7 @@ namespace YgoMaster.Net
     class NetClient
     {
         public bool Closed { get; private set; }
+        public object Data { get; set; }
 
         public void Close()
         {
