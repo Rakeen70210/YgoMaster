@@ -20,6 +20,64 @@ class RenderLlmDecisionReportTests(unittest.TestCase):
                 writer.write(json.dumps(event, separators=(",", ":")) + "\n")
         return temp_dir, path
 
+    def test_renders_attack_target_ownership_and_divergence(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "kind": "llm_broker_window_routed",
+                    "run_effect_seq": 539,
+                    "route": "Broker",
+                    "prompt_family": "WaitInput",
+                    "reason": "attack_target",
+                },
+                {
+                    "kind": "llm_attack_target_divergence",
+                    "run_effect_seq": 539,
+                    "origin_run_effect_seq": 534,
+                    "reason": "provider_error",
+                    "fallback": "cpu",
+                    "legal_target_count": 2,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        report = renderer.render_report([path])
+        self.assertIn("Broker-owned attack-target windows: 1", report)
+        self.assertIn("Attack-target divergences: 1", report)
+        self.assertIn(
+            "attack-target divergence: seq 539 from attack 534 (provider_error -> cpu)",
+            report,
+        )
+
+    def test_renders_applicability_rejection_and_followup_unavailable(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "kind": "llm_broker_rejected",
+                    "request_run_effect_seq": 863,
+                    "error": "effect_applicability_contradiction",
+                },
+                {
+                    "kind": "intended_followup_unavailable",
+                    "origin_run_effect_seq": 881,
+                    "current_run_effect_seq": 929,
+                    "action_family": "effect_activation",
+                    "expected_card_name": "Castel, the Skyblaster Musketeer",
+                    "reason": "effect_not_legal",
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        report = renderer.render_report([path])
+        self.assertIn("Effect-applicability contradiction rejects: 1", report)
+        self.assertIn("Promised followups unavailable: 1", report)
+        self.assertIn(
+            "followup unavailable: root 881 -> seq 929 effect_activation Castel, the Skyblaster Musketeer (effect_not_legal)",
+            report,
+        )
+
     def test_renders_window_summary_and_flags_generic_reason(self):
         temp_dir, path = self.write_log(
             [

@@ -538,6 +538,51 @@ namespace YgoMaster
             return MiniJSON.Json.Serialize(data);
         }
 
+        public static string SerializeSummonInteraction(
+            ulong runEffectSeq,
+            LlmSummonInteractionDecision decision,
+            string eventKind)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>()
+            {
+                { "kind", string.IsNullOrEmpty(eventKind) ? "summon_interaction" : eventKind },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", (long)runEffectSeq },
+                { "disposition", decision == null ? null : decision.Disposition.ToString() },
+                { "reason", decision == null ? null : decision.Reason },
+                { "attempt", decision == null ? 0 : decision.Attempt },
+                { "stable_signature", decision == null ? null : decision.StableSignature },
+                { "interaction_signature", decision == null ? null : decision.InteractionSignature },
+                { "originating_run_effect_seq", decision == null ? 0L : (long)decision.OriginatingRunEffectSeq },
+                { "temporary_cpu", decision != null && decision.ShouldUseTemporaryCpu },
+            };
+            return MiniJSON.Json.Serialize(data);
+        }
+
+        public static string SerializeStuckWindowRecovered(
+            DecisionSnapshot snapshot,
+            LlmDecisionWindowPlan plan,
+            LlmStuckWindowObservation observation)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>()
+            {
+                { "kind", "llm_broker_stuck_window_recovered" },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", snapshot == null ? 0L : (long)snapshot.RunEffectSeq },
+                { "view_type", snapshot == null ? null : snapshot.ViewType.ToString() },
+                { "view_param1", snapshot == null ? 0 : snapshot.ViewParam1 },
+                { "view_param2", snapshot == null ? 0 : snapshot.ViewParam2 },
+                { "acting_player", snapshot == null ? -1 : snapshot.ActingPlayer },
+                { "route", plan == null ? null : plan.Route.ToString() },
+                { "reason", plan == null ? null : plan.Reason },
+                { "prompt_family", plan == null ? null : plan.PromptFamily.ToString() },
+                { "repeat_count", observation == null ? 0 : observation.RepeatCount },
+                { "fingerprint", observation == null ? null : observation.Fingerprint },
+                { "route_history", observation == null ? null : observation.RouteHistory },
+            };
+            return MiniJSON.Json.Serialize(data);
+        }
+
         public static string SerializeBrokerRequestStarted(DecisionSnapshot snapshot)
         {
             Dictionary<string, object> data = new Dictionary<string, object>()
@@ -633,6 +678,27 @@ namespace YgoMaster
                 { "request_run_effect_seq", (long)requestRunEffectSeq },
                 { "current_run_effect_seq", (long)currentRunEffectSeq },
                 { "reason", reason },
+            });
+        }
+
+        public static string SerializeAttackTargetDivergence(
+            DecisionSnapshot snapshot,
+            string reason,
+            string fallback)
+        {
+            AttackTargetContext origin = snapshot == null ? null : snapshot.AttackTargetContext;
+            return MiniJSON.Json.Serialize(new Dictionary<string, object>()
+            {
+                { "kind", "llm_attack_target_divergence" },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", snapshot == null ? 0L : (long)snapshot.RunEffectSeq },
+                { "origin_run_effect_seq", origin == null ? 0L : (long)origin.OriginRunEffectSeq },
+                { "duel_generation", origin == null ? 0 : origin.OriginDuelGeneration },
+                { "attacker_player", origin == null ? -1 : origin.AttackingPlayer },
+                { "attacker_position", origin == null ? -1 : origin.AttackerPosition },
+                { "reason", reason ?? "broker_fallback" },
+                { "fallback", fallback ?? "cpu" },
+                { "legal_target_count", snapshot == null ? 0 : snapshot.LegalActions.Count },
             });
         }
 
@@ -1070,8 +1136,14 @@ namespace YgoMaster
                 { "strategic_role", action.StrategicRole },
                 { "requires_target", action.RequiresTarget },
                 { "target_scope", action.TargetScope },
+                { "target_token", action.TargetToken },
                 { "consequence_hint", action.ConsequenceHint },
             };
+            if (action.EffectApplicability != null)
+            {
+                actionData["effect_applicability"] =
+                    action.EffectApplicability.ToDictionary();
+            }
             if (action.Kind == LegalActionKind.MovePhase)
             {
                 actionData["phase"] = action.Phase.ToString();
@@ -1112,6 +1184,33 @@ namespace YgoMaster
                 actionData["decide"] = action.CancelDecide;
             }
             return actionData;
+        }
+
+        public static string SerializeIntendedFollowupEvaluation(
+            LlmPromisedFollowupEvaluation evaluation)
+        {
+            if (evaluation == null)
+            {
+                return null;
+            }
+            return MiniJSON.Json.Serialize(new Dictionary<string, object>()
+            {
+                { "kind", evaluation.EventKind },
+                { "status", evaluation.Status },
+                { "reason", evaluation.Reason },
+                { "origin_run_effect_seq", (long)evaluation.OriginRunEffectSeq },
+                { "current_run_effect_seq", (long)evaluation.CurrentRunEffectSeq },
+                { "duel_generation", evaluation.DuelGeneration },
+                { "origin_action_id", evaluation.OriginActionId },
+                { "origin_card_id", evaluation.OriginCardId },
+                { "origin_action_label", evaluation.OriginActionLabel },
+                { "action_family", evaluation.ActionFamily },
+                { "expected_card_id", evaluation.ExpectedCardId },
+                { "expected_card_name", evaluation.ExpectedCardName },
+                { "description", evaluation.Description },
+                { "matched_action_id", evaluation.ActionId },
+                { "current_legal_action_families", evaluation.CurrentLegalActionFamilies },
+            });
         }
 
         static Dictionary<string, object> SerializeCardMetadata(LlmCardMetadata card)

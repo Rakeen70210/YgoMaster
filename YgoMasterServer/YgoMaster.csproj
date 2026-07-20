@@ -90,6 +90,8 @@
     <Compile Include="Llm\LlmIntendedFollowupMemory.cs" />
     <Compile Include="Llm\LlmSlice6BCorpusCoverageManifest.cs" />
     <Compile Include="Llm\LlmImmediateOutcomeAnalyzer.cs" />
+    <Compile Include="Llm\LlmEffectApplicability.cs" />
+    <Compile Include="Llm\LlmPromisedFollowupTracker.cs" />
     <Compile Include="Llm\LlmCardEffectCapabilityCatalog.cs" />
     <Compile Include="Llm\LlmAcceptedInputTranscript.cs" />
     <Compile Include="Llm\LlmAcceptedInputTranscriptRecorder.cs" />
@@ -106,6 +108,7 @@
     <Compile Include="Llm\LlmBrokerProtocol.cs" />
     <Compile Include="Llm\LlmDecisionLogSerializer.cs" />
     <Compile Include="Llm\LlmDecisionWindowPlanner.cs" />
+    <Compile Include="Llm\LlmSummonInteractionState.cs" />
     <Compile Include="Llm\LlmTurnMemoryTracker.cs" />
     <Compile Include="Llm\LlmDuelHistoryTypes.cs" />
     <Compile Include="Llm\LlmPublicHistoryRedactionPolicy.cs" />

@@ -180,6 +180,73 @@ class LlmBrokerTests(unittest.TestCase):
             "prompt must separate fact from inference",
         )
 
+    def test_attack_target_prompt_requires_replanning_from_interaction_origin(self):
+        request = self.decision_request()
+        request["run_effect_seq"] = 539
+        request["interaction_origin"] = {
+            "kind": "attack",
+            "run_effect_seq": 534,
+            "action_label": "Attack: Chaosrider Gustaph",
+            "reason": "Attack Duza to remove the public threat.",
+        }
+        request["legal_actions"] = [
+            {
+                "action_id": 0,
+                "kind": "command",
+                "action_label": "Attack target: Duza the Meteor Cubic Vessel",
+                "target_scope": "attack_target",
+                "target_token": "attack:7:534:1:0:501:0:2:0:701",
+            },
+            {
+                "action_id": 1,
+                "kind": "command",
+                "action_label": "Attack target: face-down monster in zone 4",
+                "target_scope": "attack_target",
+                "target_token": "attack:7:534:1:0:501:0:4:0:0",
+            },
+        ]
+
+        prompt = broker.build_decision_prompt(request)
+        self.assertIn("interaction_origin", prompt)
+        self.assertIn("re-evaluate every current legal attack target", prompt)
+        self.assertIn("never invent a face-down target identity", prompt)
+
+    def test_prompt_treats_grounded_effect_applicability_as_authoritative(self):
+        request = self.decision_request()
+        request["legal_actions"][1]["effect_applicability"] = {
+            "is_grounded": True,
+            "effect_expected_to_apply": False,
+            "reason": "blocked_by_activated_monster_effect_immunity",
+            "source_original_atk": 1600,
+            "source_original_atk_at_most": 3000,
+        }
+
+        prompt = broker.build_decision_prompt(request)
+        self.assertIn("effect_applicability", prompt)
+        self.assertIn("authoritative", prompt.lower())
+        self.assertIn("must not select", prompt.lower())
+
+    def test_provider_decision_preserves_structured_intended_followups(self):
+        payload = json.loads(self.provider_decision_json())
+        payload["intended_followups"] = [
+            {
+                "action_family": "effect_activation",
+                "card_id": 11263,
+                "card_name": "Castel, the Skyblaster Musketeer",
+                "description": "detach two to shuffle",
+            }
+        ]
+        parsed = broker.parse_provider_decision(json.dumps(payload), self.decision_request())
+        self.assertEqual(parsed["intended_followups"], payload["intended_followups"])
+
+        schema = json.loads(broker.DECISION_JSON_SCHEMA)
+        self.assertIn("intended_followups", schema["required"])
+        self.assertEqual(
+            schema["properties"]["intended_followups"]["items"]["properties"]
+            ["action_family"]["type"],
+            "string",
+        )
+
     def test_build_decision_prompt_includes_matching_strategy_hint(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             hint_path = Path(temp_dir) / "LlmStrategyHints.json"

@@ -50,6 +50,8 @@
     <Compile Include="Llm005\Llm005Slice1ATests.cs" />
     <Compile Include="Llm005\Llm005Slice1BTests.cs" />
     <Compile Include="Llm005\Llm005LiveGateFixTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2DTests.cs" />
+    <Compile Include="Llm005\Llm005ApplicabilityFollowupTests.cs" />
     <Compile Include="Llm005\Llm005Slice2ATests.cs" />
     <Compile Include="Llm005\Llm005Slice0Tests.cs" />
     <Compile Include="Llm005\Llm005Slice0BTests.cs" />
@@ -101,6 +103,12 @@
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmImmediateOutcomeAnalyzer.cs">
       <Link>Llm\LlmImmediateOutcomeAnalyzer.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmEffectApplicability.cs">
+      <Link>Llm\LlmEffectApplicability.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmPromisedFollowupTracker.cs">
+      <Link>Llm\LlmPromisedFollowupTracker.cs</Link>
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmCardEffectCapabilityCatalog.cs">
       <Link>Llm\LlmCardEffectCapabilityCatalog.cs</Link>
@@ -263,6 +271,9 @@
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmDecisionWindowPlanner.cs">
       <Link>Llm\LlmDecisionWindowPlanner.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmSummonInteractionState.cs">
+      <Link>Llm\LlmSummonInteractionState.cs</Link>
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmTurnMemoryTracker.cs">
       <Link>Llm\LlmTurnMemoryTracker.cs</Link>

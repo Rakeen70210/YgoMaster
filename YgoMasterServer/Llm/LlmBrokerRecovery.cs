@@ -38,7 +38,8 @@
             }
 
             // 1) Prefer provider intent even when quality rejected it (seq 68 early_end_phase).
-            if (preferredAction != null)
+            if (preferredAction != null
+                && error != LlmEffectApplicabilityAnalyzer.ErrorEffectApplicabilityContradiction)
             {
                 foreach (LegalAction candidate in snapshot.LegalActions)
                 {
@@ -49,6 +50,14 @@
                         return true;
                     }
                 }
+            }
+
+            // A target continuation is part of the strategic attack choice. Without
+            // an exact still-legal provider target, recovery must report divergence
+            // and hand off explicitly instead of selecting the first engine target.
+            if (IsAttackTargetWindow(snapshot))
+            {
+                return false;
             }
 
             // 2) First action that still passes quality validation.
@@ -69,6 +78,10 @@
             foreach (LegalAction candidate in snapshot.LegalActions)
             {
                 if (candidate.IsMechanical)
+                {
+                    continue;
+                }
+                if (LlmEffectApplicabilityAnalyzer.IsHardBlocked(candidate))
                 {
                     continue;
                 }
@@ -98,6 +111,23 @@
             }
 
             return false;
+        }
+
+        static bool IsAttackTargetWindow(DecisionSnapshot snapshot)
+        {
+            if (snapshot == null || snapshot.LegalActions == null ||
+                snapshot.LegalActions.Count < 2)
+            {
+                return false;
+            }
+            foreach (LegalAction action in snapshot.LegalActions)
+            {
+                if (action == null || !action.IsAttackTargetSelection)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

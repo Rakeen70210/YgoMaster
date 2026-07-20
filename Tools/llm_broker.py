@@ -33,6 +33,9 @@ DECISION_PROMPT = (
     "You control the request's acting_player in a local Yu-Gi-Oh! Master Duel test duel. "
     "Use only the provided legal_actions, your own hand/card context, public state, and duel_history. "
     "Use action_label, action_group, strategic_role, target_scope, and consequence_hint to understand each choice. "
+    "Treat grounded effect_applicability facts as authoritative. When is_grounded is true and effect_expected_to_apply is false, you must not select that action unless it states a concrete grounded secondary benefit worth the cost; never claim the blocked effect or modifier applied. "
+    "When interaction_origin.kind is attack, re-evaluate every current legal attack target against the originating attack reason; the earlier preference is advisory, not current legality. "
+    "Choose only a current attack_target action and never invent a face-down target identity. "
     "Ignore actions marked is_mechanical unless no strategic action is available. "
     "Prefer board development, card advantage, lethal damage, threat removal, and resource preservation. "
     "Do not end the phase while strong proactive legal actions remain unless you have a tactical reason. "
@@ -47,13 +50,15 @@ DECISION_PROMPT = (
     "Use opponent_board_assessment for the visible opponent board/graveyard context you accounted for, "
     "opponent_action_assessment for how public history actions affected the choice, "
     "why_now for timing, alternatives_considered for rejected legal alternatives, and risk for uncertainty or downside. "
+    "For a selected summon, list only future actions whose value your choice actually relies on in intended_followups; use [] when none. A future effect is not currently legal merely because you intend it. "
     "Reply only with JSON: {\"run_effect_seq\":number,\"action_id\":number,"
     "\"reason\":\"card-specific reason\",\"confidence\":number,\"plan\":\"short plan\","
     "\"opponent_board_assessment\":\"visible opponent context considered\","
     "\"opponent_action_assessment\":\"public history actions considered\","
     "\"history_event_ids_used\":[1],"
     "\"why_now\":\"timing rationale\",\"alternatives_considered\":[\"rejected option\"],"
-    "\"risk\":\"main downside or hidden-info uncertainty\"}."
+    "\"risk\":\"main downside or hidden-info uncertainty\","
+    "\"intended_followups\":[{\"action_family\":\"effect_activation\",\"card_id\":123,\"card_name\":\"name\",\"description\":\"future action\"}]}."
 )
 DECISION_JSON_SCHEMA = json.dumps(
     {
@@ -71,6 +76,7 @@ DECISION_JSON_SCHEMA = json.dumps(
             "why_now",
             "alternatives_considered",
             "risk",
+            "intended_followups",
         ],
         "properties": {
             "run_effect_seq": {"type": "integer"},
@@ -90,6 +96,23 @@ DECISION_JSON_SCHEMA = json.dumps(
                 "items": {"type": "string"},
             },
             "risk": {"type": "string"},
+            "intended_followups": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["action_family", "card_id", "card_name", "description"],
+                    "properties": {
+                        "action_family": {
+                            "type": "string",
+                            "enum": ["effect_activation", "attack", "move_phase"],
+                        },
+                        "card_id": {"type": "integer", "minimum": 0},
+                        "card_name": {"type": "string"},
+                        "description": {"type": "string"},
+                    },
+                },
+            },
         },
     },
     separators=(",", ":"),
@@ -147,9 +170,25 @@ def deterministic_response(request):
 
     selected = None
     for action in actions:
-        if action.get("kind") == "command":
+        applicability = action.get("effect_applicability") or {}
+        hard_blocked = (
+            applicability.get("is_grounded") is True
+            and applicability.get("effect_expected_to_apply") is False
+            and applicability.get("has_grounded_secondary_benefit") is not True
+        )
+        if action.get("kind") == "command" and not hard_blocked:
             selected = action
             break
+    if selected is None:
+        for action in actions:
+            applicability = action.get("effect_applicability") or {}
+            if not (
+                applicability.get("is_grounded") is True
+                and applicability.get("effect_expected_to_apply") is False
+                and applicability.get("has_grounded_secondary_benefit") is not True
+            ):
+                selected = action
+                break
     if selected is None:
         selected = actions[0]
 
@@ -167,6 +206,7 @@ def deterministic_response(request):
         "why_now": "No model-backed timing rationale is available in deterministic fallback.",
         "alternatives_considered": [],
         "risk": "Deterministic fallback may choose a legal but strategically weak action.",
+        "intended_followups": [],
     }
 
 
@@ -265,6 +305,40 @@ def strict_optional_provider_string_list(parsed, field_name):
         if not isinstance(item, str):
             raise ProviderResponseError("provider %s items must be strings" % field_name)
         result.append(item)
+    return result
+
+
+def strict_intended_followups(parsed):
+    value = parsed.get("intended_followups")
+    if value is None:
+        return []
+    if not isinstance(value, list):
+        raise ProviderResponseError("provider intended_followups must be an array")
+    result = []
+    allowed = {"effect_activation", "attack", "move_phase"}
+    for item in value:
+        if not isinstance(item, dict):
+            raise ProviderResponseError("provider intended_followups items must be objects")
+        family = item.get("action_family")
+        card_id = item.get("card_id")
+        card_name = item.get("card_name")
+        description = item.get("description")
+        if family not in allowed:
+            raise ProviderResponseError("provider intended_followup action_family is invalid")
+        if isinstance(card_id, bool) or not isinstance(card_id, int) or card_id < 0:
+            raise ProviderResponseError("provider intended_followup card_id is invalid")
+        if not isinstance(card_name, str) or not isinstance(description, str):
+            raise ProviderResponseError(
+                "provider intended_followup card_name/description must be strings"
+            )
+        result.append(
+            {
+                "action_family": family,
+                "card_id": card_id,
+                "card_name": card_name,
+                "description": description,
+            }
+        )
     return result
 
 
@@ -397,6 +471,7 @@ def parse_provider_decision(content, request):
                             parsed_decision, "alternatives_considered"
                         ),
                         "risk": str(parsed_decision.get("risk") or ""),
+                        "intended_followups": strict_intended_followups(parsed_decision),
                     }
                 )
             except ProviderResponseError as exc:
@@ -552,6 +627,7 @@ def _compact_parsed_decision(decision):
         "opponent_board_assessment",
         "opponent_action_assessment",
         "history_event_ids_used",
+        "intended_followups",
     ):
         if key in decision:
             compact[key] = decision[key]

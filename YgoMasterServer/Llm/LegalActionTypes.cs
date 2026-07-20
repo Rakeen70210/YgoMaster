@@ -28,6 +28,7 @@ namespace YgoMaster
         public bool DialogIsYesNoPrompt { get; set; }
         public bool CancelDecide { get; set; }
         public bool IsEffectTargetSelection { get; set; }
+        public bool IsAttackTargetSelection { get; set; }
         public int ListItemAttribute { get; set; }
         public int ListItemFrom { get; set; }
         public int ListItemId { get; set; }
@@ -43,13 +44,22 @@ namespace YgoMaster
         public string StrategicRole { get; set; }
         public bool RequiresTarget { get; set; }
         public string TargetScope { get; set; }
+        public string TargetToken { get; set; }
         public string ConsequenceHint { get; set; }
+        public LlmEffectApplicabilityAnnotation EffectApplicability { get; set; }
     }
 
     class AttackTargetContext
     {
         public int AttackingPlayer { get; set; }
         public int AttackerPosition { get; set; }
+        public ulong OriginRunEffectSeq { get; set; }
+        public int OriginDuelGeneration { get; set; }
+        public int AttackerCardId { get; set; }
+        public int AttackerUniqueId { get; set; }
+        public string OriginActionLabel { get; set; }
+        public string OriginReason { get; set; }
+        public string OriginPlan { get; set; }
     }
 
     class DecisionSnapshot
@@ -77,6 +87,7 @@ namespace YgoMaster
         /// Attached at extraction; not serialized into default decision-window /decide JSON.
         /// </summary>
         public LlmSelfResources SelfResources { get; set; }
+        public AttackTargetContext AttackTargetContext { get; set; }
         public List<LegalAction> LegalActions { get; private set; }
         public bool IsStrategicWindow { get; set; }
         public string StrategicWindowReason { get; set; }

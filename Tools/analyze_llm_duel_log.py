@@ -57,6 +57,12 @@ def analyze_paths(paths):
     route_counts = Counter()
     route_prompt_families = Counter()
     unsupported_windows = 0
+    attack_target_broker_windows = 0
+    attack_target_divergences = Counter()
+    grounded_blocked_actions = 0
+    applicability_contradiction_rejections = 0
+    promised_followup_matched = 0
+    promised_followup_unavailable = Counter()
 
     broker = Counter()
     quality = Counter()
@@ -92,6 +98,13 @@ def analyze_paths(paths):
                     action_kind = action.get("kind")
                     if action_kind:
                         decision_action_types.add(action_kind)
+                    applicability = action.get("effect_applicability")
+                    if (
+                        isinstance(applicability, dict)
+                        and applicability.get("is_grounded") is True
+                        and applicability.get("effect_expected_to_apply") is False
+                    ):
+                        grounded_blocked_actions += 1
             collect_hidden_leaks(event, "decision_window", hidden_info_leaks)
             history = event.get("duel_history")
             if isinstance(history, dict) and history.get("history_compacted") is True:
@@ -165,14 +178,24 @@ def analyze_paths(paths):
             prompt_family = event.get("prompt_family") or "unknown"
             route_counts[str(route)] += 1
             route_prompt_families[str(prompt_family)] += 1
+            if route == "Broker" and event.get("reason") == "attack_target":
+                attack_target_broker_windows += 1
         elif kind == "llm_broker_unsupported_window":
             unsupported_windows += 1
+        elif kind == "llm_attack_target_divergence":
+            attack_target_divergences[str(event.get("reason") or "unknown")] += 1
         elif kind == "llm_broker_rejected":
             broker["rejected"] += 1
             if event.get("error") == "stale_run_effect_seq":
                 broker["stale_rejects"] += 1
+            if event.get("error") == "effect_applicability_contradiction":
+                applicability_contradiction_rejections += 1
         elif kind == "llm_broker_commit_skipped":
             broker["skipped"] += 1
+        elif kind == "intended_followup_matched":
+            promised_followup_matched += 1
+        elif kind == "intended_followup_unavailable":
+            promised_followup_unavailable[str(event.get("reason") or "unknown")] += 1
 
     cpu_fallbacks = broker["failed_responses"] + broker["rejected"] + broker["skipped"]
     request_starts = broker["request_starts"]
@@ -199,6 +222,20 @@ def analyze_paths(paths):
             "by_route": dict(sorted(route_counts.items())),
             "by_prompt_family": dict(sorted(route_prompt_families.items())),
             "unsupported_windows": unsupported_windows,
+        },
+        "attack_targets": {
+            "broker_owned_windows": attack_target_broker_windows,
+            "fallback_divergences": sum(attack_target_divergences.values()),
+            "divergence_reasons": dict(sorted(attack_target_divergences.items())),
+        },
+        "effect_applicability": {
+            "grounded_blocked_actions": grounded_blocked_actions,
+            "contradiction_rejections": applicability_contradiction_rejections,
+        },
+        "promised_followups": {
+            "matched": promised_followup_matched,
+            "unavailable": sum(promised_followup_unavailable.values()),
+            "unavailable_reasons": dict(sorted(promised_followup_unavailable.items())),
         },
         "coverage": {
             "turns": sorted(turns),

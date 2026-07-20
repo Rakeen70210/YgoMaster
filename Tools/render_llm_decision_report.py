@@ -40,6 +40,10 @@ def collect_windows(paths):
     counts = Counter()
     route_counts = Counter()
     unsupported_events = []
+    attack_target_routes = 0
+    attack_target_divergences = []
+    applicability_rejections = []
+    promised_followup_events = []
 
     for path, event in iter_events(paths):
         kind = event.get("kind", "unknown")
@@ -58,11 +62,19 @@ def collect_windows(paths):
         elif kind == "llm_broker_window_routed":
             route = event.get("route") or "unknown"
             route_counts[str(route)] += 1
+            if route == "Broker" and event.get("reason") == "attack_target":
+                attack_target_routes += 1
             routed_window = windows_by_seq.get(event.get("run_effect_seq"))
             if routed_window is not None:
                 routed_window["route"] = event
         elif kind == "llm_broker_unsupported_window":
             unsupported_events.append(event)
+        elif kind == "llm_attack_target_divergence":
+            attack_target_divergences.append(event)
+        elif kind == "llm_broker_rejected" and event.get("error") == "effect_applicability_contradiction":
+            applicability_rejections.append(event)
+        elif kind in ("intended_followup_matched", "intended_followup_unavailable"):
+            promised_followup_events.append(event)
         elif kind == "llm_broker_request_started":
             if current is not None:
                 current["request_started"] = event
@@ -73,7 +85,16 @@ def collect_windows(paths):
             if current is not None:
                 current["commit"] = event
 
-    return windows, counts, route_counts, unsupported_events
+    return (
+        windows,
+        counts,
+        route_counts,
+        unsupported_events,
+        attack_target_routes,
+        attack_target_divergences,
+        applicability_rejections,
+        promised_followup_events,
+    )
 
 
 def parse_request_payload(value):
@@ -159,7 +180,16 @@ SET_EVENT_KINDS = ("set_monster", "set_spell_trap")
 
 
 def render_report(paths):
-    windows, counts, route_counts, unsupported_events = collect_windows(paths)
+    (
+        windows,
+        counts,
+        route_counts,
+        unsupported_events,
+        attack_target_routes,
+        attack_target_divergences,
+        applicability_rejections,
+        promised_followup_events,
+    ) = collect_windows(paths)
     lines = ["# LLM Decision Report", ""]
     lines.append("## Duel Summary")
     lines.append("")
@@ -178,6 +208,43 @@ def render_report(paths):
         lines.append(
             "- unsupported window: %s (%s)"
             % (event.get("prompt_family"), event.get("reason"))
+        )
+    lines.append("- Broker-owned attack-target windows: %d" % attack_target_routes)
+    lines.append("- Attack-target divergences: %d" % len(attack_target_divergences))
+    for event in attack_target_divergences[:10]:
+        lines.append(
+            "- attack-target divergence: seq %s from attack %s (%s -> %s)"
+            % (
+                event.get("run_effect_seq"),
+                event.get("origin_run_effect_seq"),
+                event.get("reason"),
+                event.get("fallback"),
+            )
+        )
+    lines.append(
+        "- Effect-applicability contradiction rejects: %d"
+        % len(applicability_rejections)
+    )
+    unavailable_followups = [
+        event for event in promised_followup_events
+        if event.get("kind") == "intended_followup_unavailable"
+    ]
+    matched_followups = [
+        event for event in promised_followup_events
+        if event.get("kind") == "intended_followup_matched"
+    ]
+    lines.append("- Promised followups matched: %d" % len(matched_followups))
+    lines.append("- Promised followups unavailable: %d" % len(unavailable_followups))
+    for event in unavailable_followups[:10]:
+        lines.append(
+            "- followup unavailable: root %s -> seq %s %s %s (%s)"
+            % (
+                event.get("origin_run_effect_seq"),
+                event.get("current_run_effect_seq"),
+                event.get("action_family"),
+                event.get("expected_card_name") or event.get("expected_card_id"),
+                event.get("reason"),
+            )
         )
     lines.append("")
 

@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 namespace YgoMaster
 {
+    class LlmBrokerIntendedFollowup
+    {
+        public string ActionFamily { get; set; }
+        public int CardId { get; set; }
+        public string CardName { get; set; }
+        public string Description { get; set; }
+    }
+
     class LlmBrokerDecisionResponse
     {
         public ulong RunEffectSeq { get; set; }
@@ -24,6 +32,8 @@ namespace YgoMaster
         /// Explicit null is treated as missing during validation.
         /// </summary>
         public List<long> HistoryEventIdsUsed { get; set; } = new List<long>();
+        public List<LlmBrokerIntendedFollowup> IntendedFollowups { get; set; } =
+            new List<LlmBrokerIntendedFollowup>();
     }
 
     class LlmBrokerValidationResult
@@ -71,7 +81,7 @@ namespace YgoMaster
 
         static Dictionary<string, object> BuildDecisionRequestData(DecisionSnapshot snapshot)
         {
-            return new Dictionary<string, object>()
+            Dictionary<string, object> data = new Dictionary<string, object>()
             {
                 { "kind", "decision_request" },
                 { "schema_version", SchemaVersion },
@@ -97,6 +107,24 @@ namespace YgoMaster
                 { "duel_history", LlmDecisionLogSerializer.SerializeDuelHistory(snapshot.DuelHistory) },
                 { "legal_actions", LlmDecisionLogSerializer.SerializeLegalActions(snapshot.LegalActions) },
             };
+            if (snapshot.AttackTargetContext != null)
+            {
+                AttackTargetContext origin = snapshot.AttackTargetContext;
+                data["interaction_origin"] = new Dictionary<string, object>()
+                {
+                    { "kind", "attack" },
+                    { "run_effect_seq", (long)origin.OriginRunEffectSeq },
+                    { "duel_generation", origin.OriginDuelGeneration },
+                    { "attacker_player", origin.AttackingPlayer },
+                    { "attacker_position", origin.AttackerPosition },
+                    { "attacker_card_id", origin.AttackerCardId },
+                    { "attacker_unique_id", origin.AttackerUniqueId },
+                    { "action_label", origin.OriginActionLabel },
+                    { "reason", origin.OriginReason },
+                    { "plan", origin.OriginPlan },
+                };
+            }
+            return data;
         }
 
         /// <summary>
@@ -227,6 +255,13 @@ namespace YgoMaster
                 return false;
             }
 
+            List<LlmBrokerIntendedFollowup> intendedFollowups;
+            if (!TryGetOptionalIntendedFollowups(
+                data, out intendedFollowups, out error))
+            {
+                return false;
+            }
+
             // history_event_ids_used is required to be present in schema-v4 payloads.
             // Empty list is valid; missing key is not.
             List<long> historyEventIdsUsed;
@@ -248,6 +283,7 @@ namespace YgoMaster
                 OpponentBoardAssessment = GetOptionalString(data, "opponent_board_assessment"),
                 OpponentActionAssessment = GetOptionalString(data, "opponent_action_assessment"),
                 HistoryEventIdsUsed = historyEventIdsUsed,
+                IntendedFollowups = intendedFollowups,
             };
             return true;
         }
@@ -502,6 +538,7 @@ namespace YgoMaster
                 case "broker_timeout":
                 case "invalid_json":
                 case "missing_result":
+                case "effect_applicability_contradiction":
                     return true;
                 default:
                     return false;
@@ -651,6 +688,12 @@ namespace YgoMaster
             {
                 return LlmBrokerValidationResult.Invalid("early_end_phase");
             }
+            if (LlmEffectApplicabilityAnalyzer.IsHardBlocked(action))
+            {
+                return LlmBrokerValidationResult.Invalid(
+                    LlmEffectApplicabilityAnalyzer.ErrorEffectApplicabilityContradiction,
+                    action);
+            }
             return LlmBrokerValidationResult.Valid(action);
         }
 
@@ -738,7 +781,8 @@ namespace YgoMaster
                 current.Position == expected.Position &&
                 current.Index == expected.Index &&
                 current.Command == expected.Command &&
-                current.CardUniqueId == expected.CardUniqueId;
+                current.CardUniqueId == expected.CardUniqueId &&
+                current.TargetToken == expected.TargetToken;
         }
 
         static bool IsGenericReason(string reason)
@@ -888,6 +932,70 @@ namespace YgoMaster
                     return false;
                 }
                 value.Add(stringItem);
+            }
+            return true;
+        }
+
+        static bool TryGetOptionalIntendedFollowups(
+            Dictionary<string, object> data,
+            out List<LlmBrokerIntendedFollowup> value,
+            out string error)
+        {
+            value = new List<LlmBrokerIntendedFollowup>();
+            error = null;
+            object raw;
+            if (!data.TryGetValue("intended_followups", out raw) || raw == null)
+            {
+                return true;
+            }
+            List<object> list = raw as List<object>;
+            if (list == null)
+            {
+                error = "invalid_intended_followups";
+                return false;
+            }
+            foreach (object item in list)
+            {
+                Dictionary<string, object> bag = item as Dictionary<string, object>;
+                if (bag == null)
+                {
+                    error = "invalid_intended_followups";
+                    return false;
+                }
+                string family = GetOptionalString(bag, "action_family");
+                if (family != "effect_activation"
+                    && family != "attack"
+                    && family != "move_phase")
+                {
+                    error = "invalid_intended_followup_family";
+                    return false;
+                }
+                int cardId = 0;
+                object rawCardId;
+                if (bag.TryGetValue("card_id", out rawCardId) && rawCardId != null)
+                {
+                    try
+                    {
+                        cardId = Convert.ToInt32(rawCardId);
+                    }
+                    catch
+                    {
+                        error = "invalid_intended_followup_card_id";
+                        return false;
+                    }
+                    if (cardId < 0)
+                    {
+                        error = "invalid_intended_followup_card_id";
+                        return false;
+                    }
+                }
+                value.Add(new LlmBrokerIntendedFollowup()
+                {
+                    ActionFamily = family,
+                    CardId = cardId,
+                    CardName = GetOptionalString(bag, "card_name"),
+                    Description = GetOptionalString(bag, "description"),
+                });
             }
             return true;
         }

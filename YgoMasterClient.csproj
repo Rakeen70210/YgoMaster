@@ -148,6 +148,8 @@
     <Compile Include="YgoMasterServer\Llm\LlmIntendedFollowupMemory.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmSlice6BCorpusCoverageManifest.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmImmediateOutcomeAnalyzer.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmEffectApplicability.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmPromisedFollowupTracker.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmCardEffectCapabilityCatalog.cs" />
     <!-- Slice 5: client capture surface only (transcript model + recorder). -->
     <Compile Include="YgoMasterServer\Llm\LlmAcceptedInputTranscript.cs" />
@@ -159,6 +161,7 @@
     <Compile Include="YgoMasterServer\Llm\LlmBrokerProtocol.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmDecisionLogSerializer.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmDecisionWindowPlanner.cs" />
+    <Compile Include="YgoMasterServer\Llm\LlmSummonInteractionState.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmTurnMemoryTracker.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmDuelHistoryTypes.cs" />
     <Compile Include="YgoMasterServer\Llm\LlmPublicHistoryRedactionPolicy.cs" />

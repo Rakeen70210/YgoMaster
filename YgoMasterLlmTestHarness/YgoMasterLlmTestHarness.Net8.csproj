@@ -21,6 +21,8 @@
     <Compile Include="Llm005\Llm005Slice1ATests.cs" />
     <Compile Include="Llm005\Llm005Slice1BTests.cs" />
     <Compile Include="Llm005\Llm005LiveGateFixTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2DTests.cs" />
+    <Compile Include="Llm005\Llm005ApplicabilityFollowupTests.cs" />
     <Compile Include="Llm005\Llm005Slice2ATests.cs" />
     <Compile Include="Llm005\Llm005Slice0Tests.cs" />
     <Compile Include="Llm005\Llm005Slice0BTests.cs" />
@@ -45,6 +47,8 @@
     <Compile Include="..\YgoMasterServer\Llm\LlmIntendedFollowupMemory.cs" Link="Llm\LlmIntendedFollowupMemory.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmSlice6BCorpusCoverageManifest.cs" Link="Llm\LlmSlice6BCorpusCoverageManifest.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmImmediateOutcomeAnalyzer.cs" Link="Llm\LlmImmediateOutcomeAnalyzer.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmEffectApplicability.cs" Link="Llm\LlmEffectApplicability.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmPromisedFollowupTracker.cs" Link="Llm\LlmPromisedFollowupTracker.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmCardEffectCapabilityCatalog.cs" Link="Llm\LlmCardEffectCapabilityCatalog.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscript.cs" Link="Llm\LlmAcceptedInputTranscript.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmAcceptedInputTranscriptRecorder.cs" Link="Llm\LlmAcceptedInputTranscriptRecorder.cs" />
@@ -99,6 +103,7 @@
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs" Link="Llm\LlmBrokerProtocol.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmDecisionLogSerializer.cs" Link="Llm\LlmDecisionLogSerializer.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmDecisionWindowPlanner.cs" Link="Llm\LlmDecisionWindowPlanner.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSummonInteractionState.cs" Link="Llm\LlmSummonInteractionState.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmTurnMemoryTracker.cs" Link="Llm\LlmTurnMemoryTracker.cs" />
   </ItemGroup>
 </Project>

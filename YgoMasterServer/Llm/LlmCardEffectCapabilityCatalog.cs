@@ -27,6 +27,16 @@ namespace YgoMaster
         public bool? RequiresRemainFaceUp { get; set; }
         public bool CapabilitiesGrounded { get; set; }
         public bool ResolutionDependencyGrounded { get; set; }
+        /// <summary>Current activated effect targets an opponent monster.</summary>
+        public bool TargetsOpponentMonster { get; set; }
+        public string PrimaryEffectCapability { get; set; }
+        /// <summary>Applicability predicates in this entry are reviewed structured facts.</summary>
+        public bool ApplicabilityGrounded { get; set; }
+        /// <summary>
+        /// Target is unaffected by activated monster effects whose source original ATK is
+        /// less than or equal to this threshold. Null means no such catalog predicate.
+        /// </summary>
+        public int? UnaffectedByActivatedMonsterEffectsFromSourceOriginalAtkAtMost { get; set; }
 
         public LlmCardEffectCapabilityFacts()
         {
@@ -119,6 +129,25 @@ namespace YgoMaster
                     RequiresRemainFaceUp = true,
                     CapabilitiesGrounded = false,
                     ResolutionDependencyGrounded = true,
+                });
+                // Armored Bee: activated monster effect targets one face-up opponent monster
+                // and halves its ATK. Applicability is evaluated by generic target predicates.
+                Register(new LlmCardEffectCapabilityFacts()
+                {
+                    CardId = 8742,
+                    TargetsOpponentMonster = true,
+                    PrimaryEffectCapability = "modify_atk",
+                    CapabilitiesGrounded = true,
+                    ApplicabilityGrounded = true,
+                });
+                // Crimson Nova: unaffected by activated monster effects from monsters whose
+                // original ATK is 3000 or less. This is structured card semantics, not a
+                // play-specific branch; the analyzer applies the same predicate generically.
+                Register(new LlmCardEffectCapabilityFacts()
+                {
+                    CardId = 12522,
+                    ApplicabilityGrounded = true,
+                    UnaffectedByActivatedMonsterEffectsFromSourceOriginalAtkAtMost = 3000,
                 });
                 _seeded = true;
             }

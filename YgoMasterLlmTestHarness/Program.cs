@@ -23,6 +23,7 @@ namespace YgoMaster
                 IgnoresNullPhaseBit();
                 PreservesDecisionSnapshotMetadata();
                 ExtractsPublicStateCountsAndKnownCards();
+                ExtractsPublicFaceUpFieldCardsAndRedactsFaceDown();
                 DoesNotExposeHiddenPublicStateCards();
                 ExtractsControlledPlayerPrivateHandCardMetadata();
                 DoesNotExposeOpponentHiddenHandCardMetadata();
@@ -41,12 +42,21 @@ namespace YgoMaster
                 TreatsConfirmDialogAsBinaryChoiceWhenEngineFlagIsMissing();
                 LeavesEffectDialogWithoutEngineChoicesOnNativeDefaultPath();
                 AddsDeclineActionToCheckChainWaitInput();
+                AddsDeclineActionToCheckTimingWaitInput();
                 DoesNotAddDeclineToForcedCheckChainWaitInput();
                 EmptyCancellableCheckChainWaitInputAddsMechanicalDeclineAndAutoCommits();
+                EmptyCancellableCheckTimingWaitInputAddsMechanicalDeclineAndAutoCommits();
                 EmptyCheckChainDeclineCommitPlanUsesCancelNotDecide();
                 ExtractsSummonPlacementActionsFromPositionMask();
+                IgnoresStaleSummonPlacementMetadataOutsideLocationPrompt();
                 ExtractsAttackTargetActionsFromTargetMask();
                 ExtractsSingleAttackTargetAsAutomaticAction();
+                RoutesStrategicAttackTargetsThroughBrokerGate();
+                SerializesPublicSafeAttackTargetContinuationContext();
+                HidesFaceDownAttackTargetIdentityFromRequestBytes();
+                RejectsAttackTargetTokenFromDifferentInteractionLease();
+                SerializesAttackTargetFallbackDivergence();
+                DoesNotHeuristicallySubstituteAttackTargetDuringRecovery();
                 ExtractsOpponentEffectTargetsAsStrategicActions();
                 ExtractsSingleOpponentEffectTargetAsAutomaticAction();
                 DoesNotExtractAttackTargetsWithoutPendingAttackContext();
@@ -67,6 +77,7 @@ namespace YgoMaster
                 SerializesBrokerAutomaticActionAsJsonLine();
                 SerializesWindowRoutedAsJsonLine();
                 SerializesUnsupportedWindowAsJsonLine();
+                SerializesStuckWindowRecoveryAsJsonLine();
                 SerializesBrokerDecisionRequest();
                 SerializesBrokerRequestStartedWithSnapshotDetails();
                 SerializesPublicStateInBrokerDecisionRequest();
@@ -117,6 +128,7 @@ namespace YgoMaster
                 RoutesMechanicalOnlyWithoutUnsupportedFlag();
                 RoutesKnownSummonPlacementWindowToAutomatic();
                 ResolvesPlannerSelectedAutomaticActionForCommit();
+                Llm005Slice2DTests.RunAll();
                 RoutesUncontrolledRemotePromptToCpuFallback();
                 RoutesUncontrolledLocalPromptToDefault();
                 BrokerClientPostsDecisionRequestAndReturnsLegalAction();
@@ -128,6 +140,10 @@ namespace YgoMaster
                 CreatesPhaseCommitPlan();
                 CreatesSummonPlacementCommitPlan();
                 BlocksRepeatedAutomaticSummonPlacementPrompt();
+                StuckWindowWatchdogDetectsCrossSequenceLogicalCycle();
+                StuckWindowWatchdogDetectsAutomaticCheckTimingCycle();
+                StuckWindowWatchdogIgnoresPendingAndUncontrolledWindows();
+                TemporaryCpuCoordinatorAllowsExplicitWatchdogRecovery();
                 CreatesCancelCommitPlan();
                 ExtractsEnabledDialogResultActions();
                 ExtractsYesNoEffectDialogAsStrategicActions();
@@ -163,6 +179,7 @@ namespace YgoMaster
                 Llm005Slice0Tests.RunAll();
                 Llm005Slice0BTests.RunAll();
                 Llm005Slice2BIntegrationTests.RunAll();
+                Llm005ApplicabilityFollowupTests.RunAll();
                 // YGOMASTER-LLM-005 Slice 2C: Synchro candidacy TDD RED (tests only).
                 Llm005Slice2CTests.RunAll();
                 // YGOMASTER-LLM-005 Slice 5: out-of-process replay worker contract.
@@ -323,13 +340,33 @@ namespace YgoMaster
             query.CardIdsByUniqueId[305] = 4305;
             query.CardIdsByUniqueId[306] = 4306;
             query.HandCardOpen[Key(1, 0)] = 0;
-            query.CardFaces[Key(1, 0, 0)] = 1;
+            query.CardFaces[Key(1, 0, 0)] = 0;
             query.CardFaces[Key(1, 17, 0)] = 1;
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 13, DuelViewType.WaitInput, 0);
 
             AssertEqual(0, snapshot.PublicState.Players[1].KnownCards.Count, "hidden known cards");
+        }
+
+        static void ExtractsPublicFaceUpFieldCardsAndRedactsFaceDown()
+        {
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            query.CardNums[Key(1, 2)] = 1;
+            query.CardUniqueIds[Key(1, 2, 0)] = 401;
+            query.CardUniqueIds[Key(1, 2, 1)] = 402;
+            query.CardIdsByUniqueId[401] = 5401;
+            query.CardIdsByUniqueId[402] = 5402;
+            query.CardFaces[Key(1, 2, 0)] = 1;
+            query.CardFaces[Key(1, 2, 1)] = 0;
+
+            DecisionSnapshot snapshot = LegalActionExtractor.Extract(
+                query, 14, DuelViewType.WaitInput, 0);
+
+            AssertEqual(1, snapshot.PublicState.Players[1].KnownCards.Count,
+                "only public face-up field identity");
+            AssertEqual(5401, snapshot.PublicState.Players[1].KnownCards[0].CardId,
+                "face-up opponent field card id");
         }
 
         static void ExtractsControlledPlayerPrivateHandCardMetadata()
@@ -521,6 +558,27 @@ namespace YgoMaster
             AssertEqual(true, coordinator.TryBegin(59, 1),
                 "later selection can start after restoration");
 
+            AssertEqual(false, coordinator.ShouldRestore(
+                DuelViewType.WaitInput,
+                (int)DuelMenuActType.Location,
+                true),
+                "summon placement remains delegated while temporary CPU owns the seat");
+            AssertEqual(true, coordinator.ShouldSuppressDecisionView(
+                DuelViewType.WaitInput,
+                (int)DuelMenuActType.Location,
+                true),
+                "summon placement wait input is suppressed while temporary CPU owns the seat");
+            AssertEqual(false, coordinator.ShouldRestore(
+                DuelViewType.WaitInput,
+                (int)DuelMenuActType.Location,
+                false),
+                "location recovery remains delegated after native summon metadata disappears");
+            AssertEqual(true, coordinator.ShouldSuppressDecisionView(
+                DuelViewType.WaitInput,
+                (int)DuelMenuActType.Location,
+                false),
+                "metadata-poor location recovery remains suppressed while CPU owns the seat");
+
             AssertEqual(true, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
                 59, 59, DuelViewType.WaitInput, (int)DuelMenuActType.Selection,
                 1, 1, 1),
@@ -545,6 +603,14 @@ namespace YgoMaster
                 59, 59, DuelViewType.WaitInput, (int)DuelMenuActType.Selection,
                 1, 0, 1),
                 "spoofed actor seat is rejected");
+            AssertEqual(true, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                61, 61, DuelViewType.WaitInput, (int)DuelMenuActType.Location,
+                1, 1, 1, true),
+                "matching summon placement request is accepted");
+            AssertEqual(true, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                61, 61, DuelViewType.WaitInput, (int)DuelMenuActType.Location,
+                1, 1, 1, false),
+                "owned location recovery survives transient native summon metadata loss");
         }
 
         static void RoutesUnsupportedRunListToTemporaryCpu()
@@ -739,6 +805,35 @@ namespace YgoMaster
             AssertEqual(true, snapshot.IsStrategicWindow, "check-chain strategic window");
         }
 
+        static void AddsDeclineActionToCheckTimingWaitInput()
+        {
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            query.CardNums[Key(1, 7)] = 1;
+            query.CommandMasks[Key(1, 7, 0)] =
+                (uint)(1 << (int)DuelCommandType.Action);
+            query.CardUniqueIds[Key(1, 7, 0)] = 702;
+
+            DecisionSnapshot snapshot = LegalActionExtractor.Extract(
+                query, 189, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot,
+                query,
+                (int)DuelMenuActType.CheckTiming,
+                0,
+                (int)DuelMenuParamType.TrueCancel);
+
+            AssertEqual(2, snapshot.LegalActions.Count, "check-timing action count");
+            AssertEqual(LegalActionKind.Command, snapshot.LegalActions[0].Kind,
+                "timing activation kind");
+            AssertEqual(LegalActionKind.Cancel, snapshot.LegalActions[1].Kind,
+                "timing decline kind");
+            AssertEqual(false, snapshot.LegalActions[1].CancelDecide,
+                "timing decline is not decide");
+            AssertEqual("Decline response", snapshot.LegalActions[1].ActionLabel,
+                "timing decline label");
+            AssertEqual(true, snapshot.IsStrategicWindow, "check-timing strategic window");
+        }
+
         static void DoesNotAddDeclineToForcedCheckChainWaitInput()
         {
             FakeLegalActionQuery query = new FakeLegalActionQuery();
@@ -829,6 +924,64 @@ namespace YgoMaster
             AssertEqual(false, plan.CancelDecide, "does not force decide");
         }
 
+        static void EmptyCancellableCheckTimingWaitInputAddsMechanicalDeclineAndAutoCommits()
+        {
+            AssertEqual(4, (int)DuelMenuActType.CheckTiming, "CheckTiming ordinal");
+            AssertEqual(2, (int)DuelMenuParamType.TrueCancel, "TrueCancel ordinal");
+
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            DecisionSnapshot snapshot = LegalActionExtractor.Extract(
+                query, 994, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot,
+                query,
+                (int)DuelMenuActType.CheckTiming,
+                0,
+                (int)DuelMenuParamType.TrueCancel);
+
+            AssertEqual(1, snapshot.LegalActions.Count, "empty check-timing sole decline");
+            AssertEqual(LegalActionKind.Cancel, snapshot.LegalActions[0].Kind, "decline kind");
+            AssertEqual(false, snapshot.LegalActions[0].CancelDecide, "CancelCommand2(false)");
+            AssertEqual(true, snapshot.LegalActions[0].IsMechanical, "empty decline is mechanical");
+            AssertEqual("empty_check_timing_decline", snapshot.LegalActions[0].TargetScope,
+                "check-timing scope");
+
+            LlmDecisionWindowPlan plan = LlmDecisionWindowPlanner.Plan(
+                snapshot, true, 1, 1, true, null, false, true, null);
+            AssertEqual(LlmDecisionWindowRoute.Automatic, plan.Route,
+                "empty check-timing routes automatic");
+            AssertEqual("empty_check_timing_decline", plan.Reason,
+                "check-timing route reason");
+        }
+
+        static void SerializesStuckWindowRecoveryAsJsonLine()
+        {
+            DecisionSnapshot snapshot = CreateCheckTimingSnapshot(1000);
+            LlmDecisionWindowPlan plan = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.CpuFallback,
+                PromptFamily = LlmPromptFamily.WaitInput,
+                Reason = "no_actions",
+            };
+            LlmStuckWindowObservation observation = new LlmStuckWindowObservation()
+            {
+                ShouldRecover = true,
+                RepeatCount = 3,
+                Fingerprint = "WaitInput|4|0|1|CpuFallback|no_actions",
+                RouteHistory = new List<string>() { "994:a", "997:a", "1000:a" },
+            };
+
+            Dictionary<string, object> data = DeserializeObject(
+                LlmDecisionLogSerializer.SerializeStuckWindowRecovered(
+                    snapshot, plan, observation));
+            AssertEqual("llm_broker_stuck_window_recovered", data["kind"], "event kind");
+            AssertEqual((long)1000, data["run_effect_seq"], "recovery seq");
+            AssertEqual((long)3, data["repeat_count"], "repeat count");
+            AssertEqual("WaitInput|4|0|1|CpuFallback|no_actions", data["fingerprint"],
+                "logical fingerprint");
+            AssertEqual(3, ((List<object>)data["route_history"]).Count, "route history count");
+        }
+
         static void ExtractsOpponentEffectTargetsAsStrategicActions()
         {
             FakeLegalActionQuery query = new FakeLegalActionQuery();
@@ -895,12 +1048,45 @@ namespace YgoMaster
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 132, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot,
+                query,
+                (int)DuelMenuActType.Location,
+                33,
+                (int)DuelMenuParamType.Cancel);
 
             AssertEqual(2, snapshot.LegalActions.Count, "summon placement action count");
             AssertCommand(snapshot.LegalActions[0], 0, 1, 1, 0, DuelCommandType.Decide, 33);
             AssertCommand(snapshot.LegalActions[1], 1, 1, 2, 0, DuelCommandType.Decide, 33);
             AssertEqual(4927, snapshot.LegalActions[0].CardId, "first placement card id");
             AssertEqual(4927, snapshot.LegalActions[1].CardId, "second placement card id");
+        }
+
+        static void IgnoresStaleSummonPlacementMetadataOutsideLocationPrompt()
+        {
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            query.SummoningMonsterUniqueId = 83;
+            query.SummonPositionMask = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3);
+            query.CardIdsByUniqueId[83] = 9760;
+            query.MovablePhaseMask = (uint)(1 << (int)DuelPhase.End);
+
+            DecisionSnapshot snapshot = LegalActionExtractor.Extract(
+                query, 964, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot,
+                query,
+                (int)DuelMenuActType.MainPhase,
+                0,
+                (int)DuelMenuParamType.TrueCancel);
+
+            AssertEqual(1, snapshot.LegalActions.Count, "ordinary main phase action count");
+            AssertEqual(LegalActionKind.MovePhase, snapshot.LegalActions[0].Kind,
+                "stale summon metadata does not replace phase actions");
+            AssertEqual(DuelPhase.End, snapshot.LegalActions[0].Phase,
+                "end phase remains available");
+            AssertEqual(false,
+                LlmAutomaticActionLoopGuard.IsSummonPlacementAction(snapshot.LegalActions[0]),
+                "ordinary main phase action is not summon placement");
         }
 
         static void ExtractsAttackTargetActionsFromTargetMask()
@@ -950,6 +1136,192 @@ namespace YgoMaster
             AssertEqual(0, snapshot.LegalActions.Count, "single attack target hidden from broker");
             AssertEqual(true, extracted, "automatic attack target extracted");
             AssertCommand(automaticAction, 0, 0, 2, 0, DuelCommandType.Decide, 0);
+        }
+
+        static void RoutesStrategicAttackTargetsThroughBrokerGate()
+        {
+            DecisionSnapshot snapshot = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+
+            AssertEqual(false, LlmDecisionWindowPlanner.RequiresCpuFallback(snapshot),
+                "strategic attack target is not generic selection fallback");
+            LlmDecisionWindowPlan plan = LlmDecisionWindowPlanner.Plan(
+                snapshot,
+                true,
+                1,
+                1,
+                true,
+                LlmBrokerRequestGateDecision.StartRequest,
+                false,
+                false,
+                null);
+            AssertEqual(LlmDecisionWindowRoute.Broker, plan.Route,
+                "multiple attack targets remain broker-owned");
+
+            DecisionSnapshot unrelated = new DecisionSnapshot()
+            {
+                RunEffectSeq = 540,
+                ViewType = DuelViewType.WaitInput,
+                ViewParam1 = (int)DuelMenuActType.Selection,
+                ActingPlayer = 1,
+                ControlledPlayer = 1,
+            };
+            AssertEqual(true, LlmDecisionWindowPlanner.RequiresCpuFallback(unrelated),
+                "unrelated selection remains temporary CPU");
+        }
+
+        static void SerializesPublicSafeAttackTargetContinuationContext()
+        {
+            DecisionSnapshot snapshot = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+
+            AssertEqual(2, snapshot.LegalActions.Count, "attack target count");
+            LegalAction faceUp = snapshot.LegalActions[0];
+            LegalAction faceDown = snapshot.LegalActions[1];
+            AssertEqual("attack_target", faceUp.TargetScope, "face-up target scope");
+            AssertEqual("Attack target: Duza the Meteor Cubic Vessel", faceUp.ActionLabel,
+                "face-up target label");
+            AssertEqual(12801, faceUp.CardId, "face-up target card id");
+            AssertEqual("Attack target: face-down monster in zone 4", faceDown.ActionLabel,
+                "face-down target label");
+            AssertEqual(0, faceDown.CardId, "face-down target card id redacted");
+            AssertEqual(0, faceDown.CardUniqueId, "face-down target unique id redacted");
+
+            string json = LlmBrokerProtocol.SerializeDecisionRequest(snapshot);
+            Dictionary<string, object> root = DeserializeObject(json);
+            Dictionary<string, object> origin =
+                root["interaction_origin"] as Dictionary<string, object>;
+            AssertEqual("attack", origin["kind"], "interaction origin kind");
+            AssertNumber(534, origin["run_effect_seq"], "origin run_effect_seq");
+            AssertEqual("Attack: Chaosrider Gustaph", origin["action_label"],
+                "origin action label");
+            AssertEqual("Attack Duza to remove the public threat.", origin["reason"],
+                "origin provider reason");
+            AssertEqual(false, json.Contains("702"),
+                "face-down target unique id absent from request");
+        }
+
+        static void HidesFaceDownAttackTargetIdentityFromRequestBytes()
+        {
+            DecisionSnapshot first = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+            DecisionSnapshot second = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 9902, 1, 0);
+
+            string firstJson = LlmBrokerProtocol.SerializeDecisionRequest(first);
+            string secondJson = LlmBrokerProtocol.SerializeDecisionRequest(second);
+            AssertEqual(firstJson, secondJson,
+                "hidden target pair produces byte-identical broker request");
+        }
+
+        static void RejectsAttackTargetTokenFromDifferentInteractionLease()
+        {
+            DecisionSnapshot expected = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+            DecisionSnapshot fresh = CreateAttackTargetSnapshot(
+                539, 535, 7, 701, 702, 1, 0);
+
+            AssertEqual(false,
+                LlmBrokerProtocol.IsSameAction(fresh.LegalActions[0], expected.LegalActions[0]),
+                "target token binds action to originating attack lease");
+        }
+
+        static void SerializesAttackTargetFallbackDivergence()
+        {
+            DecisionSnapshot snapshot = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+            string json = LlmDecisionLogSerializer.SerializeAttackTargetDivergence(
+                snapshot,
+                "provider_error",
+                "temporary_cpu");
+            Dictionary<string, object> data = DeserializeObject(json);
+
+            AssertEqual("llm_attack_target_divergence", data["kind"], "kind");
+            AssertNumber(539, data["run_effect_seq"], "run_effect_seq");
+            AssertNumber(534, data["origin_run_effect_seq"], "origin_run_effect_seq");
+            AssertEqual("provider_error", data["reason"], "reason");
+            AssertEqual("temporary_cpu", data["fallback"], "fallback");
+            AssertNumber(2, data["legal_target_count"], "legal_target_count");
+        }
+
+        static void DoesNotHeuristicallySubstituteAttackTargetDuringRecovery()
+        {
+            DecisionSnapshot snapshot = CreateAttackTargetSnapshot(
+                539, 534, 7, 701, 702, 1, 0);
+            LegalAction selected;
+            string policy;
+            bool recovered = LlmBrokerRecovery.TrySelectAction(
+                snapshot,
+                "provider_error",
+                null,
+                out selected,
+                out policy);
+
+            AssertEqual(false, recovered,
+                "provider failure cannot silently choose the first attack target");
+            AssertEqual(null, selected, "no substituted attack target");
+        }
+
+        static DecisionSnapshot CreateAttackTargetSnapshot(
+            ulong currentSeq,
+            ulong originSeq,
+            int duelGeneration,
+            int faceUpUniqueId,
+            int faceDownUniqueId,
+            int faceUpFace,
+            int faceDownFace)
+        {
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            query.CurrentPhase = (int)DuelPhase.Battle;
+            query.CardNums[Key(0, 2)] = 1;
+            query.CardNums[Key(0, 4)] = 1;
+            query.CardUniqueIds[Key(0, 2, 0)] = faceUpUniqueId;
+            query.CardUniqueIds[Key(0, 4, 0)] = faceDownUniqueId;
+            query.CardFaces[Key(0, 2, 0)] = faceUpFace;
+            query.CardFaces[Key(0, 4, 0)] = faceDownFace;
+            query.CardIdsByUniqueId[faceUpUniqueId] = 12801;
+            query.CardIdsByUniqueId[faceDownUniqueId] = 99999;
+            query.AttackTargetMasks[Key(1, 0)] = (1 << 2) | (1 << 4);
+            FakeCardCatalog catalog = new FakeCardCatalog();
+            catalog.Cards[12801] = new LlmCardMetadata()
+            {
+                CardId = 12801,
+                Name = "Duza the Meteor Cubic Vessel",
+            };
+            catalog.Cards[99999] = new LlmCardMetadata()
+            {
+                CardId = 99999,
+                Name = "Hidden Sentinel",
+            };
+
+            DecisionSnapshot snapshot = LegalActionExtractor.Extract(
+                query,
+                currentSeq,
+                DuelViewType.WaitInput,
+                1,
+                LegalActionExtractor.DefaultPosNum,
+                catalog,
+                new AttackTargetContext()
+                {
+                    AttackingPlayer = 1,
+                    AttackerPosition = 0,
+                    OriginRunEffectSeq = originSeq,
+                    OriginDuelGeneration = duelGeneration,
+                    AttackerCardId = 5825,
+                    AttackerUniqueId = 501,
+                    OriginActionLabel = "Attack: Chaosrider Gustaph",
+                    OriginReason = "Attack Duza to remove the public threat.",
+                    OriginPlan = "Clear Duza before Main Phase 2.",
+                },
+                LlmPublicVisibilityMode.RuntimeDllField);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot,
+                query,
+                (int)DuelMenuActType.Selection,
+                0,
+                0,
+                catalog);
+            return snapshot;
         }
 
         static void DoesNotExtractAttackTargetsWithoutPendingAttackContext()
@@ -1619,13 +1991,17 @@ namespace YgoMaster
             query.SummoningMonsterUniqueId = 33;
             query.CardIdsByUniqueId[33] = 5033;
             query.SummonPositionMask = (1 << 0) | (1 << 1);
+            FakeCardCatalog catalog = new FakeCardCatalog();
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query,
                 132,
                 DuelViewType.WaitInput,
                 1,
-                new FakeCardCatalog());
+                catalog);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel, catalog);
 
             AssertEqual(2, snapshot.LegalActions.Count, "placement actions");
             AssertEqual(false, snapshot.IsStrategicWindow, "mechanical window");
@@ -1862,6 +2238,9 @@ namespace YgoMaster
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 192, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
 
             LlmDecisionWindowPlan plan = LlmDecisionWindowPlanner.Plan(
                 snapshot,
@@ -1889,6 +2268,9 @@ namespace YgoMaster
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 192, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
 
             LlmDecisionWindowPlan plan = LlmDecisionWindowPlanner.Plan(
                 snapshot,
@@ -2096,6 +2478,9 @@ namespace YgoMaster
             query.SummonPositionMask = (1 << 0) | (1 << 1);
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 132, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
 
             LlmBrokerValidationResult result = LlmBrokerProtocol.ValidateResponse(
                 snapshot,
@@ -2503,6 +2888,9 @@ namespace YgoMaster
 
             DecisionSnapshot snapshot = LegalActionExtractor.Extract(
                 query, 132, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                snapshot, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
             LlmActionCommitPlan plan = LlmActionCommitPlan.FromLegalAction(snapshot.LegalActions[0]);
 
             AssertEqual(LlmActionCommitKind.Command, plan.Kind, "kind");
@@ -2522,18 +2910,193 @@ namespace YgoMaster
                 query, 301, DuelViewType.WaitInput, 1);
             DecisionSnapshot repeated = LegalActionExtractor.Extract(
                 query, 302, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                first, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
+            LegalActionExtractor.ApplyViewContext(
+                repeated, query, (int)DuelMenuActType.Location, 33,
+                (int)DuelMenuParamType.Cancel);
             LlmAutomaticActionLoopGuard guard = new LlmAutomaticActionLoopGuard();
 
             AssertEqual(true, guard.TryAcquire(first, first.LegalActions[0]), "first placement attempt");
-            AssertEqual(false, guard.TryAcquire(repeated, repeated.LegalActions[0]), "repeated prompt blocked");
+            AssertEqual(true, guard.TryAcquire(repeated, repeated.LegalActions[0]), "repeated prompt retry");
+            AssertEqual(false, guard.TryAcquire(repeated, repeated.LegalActions[0]), "third repeated prompt blocked");
 
             query.SummoningMonsterUniqueId = 34;
             DecisionSnapshot different = LegalActionExtractor.Extract(
                 query, 303, DuelViewType.WaitInput, 1);
+            LegalActionExtractor.ApplyViewContext(
+                different, query, (int)DuelMenuActType.Location, 34,
+                (int)DuelMenuParamType.Cancel);
             AssertEqual(true, guard.TryAcquire(different, different.LegalActions[0]), "different summon accepted");
 
             guard.Reset();
             AssertEqual(true, guard.TryAcquire(repeated, repeated.LegalActions[0]), "reset accepts prompt");
+        }
+
+        static void StuckWindowWatchdogDetectsCrossSequenceLogicalCycle()
+        {
+            LlmStuckWindowWatchdog watchdog = new LlmStuckWindowWatchdog(3);
+            LlmDecisionWindowPlan plan = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.CpuFallback,
+                Reason = "no_actions",
+                HasActingPlayer = true,
+                BrokerControlsActingPlayer = true,
+                IsUnsupportedWindow = true,
+            };
+
+            LlmStuckWindowObservation first = watchdog.Observe(
+                CreateCheckTimingSnapshot(994), plan, 7, false);
+            LlmStuckWindowObservation second = watchdog.Observe(
+                CreateCheckTimingSnapshot(997), plan, 7, false);
+            LlmStuckWindowObservation third = watchdog.Observe(
+                CreateCheckTimingSnapshot(1000), plan, 7, false);
+
+            AssertEqual(false, first.ShouldRecover, "first cycle does not recover");
+            AssertEqual(false, second.ShouldRecover, "second cycle does not recover");
+            AssertEqual(true, third.ShouldRecover, "third cross-seq cycle recovers");
+            AssertEqual(3, third.RepeatCount, "logical repeat count ignores run_effect_seq");
+            AssertEqual(true, third.Fingerprint.Contains("WaitInput|4|0|1|CpuFallback|no_actions"),
+                "stable logical fingerprint");
+
+            DecisionSnapshot newPhase = CreateCheckTimingSnapshot(1003);
+            newPhase.CurrentPhase = (int)DuelPhase.Battle;
+            AssertEqual(false, watchdog.Observe(newPhase, plan, 7, false).ShouldRecover,
+                "phase change resets watchdog");
+        }
+
+        static void StuckWindowWatchdogIgnoresPendingAndUncontrolledWindows()
+        {
+            LlmStuckWindowWatchdog watchdog = new LlmStuckWindowWatchdog(2);
+            DecisionSnapshot snapshot = CreateCheckTimingSnapshot(1100);
+            LlmDecisionWindowPlan pending = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.Suppressed,
+                Reason = "pending_broker_request",
+                HasActingPlayer = true,
+                BrokerControlsActingPlayer = true,
+            };
+            AssertEqual(false, watchdog.Observe(snapshot, pending, 8, true).ShouldRecover,
+                "pending request ignored");
+            AssertEqual(false, watchdog.Observe(CreateCheckTimingSnapshot(1103), pending, 8, true).ShouldRecover,
+                "repeated pending request ignored");
+
+            LlmDecisionWindowPlan uncontrolled = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.Default,
+                Reason = "uncontrolled_local_player",
+                HasActingPlayer = true,
+                BrokerControlsActingPlayer = false,
+            };
+            AssertEqual(false, watchdog.Observe(snapshot, uncontrolled, 8, false).ShouldRecover,
+                "uncontrolled local prompt ignored");
+            AssertEqual(false, watchdog.Observe(CreateCheckTimingSnapshot(1106), uncontrolled, 8, false).ShouldRecover,
+                "repeated uncontrolled prompt ignored");
+        }
+
+        static void StuckWindowWatchdogDetectsAutomaticCheckTimingCycle()
+        {
+            LlmStuckWindowWatchdog watchdog = new LlmStuckWindowWatchdog(3);
+            LegalAction decline = new LegalAction()
+            {
+                Kind = LegalActionKind.Cancel,
+                IsMechanical = true,
+                CancelDecide = false,
+                TargetScope = "empty_check_timing_decline",
+            };
+            LlmDecisionWindowPlan automatic = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.Automatic,
+                Reason = "empty_check_timing_decline",
+                AutomaticAction = decline,
+                HasActingPlayer = true,
+                BrokerControlsActingPlayer = true,
+            };
+            LlmDecisionWindowPlan dialog = new LlmDecisionWindowPlan()
+            {
+                Route = LlmDecisionWindowRoute.CpuFallback,
+                Reason = "mechanical_only",
+                HasActingPlayer = true,
+                BrokerControlsActingPlayer = true,
+            };
+
+            AssertEqual(false, watchdog.Observe(
+                CreateCheckTimingSnapshot(640), automatic, 9, false).ShouldRecover,
+                "first automatic decline does not recover");
+            AssertEqual(false, watchdog.Observe(
+                CreateMechanicalDialogSnapshot(641, 4, 1, 4), dialog, 9, false).ShouldRecover,
+                "intervening dialog does not reset or recover");
+            AssertEqual(false, watchdog.Observe(
+                CreateMechanicalDialogSnapshot(642, 0, 273, 3), dialog, 9, false).ShouldRecover,
+                "second intervening dialog does not reset or recover");
+            AssertEqual(false, watchdog.Observe(
+                CreateCheckTimingSnapshot(643), automatic, 9, false).ShouldRecover,
+                "second automatic decline does not recover");
+            LlmStuckWindowObservation third = watchdog.Observe(
+                CreateCheckTimingSnapshot(646), automatic, 9, false);
+
+            AssertEqual(true, third.ShouldRecover,
+                "third automatic CheckTiming cycle recovers");
+            AssertEqual(3, third.RepeatCount,
+                "automatic decline repeats survive mechanical dialogs");
+            AssertEqual(true, third.Fingerprint.Contains(
+                "WaitInput|4|0|1|Automatic|empty_check_timing_decline"),
+                "automatic CheckTiming fingerprint is stable");
+            AssertEqual(true,
+                LlmDecisionWindowPlanner.ShouldPreserveWatchdogAfterAutomaticAction(decline),
+                "empty response decline preserves watchdog history after commit");
+        }
+
+        static DecisionSnapshot CreateMechanicalDialogSnapshot(
+            ulong runEffectSeq,
+            int param1,
+            int param2,
+            int param3)
+        {
+            return new DecisionSnapshot()
+            {
+                RunEffectSeq = runEffectSeq,
+                ViewType = DuelViewType.RunDialog,
+                ViewParam1 = param1,
+                ViewParam2 = param2,
+                ViewParam3 = param3,
+                ActingPlayer = 1,
+                ControlledPlayer = 1,
+                CurrentPhase = (int)DuelPhase.Main1,
+            };
+        }
+
+        static void TemporaryCpuCoordinatorAllowsExplicitWatchdogRecovery()
+        {
+            AssertEqual(false, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                1200, 1200, DuelViewType.WaitInput, (int)DuelMenuActType.CheckTiming,
+                1, 1, 1, false, false),
+                "ordinary temporary CPU request cannot broaden beyond selections");
+            AssertEqual(true, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                1200, 1200, DuelViewType.WaitInput, (int)DuelMenuActType.CheckTiming,
+                1, 1, 1, false, true),
+                "explicit watchdog recovery can hand owned WaitInput to CPU");
+            AssertEqual(false, LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
+                1200, 1200, DuelViewType.WaitInput, (int)DuelMenuActType.CheckTiming,
+                1, 0, 1, false, true),
+                "watchdog recovery rejects spoofed actor seat");
+        }
+
+        static DecisionSnapshot CreateCheckTimingSnapshot(ulong runEffectSeq)
+        {
+            DecisionSnapshot snapshot = new DecisionSnapshot()
+            {
+                RunEffectSeq = runEffectSeq,
+                ViewType = DuelViewType.WaitInput,
+                ViewParam1 = (int)DuelMenuActType.CheckTiming,
+                ViewParam2 = 0,
+                ViewParam3 = (int)DuelMenuParamType.TrueCancel,
+                ActingPlayer = 1,
+                ControlledPlayer = 1,
+                CurrentPhase = (int)DuelPhase.Main1,
+            };
+            return snapshot;
         }
 
         static void CreatesCancelCommitPlan()

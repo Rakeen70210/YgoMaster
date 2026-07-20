@@ -20,6 +20,83 @@ class LlmDuelLogAnalyzerTests(unittest.TestCase):
                 writer.write(json.dumps(event, separators=(",", ":")) + "\n")
         return temp_dir, path
 
+    def test_counts_broker_owned_attack_targets_and_explicit_divergence(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "kind": "llm_broker_window_routed",
+                    "run_effect_seq": 539,
+                    "route": "Broker",
+                    "prompt_family": "WaitInput",
+                    "reason": "attack_target",
+                },
+                {
+                    "kind": "llm_attack_target_divergence",
+                    "run_effect_seq": 539,
+                    "origin_run_effect_seq": 534,
+                    "reason": "provider_error",
+                    "fallback": "temporary_cpu",
+                    "legal_target_count": 2,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([path])
+        self.assertEqual(1, summary["attack_targets"]["broker_owned_windows"])
+        self.assertEqual(1, summary["attack_targets"]["fallback_divergences"])
+        self.assertEqual(
+            {"provider_error": 1},
+            summary["attack_targets"]["divergence_reasons"],
+        )
+
+    def test_counts_grounded_blocks_and_promised_followup_results(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "kind": "decision_window",
+                    "run_effect_seq": 843,
+                    "legal_actions": [
+                        {
+                            "action_id": 3,
+                            "effect_applicability": {
+                                "is_grounded": True,
+                                "effect_expected_to_apply": False,
+                                "reason": "blocked_by_activated_monster_effect_immunity",
+                            },
+                        }
+                    ],
+                },
+                {
+                    "kind": "llm_broker_rejected",
+                    "error": "effect_applicability_contradiction",
+                },
+                {
+                    "kind": "intended_followup_matched",
+                    "origin_run_effect_seq": 881,
+                    "current_run_effect_seq": 920,
+                    "action_family": "effect_activation",
+                },
+                {
+                    "kind": "intended_followup_unavailable",
+                    "origin_run_effect_seq": 881,
+                    "current_run_effect_seq": 929,
+                    "reason": "effect_not_legal",
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([path])
+        self.assertEqual(1, summary["effect_applicability"]["grounded_blocked_actions"])
+        self.assertEqual(1, summary["effect_applicability"]["contradiction_rejections"])
+        self.assertEqual(1, summary["promised_followups"]["matched"])
+        self.assertEqual(1, summary["promised_followups"]["unavailable"])
+        self.assertEqual(
+            {"effect_not_legal": 1},
+            summary["promised_followups"]["unavailable_reasons"],
+        )
+
     def test_analyzes_broker_commit_coverage(self):
         temp_dir, path = self.write_log(
             [

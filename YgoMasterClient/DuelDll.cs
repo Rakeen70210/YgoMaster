@@ -26,11 +26,15 @@ namespace YgoMasterClient
         static object LogLocker = new object();
         static LlmBrokerRequestGate LlmBrokerGate = new LlmBrokerRequestGate();
         static LlmTurnMemoryTracker LlmTurnMemory = new LlmTurnMemoryTracker(6);
+        static LlmPromisedFollowupTracker LlmPromisedFollowups =
+            new LlmPromisedFollowupTracker();
         static LlmDuelHistoryTracker LlmDuelHistory = new LlmDuelHistoryTracker(null);
         static LlmAutomaticActionLoopGuard LlmAutomaticActionGuard =
             new LlmAutomaticActionLoopGuard();
         static LlmTemporaryCpuSelectionCoordinator LlmTemporaryCpuSelection =
             new LlmTemporaryCpuSelectionCoordinator();
+        static LlmStuckWindowWatchdog LlmStuckWindowWatchdog =
+            new LlmStuckWindowWatchdog();
         static int LlmBrokerDuelGeneration;
         static int LlmDuelHistoryGeneration;
         static bool AllowLlmAutomaticMain2FollowUp;
@@ -629,6 +633,56 @@ namespace YgoMasterClient
             }
         }
 
+        static void LogLlmSummonInteraction(
+            ulong runEffectSeq,
+            LlmSummonInteractionDecision decision)
+        {
+            if (!ClientSettings.LlmDecisionLogEnabled || !IsPvpDuel || decision == null)
+            {
+                return;
+            }
+
+            string eventKind;
+            switch (decision.Disposition)
+            {
+                case LlmSummonInteractionDisposition.Started:
+                    eventKind = "summon_interaction_started";
+                    break;
+                case LlmSummonInteractionDisposition.Retry:
+                    eventKind = "summon_placement_retry";
+                    break;
+                case LlmSummonInteractionDisposition.TemporaryCpu:
+                    eventKind = "summon_interaction_recovery";
+                    break;
+                case LlmSummonInteractionDisposition.Preserved:
+                    eventKind = "summon_interaction_preserved";
+                    break;
+                case LlmSummonInteractionDisposition.Completed:
+                    eventKind = "summon_interaction_completion_confirmed";
+                    break;
+                case LlmSummonInteractionDisposition.Reset:
+                    eventKind = "summon_interaction_reset";
+                    break;
+                case LlmSummonInteractionDisposition.Rejected:
+                    eventKind = "summon_interaction_rejected";
+                    break;
+                default:
+                    eventKind = "summon_interaction_ignored";
+                    break;
+            }
+
+            try
+            {
+                LogLlmJsonLine(LlmDecisionLogSerializer.SerializeSummonInteraction(
+                    runEffectSeq,
+                    decision,
+                    eventKind));
+            }
+            catch
+            {
+            }
+        }
+
         static void LogLlmBrokerRequestStarted(DecisionSnapshot snapshot)
         {
             if (!ClientSettings.LlmDecisionLogEnabled || !IsPvpDuel)
@@ -677,6 +731,27 @@ namespace YgoMasterClient
                     requestRunEffectSeq,
                     RunEffectSeq,
                     reason));
+            }
+            catch
+            {
+            }
+        }
+
+        static void LogLlmAttackTargetDivergence(
+            DecisionSnapshot snapshot,
+            string reason,
+            string fallback)
+        {
+            if (!ClientSettings.LlmDecisionLogEnabled || !IsPvpDuel)
+            {
+                return;
+            }
+            try
+            {
+                LogLlmJsonLine(LlmDecisionLogSerializer.SerializeAttackTargetDivergence(
+                    snapshot,
+                    reason,
+                    fallback));
             }
             catch
             {
@@ -810,21 +885,73 @@ namespace YgoMasterClient
 
             LogLlmBrokerWindowRouted(snapshot.RunEffectSeq, decisionPlan);
 
+            int duelGeneration = GetLlmBrokerDuelGeneration();
+            LlmStuckWindowObservation stuckWindow = LlmStuckWindowWatchdog.Observe(
+                snapshot,
+                decisionPlan,
+                duelGeneration,
+                LlmBrokerGate.IsRequestInFlight());
+            if (stuckWindow.ShouldRecover)
+            {
+                try
+                {
+                    LogLlmJsonLine(LlmDecisionLogSerializer.SerializeStuckWindowRecovered(
+                        snapshot,
+                        decisionPlan,
+                        stuckWindow));
+                }
+                catch
+                {
+                }
+                return TryStartLlmTemporaryCpuSelection(
+                    snapshot,
+                    "stuck_window_recovery",
+                    true);
+            }
+
             LegalAction automaticActionToCommit =
                 LlmDecisionWindowPlanner.ResolveAutomaticActionForCommit(
                     decisionPlan,
                     automaticAction);
+            LlmAutomaticActionGuard.PreparePlacementAction(
+                snapshot,
+                automaticActionToCommit);
+            if (automaticActionToCommit == null ||
+                !LlmAutomaticActionLoopGuard.IsSummonPlacementAction(automaticActionToCommit))
+            {
+                LogLlmSummonInteraction(
+                    snapshot.RunEffectSeq,
+                    LlmAutomaticActionGuard.ObserveCompletion(snapshot, duelGeneration));
+            }
             if (decisionPlan.Route == LlmDecisionWindowRoute.Automatic &&
                 automaticActionToCommit != null)
             {
-                if (!LlmAutomaticActionGuard.TryAcquire(snapshot, automaticActionToCommit))
+                if (LlmAutomaticActionLoopGuard.IsSummonPlacementAction(automaticActionToCommit))
                 {
-                    Log("LLM broker automatic action blocked: repeated summon placement prompt");
-                    LogLlmBrokerSkippedWindow(
-                        snapshot.RunEffectSeq,
-                        snapshot,
-                        "repeated_summon_placement");
-                    return false;
+                    LlmSummonInteractionDecision interactionDecision =
+                        LlmAutomaticActionGuard.TryAcquirePlacement(
+                            snapshot,
+                            automaticActionToCommit,
+                            duelGeneration);
+                    LogLlmSummonInteraction(snapshot.RunEffectSeq, interactionDecision);
+                    if (interactionDecision == null ||
+                        interactionDecision.Disposition == LlmSummonInteractionDisposition.TemporaryCpu ||
+                        interactionDecision.Disposition == LlmSummonInteractionDisposition.Rejected)
+                    {
+                        if (interactionDecision != null &&
+                            interactionDecision.Disposition == LlmSummonInteractionDisposition.Rejected)
+                        {
+                            LogLlmBrokerSkippedWindow(
+                                snapshot.RunEffectSeq,
+                                snapshot,
+                                interactionDecision.Reason ?? "summon_interaction_rejected");
+                        }
+                        return TryStartLlmTemporaryCpuSelection(
+                            snapshot,
+                            interactionDecision == null ?
+                                "summon_interaction_missing" :
+                                interactionDecision.Reason);
+                    }
                 }
                 try
                 {
@@ -836,6 +963,11 @@ namespace YgoMasterClient
                     CommitLlmAutomaticAction(
                         automaticActionToCommit,
                         decisionPlan.Reason ?? "automatic_action");
+                    if (!LlmDecisionWindowPlanner.ShouldPreserveWatchdogAfterAutomaticAction(
+                        automaticActionToCommit))
+                    {
+                        LlmStuckWindowWatchdog.Reset();
+                    }
                     if (automaticActionToCommit.Kind == LegalActionKind.MovePhase &&
                         automaticActionToCommit.Phase == DuelPhase.Main2)
                     {
@@ -850,8 +982,6 @@ namespace YgoMasterClient
                 }
             }
 
-            LlmAutomaticActionGuard.TryAcquire(snapshot, null);
-
             if (decisionPlan.Route == LlmDecisionWindowRoute.Automatic)
             {
                 Log("LLM broker automatic route had no action to commit");
@@ -865,20 +995,7 @@ namespace YgoMasterClient
 
             if (decisionPlan.Route == LlmDecisionWindowRoute.TemporaryCpu)
             {
-                LogLlmBrokerSkippedWindow(snapshot.RunEffectSeq, snapshot, decisionPlan.Reason);
-                if (!LlmTemporaryCpuSelection.TryBegin(snapshot.RunEffectSeq, snapshot.ActingPlayer))
-                {
-                    return true;
-                }
-
-                Log("LLM broker temporary CPU selection: player:" + snapshot.ActingPlayer +
-                    " seq:" + snapshot.RunEffectSeq);
-                Program.NetClient.Send(new DuelComSetTemporaryCpuMessage()
-                {
-                    RunEffectSeq = snapshot.RunEffectSeq,
-                    Player = snapshot.ActingPlayer,
-                });
-                return true;
+                return TryStartLlmTemporaryCpuSelection(snapshot, decisionPlan.Reason);
             }
 
             if (decisionPlan.Route == LlmDecisionWindowRoute.CpuFallback)
@@ -899,6 +1016,47 @@ namespace YgoMasterClient
             }
 
             return decisionPlan.Route == LlmDecisionWindowRoute.Suppressed;
+        }
+
+        static bool TryStartLlmTemporaryCpuSelection(
+            DecisionSnapshot snapshot,
+            string reason)
+        {
+            return TryStartLlmTemporaryCpuSelection(snapshot, reason, false);
+        }
+
+        static bool TryStartLlmTemporaryCpuSelection(
+            DecisionSnapshot snapshot,
+            string reason,
+            bool isWatchdogRecovery)
+        {
+            if (snapshot == null || snapshot.ActingPlayer < 0 || snapshot.ActingPlayer > 1)
+            {
+                return false;
+            }
+
+            LogLlmBrokerSkippedWindow(
+                snapshot.RunEffectSeq,
+                snapshot,
+                reason ?? "temporary_cpu");
+            if (!LlmTemporaryCpuSelection.TryBegin(
+                snapshot.RunEffectSeq,
+                snapshot.ActingPlayer))
+            {
+                return true;
+            }
+
+            Log("LLM broker temporary CPU selection: player:" + snapshot.ActingPlayer +
+                " seq:" + snapshot.RunEffectSeq +
+                " reason:" + (reason ?? "temporary_cpu"));
+            Program.NetClient.Send(new DuelComSetTemporaryCpuMessage()
+            {
+                RunEffectSeq = snapshot.RunEffectSeq,
+                Player = snapshot.ActingPlayer,
+                IsWatchdogRecovery = isWatchdogRecovery,
+            });
+            LlmStuckWindowWatchdog.Reset();
+            return true;
         }
 
         static bool TryQueueLlmBrokerDecision(
@@ -997,7 +1155,7 @@ namespace YgoMasterClient
                         return;
                     }
                     LlmBrokerGate.MarkFailed(requestSeq);
-                    FallbackLlmBrokerDecisionIfNeeded();
+                    FallbackLlmBrokerDecisionIfNeeded(failureError);
                     return;
                 }
 
@@ -1039,7 +1197,7 @@ namespace YgoMasterClient
                         result != null ? result.Action : null))
                     {
                         LlmBrokerGate.MarkFailed(requestSeq);
-                        FallbackLlmBrokerDecisionIfNeeded();
+                        FallbackLlmBrokerDecisionIfNeeded(commitSkipReason);
                     }
                     return;
                 }
@@ -1075,13 +1233,37 @@ namespace YgoMasterClient
                     }
 
                     LlmBrokerGate.MarkFailed(requestSeq);
-                    FallbackLlmBrokerDecisionIfNeeded();
+                    FallbackLlmBrokerDecisionIfNeeded(validation.Error);
                     return;
+                }
+
+                if (LlmAutomaticActionLoopGuard.IsSummonDeclarationAction(validation.Action))
+                {
+                    LlmSummonInteractionDecision interactionDecision =
+                        LlmAutomaticActionGuard.BeginSummonInteraction(
+                            currentSnapshot,
+                            validation.Action,
+                            requestDuelGeneration);
+                    LogLlmSummonInteraction(requestSeq, interactionDecision);
+                    if (interactionDecision == null ||
+                        interactionDecision.Disposition == LlmSummonInteractionDisposition.Rejected ||
+                        interactionDecision.Disposition == LlmSummonInteractionDisposition.TemporaryCpu)
+                    {
+                        string interactionError = interactionDecision == null ?
+                            "summon_interaction_missing" :
+                            interactionDecision.Reason ?? "summon_interaction_rejected";
+                        Log("LLM broker summon interaction rejected: " + interactionError);
+                        LogLlmBrokerCommitSkipped(requestSeq, interactionError);
+                        LlmBrokerGate.MarkFailed(requestSeq);
+                        FallbackLlmBrokerDecisionIfNeeded(interactionError);
+                        return;
+                    }
                 }
 
                 try
                 {
-                    CommitLlmAction(validation.Action);
+                    CommitLlmAction(validation.Action, requestSeq, result.Response);
+                    LlmStuckWindowWatchdog.Reset();
                     AllowLlmAutomaticMain2FollowUp =
                         validation.Action.Kind == LegalActionKind.MovePhase &&
                         validation.Action.Phase == DuelPhase.Main2;
@@ -1090,6 +1272,11 @@ namespace YgoMasterClient
                         currentSnapshot,
                         result.Response,
                         validation.Action);
+                    LlmPromisedFollowups.RecordCommittedAction(
+                        currentSnapshot,
+                        validation.Action,
+                        result.Response,
+                        requestDuelGeneration);
                     LlmBrokerGate.MarkCompleted(requestSeq);
                 }
                 catch (Exception e)
@@ -1104,7 +1291,7 @@ namespace YgoMasterClient
                         result != null ? result.Action : null))
                     {
                         LlmBrokerGate.MarkFailed(requestSeq);
-                        FallbackLlmBrokerDecisionIfNeeded();
+                        FallbackLlmBrokerDecisionIfNeeded("commit_exception");
                     }
                     return;
                 }
@@ -1158,6 +1345,14 @@ namespace YgoMasterClient
                 // path (decision window, broker queue, retry, recovery). Same request keeps
                 // its attached snapshot; a newly extracted retry gets then-current history.
                 LlmDecisionSnapshotHistory.Attach(snapshot, LlmDuelHistory);
+                LlmPromisedFollowupEvaluation followup =
+                    LlmPromisedFollowups.Evaluate(
+                        snapshot, GetLlmBrokerDuelGeneration());
+                if (followup != null && ClientSettings.LlmDecisionLogEnabled && IsPvpDuel)
+                {
+                    LogLlmJsonLine(
+                        LlmDecisionLogSerializer.SerializeIntendedFollowupEvaluation(followup));
+                }
             }
         }
 
@@ -1172,10 +1367,20 @@ namespace YgoMasterClient
             {
                 AttackingPlayer = PendingLlmAttackTargetContext.AttackingPlayer,
                 AttackerPosition = PendingLlmAttackTargetContext.AttackerPosition,
+                OriginRunEffectSeq = PendingLlmAttackTargetContext.OriginRunEffectSeq,
+                OriginDuelGeneration = PendingLlmAttackTargetContext.OriginDuelGeneration,
+                AttackerCardId = PendingLlmAttackTargetContext.AttackerCardId,
+                AttackerUniqueId = PendingLlmAttackTargetContext.AttackerUniqueId,
+                OriginActionLabel = PendingLlmAttackTargetContext.OriginActionLabel,
+                OriginReason = PendingLlmAttackTargetContext.OriginReason,
+                OriginPlan = PendingLlmAttackTargetContext.OriginPlan,
             };
         }
 
-        static void UpdateLlmAttackTargetContextAfterCommit(LegalAction action)
+        static void UpdateLlmAttackTargetContextAfterCommit(
+            LegalAction action,
+            ulong originRunEffectSeq,
+            LlmBrokerDecisionResponse originResponse)
         {
             if (action != null &&
                 action.Kind == LegalActionKind.Command &&
@@ -1185,6 +1390,13 @@ namespace YgoMasterClient
                 {
                     AttackingPlayer = action.Player,
                     AttackerPosition = action.Position,
+                    OriginRunEffectSeq = originRunEffectSeq,
+                    OriginDuelGeneration = GetLlmBrokerDuelGeneration(),
+                    AttackerCardId = action.CardId,
+                    AttackerUniqueId = action.CardUniqueId,
+                    OriginActionLabel = action.ActionLabel,
+                    OriginReason = originResponse == null ? null : originResponse.Reason,
+                    OriginPlan = originResponse == null ? null : originResponse.Plan,
                 };
                 return;
             }
@@ -1195,6 +1407,13 @@ namespace YgoMasterClient
         static void ClearLlmAttackTargetContext()
         {
             PendingLlmAttackTargetContext = null;
+        }
+
+        static void ResetLlmSummonInteractionState()
+        {
+            LlmAutomaticActionGuard.Reset();
+            LlmTemporaryCpuSelection.Reset();
+            LlmStuckWindowWatchdog.Reset();
         }
 
         static void AdvanceLlmBrokerDuelGeneration()
@@ -1224,6 +1443,20 @@ namespace YgoMasterClient
                 MyID,
                 turnPlayer,
                 out player);
+        }
+
+        static bool IsCurrentSummonPlacementPrompt()
+        {
+            if (pvpEngineState.ViewType != DuelViewType.WaitInput ||
+                pvpEngineState.Param1 != (int)DuelMenuActType.Location)
+            {
+                return false;
+            }
+
+            PvpEngineStateLegalActionQuery query =
+                new PvpEngineStateLegalActionQuery(pvpEngineState);
+            return query.GetSummoningMonsterUniqueId() > 0 &&
+                query.GetSummonPositionMask() != 0;
         }
 
         static bool HasLocalDefaultWaitInputInteraction(int actingPlayer)
@@ -1354,17 +1587,23 @@ namespace YgoMasterClient
                     return false;
                 }
 
-                CommitLlmAction(recoveryAction);
+                LlmBrokerDecisionResponse recoveryResponse = result != null ? result.Response : null;
+                CommitLlmAction(recoveryAction, requestSeq, recoveryResponse);
+                LlmStuckWindowWatchdog.Reset();
                 AllowLlmAutomaticMain2FollowUp =
                     recoveryAction.Kind == LegalActionKind.MovePhase &&
                     recoveryAction.Phase == DuelPhase.Main2;
-                LlmBrokerDecisionResponse recoveryResponse = result != null ? result.Response : null;
                 Log("LLM broker recovery: " + (string.IsNullOrEmpty(error) ? "unknown" : error) +
                     " -> " + policyBranch + " " + DescribeLlmAction(recoveryAction));
                 LogLlmBrokerRecovered(requestSeq, error, policyBranch, recoveryAction, recoveryResponse);
                 // Keep normal committed events so analyzer commit coverage still counts recovery.
                 LogLlmBrokerCommitted(requestSeq, recoveryResponse, recoveryAction);
                 LlmTurnMemory.RecordCommittedAction(snapshot, recoveryResponse, recoveryAction);
+                LlmPromisedFollowups.RecordCommittedAction(
+                    snapshot,
+                    recoveryAction,
+                    recoveryResponse,
+                    GetLlmBrokerDuelGeneration());
                 LlmBrokerGate.MarkCompleted(requestSeq);
                 return true;
             }
@@ -1402,7 +1641,7 @@ namespace YgoMasterClient
             }
         }
 
-        static void FallbackLlmBrokerDecisionIfNeeded()
+        static void FallbackLlmBrokerDecisionIfNeeded(string reason)
         {
             if (HasDuelEnd || HasNetworkError || SpecialFinishType != DuelFinishType.None)
             {
@@ -1416,6 +1655,7 @@ namespace YgoMasterClient
             int currentParam1 = 0;
             int currentParam2 = 0;
             int currentParam3 = 0;
+            DecisionSnapshot attackTargetSnapshot = null;
             lock (pvpEngineState)
             {
                 hasActingPlayer = TryGetLlmBrokerActingPlayer(out actingPlayer);
@@ -1426,6 +1666,17 @@ namespace YgoMasterClient
                     currentParam1 = pvpEngineState.Param1;
                     currentParam2 = pvpEngineState.Param2;
                     currentParam3 = pvpEngineState.Param3;
+                    if (PendingLlmAttackTargetContext != null)
+                    {
+                        attackTargetSnapshot = LegalActionExtractor.Extract(
+                            new PvpEngineStateLegalActionQuery(pvpEngineState),
+                            pvpEngineState.RunEffectSeq,
+                            pvpEngineState.ViewType,
+                            actingPlayer,
+                            YdkLlmCardCatalog.Instance,
+                            GetLlmAttackTargetContext());
+                        AttachLlmViewContext(attackTargetSnapshot);
+                    }
                 }
             }
 
@@ -1441,6 +1692,15 @@ namespace YgoMasterClient
             if (fallbackHandling == LlmBrokerViewHandling.RunCpuThinking)
             {
                 Log("LLM broker fallback: CpuThinking");
+                if (attackTargetSnapshot != null &&
+                    attackTargetSnapshot.AttackTargetContext != null &&
+                    attackTargetSnapshot.LegalActions.Count > 1)
+                {
+                    LogLlmAttackTargetDivergence(
+                        attackTargetSnapshot,
+                        reason,
+                        "cpu");
+                }
                 ClearLlmAttackTargetContext();
                 RunEffect((int)DuelViewType.CpuThinking, 0, 0, 0);
             }
@@ -1451,7 +1711,10 @@ namespace YgoMasterClient
             }
         }
 
-        static void CommitLlmAction(LegalAction action)
+        static void CommitLlmAction(
+            LegalAction action,
+            ulong originRunEffectSeq = 0,
+            LlmBrokerDecisionResponse originResponse = null)
         {
             LlmActionCommitPlan plan = LlmActionCommitPlan.FromLegalAction(action);
             bool isAutomatic = action != null
@@ -1484,7 +1747,10 @@ namespace YgoMasterClient
                         DLL_DuelComCancelCommand2(plan.CancelDecide);
                         break;
                 }
-                UpdateLlmAttackTargetContextAfterCommit(action);
+                UpdateLlmAttackTargetContextAfterCommit(
+                    action,
+                    originRunEffectSeq,
+                    originResponse);
             }
             catch
             {
@@ -1569,8 +1835,8 @@ namespace YgoMasterClient
             }
             LlmBrokerGate.Reset();
             LlmTurnMemory.Reset();
-            LlmAutomaticActionGuard.Reset();
-            LlmTemporaryCpuSelection.Reset();
+            LlmPromisedFollowups.Reset();
+            ResetLlmSummonInteractionState();
             AllowLlmAutomaticMain2FollowUp = false;
             ClearLlmAttackTargetContext();
             AdvanceLlmBrokerDuelGeneration();
@@ -1600,8 +1866,8 @@ namespace YgoMasterClient
             }
             LlmBrokerGate.Reset();
             LlmTurnMemory.Reset();
-            LlmAutomaticActionGuard.Reset();
-            LlmTemporaryCpuSelection.Reset();
+            LlmPromisedFollowups.Reset();
+            ResetLlmSummonInteractionState();
             AllowLlmAutomaticMain2FollowUp = false;
             ClearLlmAttackTargetContext();
             AdvanceLlmBrokerDuelGeneration();
@@ -1653,6 +1919,9 @@ namespace YgoMasterClient
             DuelTapSync.ClearState();
             DuelEmoteHelper.OnEndDuel();
             TryFlushAcceptedInputTranscriptAtDuelEnd();
+            LlmBrokerGate.Reset();
+            LlmPromisedFollowups.Reset();
+            ResetLlmSummonInteractionState();
             // History must not survive duel end (plan reset invariant).
             ResetLlmDuelHistoryForNewDuel();
         }
@@ -1776,6 +2045,9 @@ namespace YgoMasterClient
             DuelTapSync.ClearState();
             DuelEmoteHelper.OnEndDuel();
             HasDuelEnd = true;
+            LlmBrokerGate.Reset();
+            LlmPromisedFollowups.Reset();
+            ResetLlmSummonInteractionState();
             if (IsPvpSpectator)
             {
                 EndSpectatorReplayStream();
@@ -1940,9 +2212,11 @@ namespace YgoMasterClient
 
                     if (stateUpdate != null)
                     {
+                        bool isSummonPlacementPrompt = IsCurrentSummonPlacementPrompt();
                         if (LlmTemporaryCpuSelection.ShouldRestore(
                             pvpEngineState.ViewType,
-                            pvpEngineState.Param1))
+                            pvpEngineState.Param1,
+                            isSummonPlacementPrompt))
                         {
                             Log("LLM broker temporary CPU selection completed: view:" +
                                 pvpEngineState.ViewType + " seq:" + pvpEngineState.RunEffectSeq);
@@ -1995,7 +2269,8 @@ namespace YgoMasterClient
                                 LogLlmDecisionWindow();
                                 if (LlmTemporaryCpuSelection.ShouldSuppressDecisionView(
                                     pvpEngineState.ViewType,
-                                    pvpEngineState.Param1))
+                                    pvpEngineState.Param1,
+                                    isSummonPlacementPrompt))
                                 {
                                     Log("LLM broker temporary CPU owns WaitInput seq:" +
                                         pvpEngineState.RunEffectSeq);
@@ -2487,6 +2762,8 @@ namespace YgoMasterClient
                     }
                     HasNetworkError = true;
                     Log("OnNetworkError");
+                    LlmBrokerGate.Reset();
+                    ResetLlmSummonInteractionState();
                     // History must not survive disconnect/network recovery into a new duel generation.
                     ResetLlmDuelHistoryForNewDuel();
                     if (/*IsPvpSpectator && */!HasDuelStart)
@@ -2554,6 +2831,8 @@ namespace YgoMasterClient
                     }
                 }
                 HasDuelEnd = true;
+                LlmBrokerGate.Reset();
+                ResetLlmSummonInteractionState();
                 ResetLlmDuelHistoryForNewDuel();
             };
             lock (ActionsToRunInNextSysAct)

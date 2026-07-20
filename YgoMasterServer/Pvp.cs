@@ -1030,7 +1030,10 @@ namespace YgoMaster
         unsafe int DoRunEffect(int id, int param1, int param2, int param3)
         {
             DuelViewType viewType = (DuelViewType)id;
-            if (temporaryCpuSelection.ShouldRestore(viewType, param1))
+            if (temporaryCpuSelection.ShouldRestore(
+                viewType,
+                param1,
+                IsSummonPlacementPrompt(viewType, param1)))
             {
                 RestoreTemporaryCpuSelection(
                     "view:" + viewType + " seq:" + engineState.RunEffectSeq);
@@ -1243,7 +1246,13 @@ namespace YgoMaster
             {
                 case NetMessageType.Ping: OnPing((PingMessage)message); break;
                 case NetMessageType.ConnectionResponse: OnConnectionResponse((ConnectionResponseMessage)message); break;
-                case NetMessageType.OpponentDuelEnded: hasDuelEnd = true; break;
+                case NetMessageType.OpponentDuelEnded:
+                    lock (engineState)
+                    {
+                        RestoreTemporaryCpuSelection("opponent_duel_ended");
+                    }
+                    hasDuelEnd = true;
+                    break;
                 case NetMessageType.DuelError: OnDuelError((DuelErrorMessage)message); break;
                 case NetMessageType.DuelIsBusyEffect: OnDuelIsBusyEffect((DuelIsBusyEffectMessage)message); break;
                 case NetMessageType.DuelComMovePhase: OnDuelComMovePhase((DuelComMovePhaseMessage)message); break;
@@ -1269,7 +1278,9 @@ namespace YgoMaster
                         engineState.Param1,
                         engineState.DoCommandUser,
                         message.ActorPlayer,
-                        message.Player) ||
+                        message.Player,
+                        IsSummonPlacementPrompt(engineState.ViewType, engineState.Param1),
+                        message.IsWatchdogRecovery) ||
                     !temporaryCpuSelection.TryBegin(message.RunEffectSeq, message.Player))
                 {
                     return;
@@ -1277,7 +1288,8 @@ namespace YgoMaster
 
                 DLL_DuelSetPlayerType(message.Player, (int)DuelPlayerType.CPU);
                 Console.WriteLine("Temporary CPU selection enabled player:" + message.Player +
-                    " seq:" + message.RunEffectSeq);
+                    " seq:" + message.RunEffectSeq +
+                    " watchdog_recovery:" + message.IsWatchdogRecovery);
             }
         }
 
@@ -1295,6 +1307,20 @@ namespace YgoMaster
                 " " + reason);
         }
 
+        bool IsSummonPlacementPrompt(DuelViewType viewType, int param1)
+        {
+            if (viewType != DuelViewType.WaitInput ||
+                param1 != (int)DuelMenuActType.Location)
+            {
+                return false;
+            }
+
+            PvpEngineStateLegalActionQuery query =
+                new PvpEngineStateLegalActionQuery(engineState);
+            return query.GetSummoningMonsterUniqueId() > 0 &&
+                query.GetSummonPositionMask() != 0;
+        }
+
         void OnPing(PingMessage message)
         {
             lastPing = DateTime.UtcNow;
@@ -1309,12 +1335,20 @@ namespace YgoMaster
         {
             if (!message.Success)
             {
+                lock (engineState)
+                {
+                    RestoreTemporaryCpuSelection("connection_failed");
+                }
                 CloseClient();
             }
         }
 
         void OnDuelError(DuelErrorMessage message)
         {
+            lock (engineState)
+            {
+                RestoreTemporaryCpuSelection("duel_error");
+            }
             CloseClient();
         }
 

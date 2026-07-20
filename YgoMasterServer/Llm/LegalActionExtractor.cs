@@ -176,16 +176,17 @@ namespace YgoMaster
             switch (viewType)
             {
                 case DuelViewType.WaitInput:
-                    if (AddSummonPlacementActions(snapshot, query, actingPlayer, cardCatalog))
-                    {
-                        break;
-                    }
                     AddPhaseActions(snapshot, query.GetMovablePhase());
                     AddCommandActions(snapshot, query, actingPlayer, posNum, cardCatalog);
                     if (snapshot.LegalActions.Count == 0)
                     {
                         bool addedAttackTargets = AddAttackTargetActions(
-                            snapshot, query, attackTargetContext, posNum);
+                            snapshot,
+                            query,
+                            attackTargetContext,
+                            posNum,
+                            cardCatalog,
+                            selfResourceFaceDomain);
                         if (!addedAttackTargets)
                         {
                             AddEffectTargetActions(
@@ -223,6 +224,8 @@ namespace YgoMaster
             foreach (LegalAction action in snapshot.LegalActions)
             {
                 ApplyActionSemantics(action);
+                action.EffectApplicability =
+                    LlmEffectApplicabilityAnalyzer.Analyze(snapshot, action);
                 if (action.IsMechanical)
                 {
                     mechanicalActions++;
@@ -479,6 +482,15 @@ namespace YgoMaster
                 return;
             }
 
+            if (menuType == (int)DuelMenuActType.Location)
+            {
+                snapshot.LegalActions.Clear();
+                AddSummonPlacementActions(
+                    snapshot, query, snapshot.ActingPlayer, cardCatalog);
+                ClassifySnapshot(snapshot);
+                return;
+            }
+
             if (menuType == (int)DuelMenuActType.LockOn)
             {
                 snapshot.LegalActions.Clear();
@@ -492,8 +504,8 @@ namespace YgoMaster
                 return;
             }
 
-            if (menuType != (int)DuelMenuActType.CheckChain ||
-                !CanCancelMenuSelection(menuParamType))
+            if (!CanCancelMenuSelection(menuParamType) ||
+                !IsCancelDrivenMenuType(menuType))
             {
                 return;
             }
@@ -506,8 +518,8 @@ namespace YgoMaster
                 }
             }
 
-            // Live hang (WaitInput CheckChain + TrueCancel/OnlyCancel/… with zero
-            // extractable activations): native RunDefault does not advance. Always
+            // Empty cancellable CheckTiming/CheckChain windows can recreate themselves
+            // when native RunDefault does not advance. Always
             // expose CancelCommand2(false) decline. When the window is otherwise
             // empty, mark the sole decline mechanical so the planner auto-commits
             // without broker and without accepting optional activations.
@@ -528,7 +540,9 @@ namespace YgoMaster
                 decline.ActionLabel = "Decline empty response window";
                 decline.ActionGroup = "response";
                 decline.StrategicRole = "empty_response_window";
-                decline.TargetScope = "empty_check_chain_decline";
+                decline.TargetScope = menuType == (int)DuelMenuActType.CheckTiming ?
+                    "empty_check_timing_decline" :
+                    "empty_check_chain_decline";
                 decline.ConsequenceHint = "advances_empty_optional_response";
                 decline.RequiresTarget = false;
                 snapshot.StrategicActionCount = 0;
@@ -544,6 +558,12 @@ namespace YgoMaster
                 menuParamType == (int)DuelMenuParamType.TrueCancel ||
                 menuParamType == (int)DuelMenuParamType.OnlyCancel ||
                 menuParamType == (int)DuelMenuParamType.DecideCancel;
+        }
+
+        static bool IsCancelDrivenMenuType(int menuType)
+        {
+            return menuType == (int)DuelMenuActType.CheckChain ||
+                menuType == (int)DuelMenuActType.CheckTiming;
         }
 
         static bool TryExtractAutomaticCommand(
@@ -668,14 +688,18 @@ namespace YgoMaster
             DecisionSnapshot snapshot,
             ILegalActionQuery query,
             AttackTargetContext attackTargetContext,
-            int posNum)
+            int posNum,
+            ILlmCardCatalog cardCatalog,
+            LlmPublicVisibilityMode visibilityMode)
         {
-            LegalAction[] actions = CollectAttackTargetActions(query, attackTargetContext, posNum);
+            LegalAction[] actions = CollectAttackTargetActions(
+                query, attackTargetContext, posNum, cardCatalog, visibilityMode);
             if (actions.Length <= 1)
             {
                 return false;
             }
 
+            snapshot.AttackTargetContext = CloneAttackTargetContext(attackTargetContext);
             for (int i = 0; i < actions.Length; i++)
             {
                 actions[i].ActionId = snapshot.LegalActions.Count;
@@ -753,7 +777,12 @@ namespace YgoMaster
             out LegalAction action)
         {
             action = null;
-            LegalAction[] actions = CollectAttackTargetActions(query, attackTargetContext, posNum);
+            LegalAction[] actions = CollectAttackTargetActions(
+                query,
+                attackTargetContext,
+                posNum,
+                null,
+                LlmPublicVisibilityMode.RuntimeDllField);
             if (actions.Length != 1)
             {
                 return false;
@@ -767,7 +796,9 @@ namespace YgoMaster
         static LegalAction[] CollectAttackTargetActions(
             ILegalActionQuery query,
             AttackTargetContext attackTargetContext,
-            int posNum)
+            int posNum,
+            ILlmCardCatalog cardCatalog,
+            LlmPublicVisibilityMode visibilityMode)
         {
             if (attackTargetContext == null ||
                 query.GetCurrentPhase() != (int)DuelPhase.Battle)
@@ -806,6 +837,15 @@ namespace YgoMaster
                     continue;
                 }
 
+                int face = query.GetCardFace(targetPlayer, targetLocate, 0);
+                bool identityVisible = LlmAbsolutePublicVisibility.CanExposeCardIdentity(
+                    targetLocate,
+                    face,
+                    false,
+                    visibilityMode);
+                int publicUniqueId = identityVisible ? cardUniqueId : 0;
+                int publicCardId = publicUniqueId <= 0 ? 0 :
+                    query.GetCardIdByUniqueId(publicUniqueId);
                 actions.Add(new LegalAction()
                 {
                     ActionId = actions.Count,
@@ -814,9 +854,50 @@ namespace YgoMaster
                     Position = targetLocate,
                     Index = 0,
                     Command = DuelCommandType.Decide,
+                    CardUniqueId = publicUniqueId,
+                    CardId = publicCardId,
+                    Card = GetCard(cardCatalog, publicCardId),
+                    IsAttackTargetSelection = true,
+                    TargetToken = BuildAttackTargetToken(
+                        attackTargetContext,
+                        targetPlayer,
+                        targetLocate,
+                        publicUniqueId),
                 });
             }
             return actions.ToArray();
+        }
+
+        static AttackTargetContext CloneAttackTargetContext(AttackTargetContext source)
+        {
+            if (source == null)
+            {
+                return null;
+            }
+            return new AttackTargetContext()
+            {
+                AttackingPlayer = source.AttackingPlayer,
+                AttackerPosition = source.AttackerPosition,
+                OriginRunEffectSeq = source.OriginRunEffectSeq,
+                OriginDuelGeneration = source.OriginDuelGeneration,
+                AttackerCardId = source.AttackerCardId,
+                AttackerUniqueId = source.AttackerUniqueId,
+                OriginActionLabel = source.OriginActionLabel,
+                OriginReason = source.OriginReason,
+                OriginPlan = source.OriginPlan,
+            };
+        }
+
+        static string BuildAttackTargetToken(
+            AttackTargetContext context,
+            int targetPlayer,
+            int targetPosition,
+            int publicTargetUniqueId)
+        {
+            return "attack:" + context.OriginDuelGeneration + ":" +
+                context.OriginRunEffectSeq + ":" + context.AttackingPlayer + ":" +
+                context.AttackerPosition + ":" + context.AttackerUniqueId + ":" +
+                targetPlayer + ":" + targetPosition + ":0:" + publicTargetUniqueId;
         }
 
         static void AddPublicState(
@@ -859,9 +940,14 @@ namespace YgoMaster
         {
             for (int index = 0; index <= cardNum; index++)
             {
+                int face = query.GetCardFace(player, position, index);
+                if (!CanExposeCardIdentity(
+                    query, player, position, index, face, controlledPlayer))
+                {
+                    continue;
+                }
                 int cardUniqueId = query.GetCardUniqueId(player, position, index);
-                if (cardUniqueId <= 0 ||
-                    !CanExposeCardIdentity(query, player, position, index, controlledPlayer))
+                if (cardUniqueId <= 0)
                 {
                     continue;
                 }
@@ -872,7 +958,6 @@ namespace YgoMaster
                     continue;
                 }
 
-                int face = query.GetCardFace(player, position, index);
                 // Open or own hand is identity-known to the public_state consumer for that
                 // controlled seat; normalize a default engine face of 0 to face-up so public
                 // serializers can distinguish revealed hand from face-down hidden plantings.
@@ -902,6 +987,7 @@ namespace YgoMaster
             int player,
             int position,
             int index,
+            int face,
             int controlledPlayer)
         {
             if (position == PosGrave)
@@ -911,6 +997,12 @@ namespace YgoMaster
             if (position == PosHand)
             {
                 return player == controlledPlayer || query.GetHandCardOpen(player, index) != 0;
+            }
+            if (position >= 0 && position <= LlmPublicHistoryRedactionPolicy.PosSpellTrapMax)
+            {
+                return LlmAbsolutePublicVisibility.CanExposeDllRuntimeCardIdentity(
+                    position, face)
+                    || (face == LlmPublicHistoryRedactionPolicy.PublicFaceUpValue);
             }
             return false;
         }
@@ -1140,6 +1232,20 @@ namespace YgoMaster
         {
             string cardName = action.Card == null ? null : action.Card.Name;
             string suffix = string.IsNullOrEmpty(cardName) ? "" : " " + cardName;
+            if (action.IsAttackTargetSelection)
+            {
+                action.ActionLabel = !string.IsNullOrEmpty(cardName) ?
+                    "Attack target: " + cardName :
+                    (action.CardUniqueId > 0 ?
+                        "Attack target: face-up monster in zone " + action.Position :
+                        "Attack target: face-down monster in zone " + action.Position);
+                action.ActionGroup = "battle_target";
+                action.StrategicRole = "attack_target";
+                action.RequiresTarget = true;
+                action.TargetScope = "attack_target";
+                action.ConsequenceHint = "selects_target_for_originating_attack";
+                return;
+            }
             switch (action.Command)
             {
                 case DuelCommandType.Summon:
