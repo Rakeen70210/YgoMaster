@@ -17,7 +17,27 @@ from urllib.parse import urlparse
 
 
 class ProviderResponseError(ValueError):
-    pass
+    """Provider failure with an optional classified failure class (Milestone 3D)."""
+
+    def __init__(self, message, failure_class=None, diagnostics=None):
+        super(ProviderResponseError, self).__init__(message)
+        self.failure_class = failure_class or classify_provider_failure(message)
+        self.diagnostics = diagnostics or {}
+
+
+# Failure classes (YGOMASTER-LLM-003 Milestone 3D).
+PROVIDER_FAILURE_TRANSPORT = "transport"
+PROVIDER_FAILURE_TIMEOUT = "timeout"
+PROVIDER_FAILURE_PROCESS_EXIT = "process_exit"
+PROVIDER_FAILURE_MAX_TURNS = "max_turns_without_structured_output"
+PROVIDER_FAILURE_SCHEMA_PARSE = "schema_parse"
+PROVIDER_FAILURE_SCHEMA_VALIDATION = "schema_validation"
+PROVIDER_FAILURE_CANCELLED = "provider_cancelled"
+PROVIDER_FAILURE_UNKNOWN = "unknown"
+
+_PROVIDER_CIRCUIT = {
+    # provider -> {"failures": int, "open_until": float, "generation": object}
+}
 
 
 PROVIDER_TRANSPORT_ERRORS = (urllib.error.URLError, TimeoutError)
@@ -555,10 +575,156 @@ def cli_timeout_seconds():
 
 
 def cli_retry_count():
+    """Legacy blind identical retry count. Prefer classified_retry_policy()."""
     try:
         return max(0, int(os.environ.get("YGO_LLM_BROKER_CLI_RETRIES", "1")))
     except ValueError:
         return 1
+
+
+def grok_max_turns():
+    """Validated Grok --max-turns setting (default 1 until captured replay evidence)."""
+    try:
+        value = int(os.environ.get("YGO_LLM_BROKER_GROK_MAX_TURNS", "1"))
+    except ValueError:
+        value = 1
+    return max(1, min(value, 3))
+
+
+def circuit_breaker_threshold():
+    try:
+        return max(1, int(os.environ.get("YGO_LLM_BROKER_CIRCUIT_FAILURE_THRESHOLD", "3")))
+    except ValueError:
+        return 3
+
+
+def circuit_breaker_cooldown_seconds():
+    try:
+        return max(1.0, float(os.environ.get("YGO_LLM_BROKER_CIRCUIT_COOLDOWN_SEC", "60")))
+    except ValueError:
+        return 60.0
+
+
+def classify_provider_failure(message, returncode=None, raw_text=None):
+    text = (message or "").lower()
+    raw = (raw_text or "").lower()
+    combined = text + "\n" + raw
+    if "timed out" in combined or "timeout" in combined:
+        return PROVIDER_FAILURE_TIMEOUT
+    # Prefer max-turns / structured-output over generic cancelled (live Grok signature).
+    if (
+        "max turns" in combined
+        or "max-turns" in combined
+        or "max_turns" in combined
+        or "structured output" in combined
+        or "structuredoutput" in combined
+    ):
+        return PROVIDER_FAILURE_MAX_TURNS
+    if "cancelled" in combined or ("stopreason" in combined and "cancel" in combined):
+        return PROVIDER_FAILURE_CANCELLED
+    if "failed to start" in combined or "no such file" in combined:
+        return PROVIDER_FAILURE_TRANSPORT
+    if returncode not in (None, 0) or "exited with code" in combined:
+        if "max turns" in combined or "structured" in combined:
+            return PROVIDER_FAILURE_MAX_TURNS
+        return PROVIDER_FAILURE_PROCESS_EXIT
+    if "invalid json" in combined or "could not parse" in combined or "no json" in combined:
+        return PROVIDER_FAILURE_SCHEMA_PARSE
+    if "schema" in combined and ("valid" in combined or "required" in combined):
+        return PROVIDER_FAILURE_SCHEMA_VALIDATION
+    if "urlerror" in combined or "connection" in combined:
+        return PROVIDER_FAILURE_TRANSPORT
+    return PROVIDER_FAILURE_UNKNOWN
+
+
+def circuit_is_open(provider, now=None):
+    now = time.monotonic() if now is None else now
+    state = _PROVIDER_CIRCUIT.get(provider)
+    if not state:
+        return False
+    open_until = state.get("open_until") or 0.0
+    return open_until > now
+
+
+def circuit_record_failure(provider, now=None):
+    now = time.monotonic() if now is None else now
+    state = _PROVIDER_CIRCUIT.setdefault(provider, {"failures": 0, "open_until": 0.0})
+    state["failures"] = int(state.get("failures") or 0) + 1
+    if state["failures"] >= circuit_breaker_threshold():
+        state["open_until"] = now + circuit_breaker_cooldown_seconds()
+    return state
+
+
+def circuit_record_success(provider):
+    _PROVIDER_CIRCUIT[provider] = {"failures": 0, "open_until": 0.0}
+
+
+def circuit_reset_all():
+    _PROVIDER_CIRCUIT.clear()
+
+
+def build_schema_repair_prompt(request, prior_raw_or_error):
+    """Compact JSON-only repair prompt: sequence, legal actions, schema, prior diagnostic."""
+    legal = request.get("legal_actions") or []
+    compact_actions = []
+    for action in legal:
+        if not isinstance(action, dict):
+            continue
+        compact_actions.append(
+            {
+                "action_id": action.get("action_id"),
+                "action_label": action.get("action_label"),
+                "kind": action.get("kind"),
+                "command": action.get("command"),
+                "phase": action.get("phase"),
+                "card_id": action.get("card_id"),
+                "card_name": (action.get("card") or {}).get("name")
+                if isinstance(action.get("card"), dict)
+                else action.get("card_name"),
+            }
+        )
+    payload = {
+        "instruction": (
+            "Return only the decision JSON object. Do not explain. "
+            "Choose exactly one action_id from legal_actions."
+        ),
+        "run_effect_seq": request.get("run_effect_seq"),
+        "legal_actions": compact_actions,
+        "required_schema": [
+            "run_effect_seq",
+            "action_id",
+            "reason",
+            "confidence",
+            "plan",
+            "opponent_board_assessment",
+            "opponent_action_assessment",
+            "history_event_ids_used",
+            "why_now",
+            "alternatives_considered",
+            "risk",
+            "intended_followups",
+        ],
+        "prior_failure": (prior_raw_or_error or "")[:2000],
+    }
+    return (
+        "Repair your previous answer into valid decision JSON only.\n"
+        + json.dumps(payload, ensure_ascii=True, separators=(",", ":"))
+    )
+
+
+def should_attempt_schema_repair(failure_class):
+    return failure_class in (
+        PROVIDER_FAILURE_MAX_TURNS,
+        PROVIDER_FAILURE_SCHEMA_PARSE,
+        PROVIDER_FAILURE_SCHEMA_VALIDATION,
+    )
+
+
+def should_attempt_identical_retry(failure_class):
+    return failure_class in (
+        PROVIDER_FAILURE_TRANSPORT,
+        PROVIDER_FAILURE_PROCESS_EXIT,
+    )
 
 
 def provider_error_fallback_enabled():
@@ -1122,7 +1288,8 @@ def extra_cli_args(provider):
     return []
 
 
-def build_grok_cli_args(prompt):
+def build_grok_cli_args(prompt, max_turns=None):
+    turns = grok_max_turns() if max_turns is None else max(1, min(int(max_turns), 3))
     args = command_tokens(cli_provider_command("grok_cli"))
     args.extend(
         [
@@ -1134,7 +1301,7 @@ def build_grok_cli_args(prompt):
             DECISION_JSON_SCHEMA,
             "--no-alt-screen",
             "--max-turns",
-            "1",
+            str(turns),
             "--verbatim",
             "--disable-web-search",
             "--no-subagents",
@@ -1143,7 +1310,19 @@ def build_grok_cli_args(prompt):
     model = provider_model_arg("grok_cli")
     if model:
         args.extend(["--model", model])
-    args.extend(extra_cli_args("grok_cli"))
+    # Strip duplicate free-form --max-turns from extra args so the validated setting wins.
+    extra = extra_cli_args("grok_cli")
+    filtered = []
+    skip_next = False
+    for token in extra:
+        if skip_next:
+            skip_next = False
+            continue
+        if token == "--max-turns":
+            skip_next = True
+            continue
+        filtered.append(token)
+    args.extend(filtered)
     return args
 
 
@@ -1222,6 +1401,9 @@ def cli_provider_attempt(provider, args, request, attempt=1, prompt=None):
     if completed.returncode != 0:
         detail = output or "no output"
         error = "%s exited with code %d: %s" % (provider, completed.returncode, detail)
+        failure_class = classify_provider_failure(
+            error, returncode=completed.returncode, raw_text=output
+        )
         log_provider_reasoning(
             request,
             provider=provider,
@@ -1238,9 +1420,17 @@ def cli_provider_attempt(provider, args, request, attempt=1, prompt=None):
             extra={
                 "command": args[0] if args else None,
                 "returncode": completed.returncode,
+                "failure_class": failure_class,
             },
         )
-        raise ProviderResponseError(error)
+        raise ProviderResponseError(
+            error,
+            failure_class=failure_class,
+            diagnostics={
+                "returncode": completed.returncode,
+                "raw_text": (output or "")[:4000],
+            },
+        )
     if not output:
         error = "%s produced no output" % provider
         log_provider_reasoning(
@@ -1306,6 +1496,13 @@ def cli_provider_attempt(provider, args, request, attempt=1, prompt=None):
 
 
 def cli_provider_response(provider, request):
+    if circuit_is_open(provider):
+        raise ProviderResponseError(
+            "%s circuit open after repeated failures" % provider,
+            failure_class=PROVIDER_FAILURE_TRANSPORT,
+            diagnostics={"circuit_open": True},
+        )
+
     prompt = build_decision_prompt(request)
     if provider == "grok_cli":
         args = build_grok_cli_args(prompt)
@@ -1317,19 +1514,63 @@ def cli_provider_response(provider, request):
         raise ProviderResponseError("provider '%s' is not a CLI provider" % provider)
 
     last_error = None
-    attempts = cli_retry_count() + 1
-    for attempt_index in range(attempts):
-        try:
-            return cli_provider_attempt(
+    try:
+        decision = cli_provider_attempt(
+            provider,
+            args,
+            request,
+            attempt=1,
+            prompt=prompt,
+        )
+        circuit_record_success(provider)
+        return decision
+    except ProviderResponseError as exc:
+        last_error = exc
+        failure_class = getattr(exc, "failure_class", None) or classify_provider_failure(
+            str(exc)
+        )
+
+    # One classified retry only — never unbounded identical CLI retries.
+    try:
+        if should_attempt_schema_repair(failure_class):
+            prior = ""
+            if last_error is not None:
+                prior = str(last_error)
+                diagnostics = getattr(last_error, "diagnostics", None) or {}
+                if diagnostics.get("raw_text"):
+                    prior = diagnostics.get("raw_text")
+            repair_prompt = build_schema_repair_prompt(request, prior)
+            if provider == "grok_cli":
+                repair_args = build_grok_cli_args(repair_prompt)
+            elif provider == "agy_cli":
+                repair_args = build_agy_cli_args(repair_prompt)
+            elif provider == "opencode_cli":
+                repair_args = build_opencode_cli_args(repair_prompt)
+            else:
+                raise last_error
+            decision = cli_provider_attempt(
+                provider,
+                repair_args,
+                request,
+                attempt=2,
+                prompt=repair_prompt,
+            )
+            circuit_record_success(provider)
+            return decision
+        if should_attempt_identical_retry(failure_class) and cli_retry_count() > 0:
+            decision = cli_provider_attempt(
                 provider,
                 args,
                 request,
-                attempt=attempt_index + 1,
+                attempt=2,
                 prompt=prompt,
             )
-        except ProviderResponseError as exc:
-            last_error = exc
+            circuit_record_success(provider)
+            return decision
+    except ProviderResponseError as exc:
+        last_error = exc
 
+    circuit_record_failure(provider)
     raise last_error
 
 

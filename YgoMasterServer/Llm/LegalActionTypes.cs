@@ -88,6 +88,10 @@ namespace YgoMaster
         /// </summary>
         public LlmSelfResources SelfResources { get; set; }
         public AttackTargetContext AttackTargetContext { get; set; }
+        /// <summary>
+        /// Grounded turn/phase capabilities (YGOMASTER-LLM-005 Slice 2H). Audit/request fact.
+        /// </summary>
+        public LlmDuelCapabilities DuelCapabilities { get; set; }
         public List<LegalAction> LegalActions { get; private set; }
         public bool IsStrategicWindow { get; set; }
         public string StrategicWindowReason { get; set; }

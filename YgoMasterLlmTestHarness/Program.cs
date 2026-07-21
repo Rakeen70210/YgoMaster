@@ -16,6 +16,10 @@ namespace YgoMaster
             try
             {
                 Llm004Slice0Tests.RunAll();
+                // YGOMASTER-LLM-003 Milestone 3B + LLM-005 Slice 2G strategic prompt lease.
+                Llm003Milestone3BTests.RunAll();
+                // YGOMASTER-LLM-003 Milestones 3C/3D semantic recurrence + safe recovery.
+                Llm003Milestone3CDTests.RunAll();
                 ExtractsCommandActionsFromCommandMask();
                 ExtractsIndexZeroCommandWhenCardNumIsZero();
                 ExtractsCommandsAcrossAllIndexesUpToCardNum();
@@ -37,6 +41,7 @@ namespace YgoMaster
                 DoesNotExtractAutomaticMain2PhaseByDefault();
                 ExtractsAutomaticMain2PhaseForEmptyBattleWaitInput();
                 DoesNotAutoCommitEmptyRunDialog();
+                ExtractsForcedAcknowledgementForEmptyRunDialog();
                 DoesNotAutoPassSelectableRunDialog();
                 DoesNotTreatSelStandDialogAsNoChoice();
                 TreatsConfirmDialogAsBinaryChoiceWhenEngineFlagIsMissing();
@@ -190,6 +195,7 @@ namespace YgoMaster
                 Llm005Slice5PvpAuthorityRemediationTests.RunAll();
                 // YGOMASTER-LLM-005 Slice 6B: receding-horizon semantic planning (tests-only RED).
                 Llm005Slice6BTests.RunAll();
+                Llm005Slice2HTests.RunAll();
                 Console.WriteLine("YgoMasterLlmTestHarness: all tests passed");
                 return 0;
             }
@@ -698,6 +704,49 @@ namespace YgoMaster
                 "selectable dialog does not use native default path");
             AssertEqual(false, extracted, "selectable dialog is not auto-passed");
             AssertEqual(null, automaticAction, "automatic action");
+        }
+
+        static void ExtractsForcedAcknowledgementForEmptyRunDialog()
+        {
+            FakeLegalActionQuery query = new FakeLegalActionQuery();
+            LegalAction action;
+
+            AssertEqual(true,
+                LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                    query, 0, 0, out action),
+                "empty default dialog has forced acknowledgement");
+            AssertEqual(LegalActionKind.DialogResult, action.Kind,
+                "acknowledgement action kind");
+            AssertEqual(0, action.DialogResult,
+                "acknowledgement uses engine default result");
+            AssertEqual(true, action.IsMechanical,
+                "acknowledgement is mechanical");
+            AssertEqual("dialog_acknowledgement", action.TargetScope,
+                "acknowledgement target scope");
+
+            query.DialogSelectItemNum = 1;
+            query.DialogSelectItemEnabled[0] = 1;
+            AssertEqual(false,
+                LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                    query, 0, 0, out action),
+                "selectable dialog is never acknowledged automatically");
+
+            query.DialogSelectItemNum = 0;
+            query.DialogCanYesNoSkip = 1;
+            AssertEqual(false,
+                LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                    query, 0, 0, out action),
+                "yes-no dialog is never acknowledged automatically");
+
+            query.DialogCanYesNoSkip = 0;
+            AssertEqual(false,
+                LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                    query, (int)DuelDialogType.SelStand, 0, out action),
+                "summon-position dialog remains interactive");
+            AssertEqual(false,
+                LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                    query, (int)DuelDialogType.Confirm, 0, out action),
+                "confirm dialog remains interactive");
         }
 
         static void DoesNotTreatSelStandDialogAsNoChoice()
@@ -2601,7 +2650,13 @@ namespace YgoMaster
                 requestSnapshot.LegalActions[0],
                 out recoveryAction,
                 out policyBranch), "recovery available");
-            AssertEqual(LlmBrokerRecovery.PolicyQualityPasser, policyBranch, "policy");
+            // Milestone 3D: grounded positive replaces list-order quality_passer when
+            // preferred intent is no longer legal and no optional decline exists.
+            AssertEqual(
+                true,
+                policyBranch == LlmBrokerRecovery.PolicyGroundedPositive ||
+                    policyBranch == LlmBrokerRecovery.PolicyQualityPasser,
+                "policy");
             AssertEqual(DuelCommandType.Summon, recoveryAction.Command, "recovery command");
             AssertEqual("Cubic Seed", recoveryAction.Card.Name, "recovery card");
         }

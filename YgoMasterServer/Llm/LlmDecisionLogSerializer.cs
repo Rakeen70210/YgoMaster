@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace YgoMaster
 {
@@ -749,6 +750,69 @@ namespace YgoMaster
             return MiniJSON.Json.Serialize(data);
         }
 
+        public static string SerializeSemanticWindowDecisionReused(
+            DecisionSnapshot snapshot,
+            string fingerprint,
+            int occurrenceCount,
+            ulong originRunEffectSeq,
+            LegalAction reusedAction)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>()
+            {
+                { "kind", "llm_semantic_window_decision_reused" },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", snapshot == null ? 0L : (long)snapshot.RunEffectSeq },
+                { "origin_run_effect_seq", (long)originRunEffectSeq },
+                { "fingerprint", fingerprint },
+                { "occurrence_count", occurrenceCount },
+                { "view_type", snapshot == null ? null : snapshot.ViewType.ToString() },
+                { "view_param1", snapshot == null ? 0 : snapshot.ViewParam1 },
+                { "acting_player", snapshot == null ? -1 : snapshot.ActingPlayer },
+                { "reused_action", SerializeLegalAction(reusedAction) },
+            };
+            if (reusedAction != null)
+            {
+                data["action_type"] = GetKindName(reusedAction.Kind);
+                data["action_id"] = reusedAction.ActionId;
+                data["action_label"] = reusedAction.ActionLabel;
+            }
+            return MiniJSON.Json.Serialize(data);
+        }
+
+        public static string SerializeSemanticWindowRecoveryFailed(
+            DecisionSnapshot snapshot,
+            string fingerprint,
+            int occurrenceCount,
+            string reason)
+        {
+            return MiniJSON.Json.Serialize(new Dictionary<string, object>()
+            {
+                { "kind", "llm_semantic_window_recovery_failed" },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", snapshot == null ? 0L : (long)snapshot.RunEffectSeq },
+                { "fingerprint", fingerprint },
+                { "occurrence_count", occurrenceCount },
+                { "reason", reason },
+                { "acting_player", snapshot == null ? -1 : snapshot.ActingPlayer },
+            });
+        }
+
+        public static string SerializeSemanticWindowRecoveryDiverged(
+            DecisionSnapshot snapshot,
+            string fingerprint,
+            string disposition)
+        {
+            return MiniJSON.Json.Serialize(new Dictionary<string, object>()
+            {
+                { "kind", "llm_semantic_window_recovery_diverged" },
+                { "schema_version", LlmBrokerProtocol.SchemaVersion },
+                { "run_effect_seq", snapshot == null ? 0L : (long)snapshot.RunEffectSeq },
+                { "fingerprint", fingerprint },
+                { "disposition", disposition },
+                { "acting_player", snapshot == null ? -1 : snapshot.ActingPlayer },
+            });
+        }
+
         public static Dictionary<string, object> SerializePublicState(PublicDuelState publicState)
         {
             Dictionary<string, object> data = new Dictionary<string, object>();
@@ -1211,6 +1275,158 @@ namespace YgoMaster
                 { "matched_action_id", evaluation.ActionId },
                 { "current_legal_action_families", evaluation.CurrentLegalActionFamilies },
             });
+        }
+
+        public static string SerializeStrategicPromptLeaseStarted(
+            LlmStrategicPromptLease lease,
+            DateTime utcNow)
+        {
+            return SerializeStrategicPromptLeaseEvent(
+                "llm_strategic_prompt_lease_started",
+                lease,
+                lease == null ? 0 : lease.RunEffectSeq,
+                null,
+                null,
+                null,
+                utcNow);
+        }
+
+        public static string SerializeStrategicPromptLeaseHeld(
+            LlmStrategicPromptLease lease,
+            ulong currentRunEffectSeq,
+            DateTime utcNow)
+        {
+            return SerializeStrategicPromptLeaseEvent(
+                "llm_strategic_prompt_lease_held",
+                lease,
+                currentRunEffectSeq,
+                null,
+                null,
+                null,
+                utcNow);
+        }
+
+        public static string SerializeStrategicPromptLeaseOvertakeBlocked(
+            LlmStrategicPromptLease lease,
+            ulong currentRunEffectSeq,
+            int actorSeat,
+            string inputKind,
+            string reason,
+            DateTime utcNow)
+        {
+            Dictionary<string, object> data = BuildStrategicPromptLeaseBase(
+                "llm_strategic_prompt_lease_overtake_blocked",
+                lease,
+                currentRunEffectSeq,
+                utcNow);
+            data["actor_seat"] = actorSeat;
+            data["input_kind"] = inputKind ?? string.Empty;
+            data["reason"] = reason ?? "overtake";
+            return MiniJSON.Json.Serialize(data);
+        }
+
+        public static string SerializeStrategicPromptLeaseReleased(
+            LlmStrategicPromptLease lease,
+            string reason,
+            string disposition,
+            DateTime utcNow)
+        {
+            return SerializeStrategicPromptLeaseEvent(
+                "llm_strategic_prompt_lease_released",
+                lease,
+                lease == null ? 0 : lease.RunEffectSeq,
+                reason,
+                disposition,
+                null,
+                utcNow);
+        }
+
+        public static string SerializeStrategicPromptLeaseExpired(
+            LlmStrategicPromptLease lease,
+            string reason,
+            string disposition,
+            DateTime utcNow)
+        {
+            return SerializeStrategicPromptLeaseEvent(
+                "llm_strategic_prompt_lease_expired",
+                lease,
+                lease == null ? 0 : lease.RunEffectSeq,
+                reason,
+                disposition,
+                null,
+                utcNow);
+        }
+
+        public static string SerializeStrategicContinuationDiverged(
+            ulong originRunEffectSeq,
+            ulong currentRunEffectSeq,
+            int absoluteActingSeat,
+            LlmPromptFamily promptFamily,
+            string reason,
+            string disposition,
+            string detail)
+        {
+            return MiniJSON.Json.Serialize(new Dictionary<string, object>()
+            {
+                { "kind", "llm_strategic_continuation_diverged" },
+                { "origin_run_effect_seq", (long)originRunEffectSeq },
+                { "current_run_effect_seq", (long)currentRunEffectSeq },
+                { "absolute_acting_seat", absoluteActingSeat },
+                { "prompt_family", promptFamily.ToString() },
+                { "reason", reason ?? string.Empty },
+                { "disposition", disposition ?? string.Empty },
+                { "detail", detail ?? string.Empty },
+            });
+        }
+
+        static string SerializeStrategicPromptLeaseEvent(
+            string kind,
+            LlmStrategicPromptLease lease,
+            ulong currentRunEffectSeq,
+            string reason,
+            string disposition,
+            string detail,
+            DateTime utcNow)
+        {
+            Dictionary<string, object> data = BuildStrategicPromptLeaseBase(
+                kind, lease, currentRunEffectSeq, utcNow);
+            if (reason != null)
+            {
+                data["reason"] = reason;
+            }
+            if (disposition != null)
+            {
+                data["disposition"] = disposition;
+            }
+            if (detail != null)
+            {
+                data["detail"] = detail;
+            }
+            return MiniJSON.Json.Serialize(data);
+        }
+
+        static Dictionary<string, object> BuildStrategicPromptLeaseBase(
+            string kind,
+            LlmStrategicPromptLease lease,
+            ulong currentRunEffectSeq,
+            DateTime utcNow)
+        {
+            Dictionary<string, object> data = new Dictionary<string, object>()
+            {
+                { "kind", kind },
+                { "origin_run_effect_seq", lease == null ? 0L : (long)lease.RunEffectSeq },
+                { "current_run_effect_seq", (long)currentRunEffectSeq },
+                { "absolute_acting_seat", lease == null ? -1 : lease.AbsoluteActingSeat },
+                { "prompt_family", lease == null ? null : lease.PromptFamily.ToString() },
+                { "duel_generation", lease == null ? 0 : lease.DuelGeneration },
+                { "elapsed_ms", lease == null ? 0L : (long)lease.ElapsedMs(utcNow) },
+                { "state", lease == null ? null : lease.State.ToString() },
+            };
+            if (lease != null && lease.DeadlineUtc != default(DateTime))
+            {
+                data["deadline_utc"] = lease.DeadlineUtc.ToString("o");
+            }
+            return data;
         }
 
         static Dictionary<string, object> SerializeCardMetadata(LlmCardMetadata card)

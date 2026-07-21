@@ -40,6 +40,10 @@ Supported broker / adapter action kinds in this slice:
 - `list_index`
 - `cancel` for validated optional `CheckTiming` or `CheckChain` decline (`CancelCommand2(false)`). When that decline is the sole extractable action on an empty cancellable timing/chain window, it is marked mechanical and auto-committed with **no model call**. If activations are present, activation plus decline remain strategic broker choices.
 
+No-choice `RunDialog` notices are also mechanical and never sent to the provider. For the broker-controlled owning seat, the client commits a `dialog_acknowledgement` using the engine-supplied default result (`view_param3`); the remote client renders `CpuThinking`. Selectable dialogs, Yes/No, Confirm, and summon-position (`SelStand`) dialogs are excluded from this path. This path is **lease-aware**: while a server-authoritative strategic prompt lease is active for a different sequence, mechanical empty-dialog acknowledgements are suppressed so they cannot overtake the pending strategic decision (see `LlmStrategicPromptLease` / Milestone 3B).
+
+Strategic broker windows (`WaitInput` / strategic `RunDialog` / `RunList`) acquire a bounded server lease before the provider call. The acquire message sets absolute `ActorPlayer`/`AbsoluteActingSeat` (session server also stamps actor from table membership). The PvP worker owns duel generation (`BeginDuelGeneration`, starts at 1) and rejects mismatched generation. While the lease is active the worker holds `DLL_DuelSysAct` on the leased sequence, blocks overtaking automatic/remote inputs, accepts exactly one matching native commit, and on provider error/parse failure/fallback the client sends `DuelComReleaseStrategicPromptLease` so the worker does not remain held until the 90s cap. Expiry uses seat-validated temporary CPU. Durable `llm_strategic_prompt_lease_*` JSONL lines are emitted from the worker and fanned out for the decision log. Strict `stale_run_effect_seq` validation is preserved.
+
 Broker requests use schema version `4` and include `acting_player` plus `controlled_player`.
 `controlled_player` is the player whose normal private player knowledge may be serialized.
 

@@ -35,10 +35,21 @@ namespace YgoMasterClient
             new LlmTemporaryCpuSelectionCoordinator();
         static LlmStuckWindowWatchdog LlmStuckWindowWatchdog =
             new LlmStuckWindowWatchdog();
+        static LlmSemanticOptionalResponseTracker LlmSemanticOptionalResponse =
+            new LlmSemanticOptionalResponseTracker();
+        static LlmStrategicPromptLeaseClientSession LlmStrategicLeaseSession =
+            new LlmStrategicPromptLeaseClientSession();
         static int LlmBrokerDuelGeneration;
+        /// <summary>
+        /// Server-authoritative strategic lease generation for the current PvP duel.
+        /// Independent of LlmBrokerDuelGeneration; synced from lease grant results.
+        /// Single-duel PvP workers start at 1.
+        /// </summary>
+        static int LlmStrategicLeaseDuelGeneration = 1;
         static int LlmDuelHistoryGeneration;
         static bool AllowLlmAutomaticMain2FollowUp;
         static AttackTargetContext PendingLlmAttackTargetContext;
+        const int StrategicLeaseGrantWaitMs = 3000;
 
         public static IntPtr CardPropMem;
 
@@ -1089,23 +1100,114 @@ namespace YgoMasterClient
             }
 
             int duelGeneration = GetLlmBrokerDuelGeneration();
+
+            // Milestone 3C: reuse prior still-legal decline or escalate to temporary CPU
+            // before spending another provider call on an unchanged semantic window.
+            LlmSemanticWindowDisposition semanticDisposition =
+                LlmSemanticOptionalResponse.ObserveStrategicWindow(snapshot, duelGeneration);
+            if (semanticDisposition == LlmSemanticWindowDisposition.ReuseDecline)
+            {
+                LegalAction reusedDecline;
+                if (LlmSemanticOptionalResponse.TryGetReusableDecline(snapshot, out reusedDecline) &&
+                    reusedDecline != null)
+                {
+                    try
+                    {
+                        LogLlmJsonLine(
+                            LlmDecisionLogSerializer.SerializeSemanticWindowDecisionReused(
+                                snapshot,
+                                LlmSemanticOptionalResponse.ActiveFingerprint,
+                                LlmSemanticOptionalResponse.SuccessfulDeclineCommits + 1,
+                                LlmSemanticOptionalResponse.OriginRunEffectSeq,
+                                reusedDecline));
+                        CommitLlmAction(reusedDecline, snapshot.RunEffectSeq, null);
+                        NoteLlmSemanticDeclineCommit(snapshot, reusedDecline, duelGeneration);
+                        LlmBrokerGate.MarkCompleted(snapshot.RunEffectSeq);
+                        LlmBrokerGate.Finish(snapshot.RunEffectSeq);
+                        ClearStrategicPromptLeaseGrant(
+                            "provider_recovery", "committed", false);
+                        Log("LLM semantic window decision reused: " +
+                            DescribeLlmAction(reusedDecline));
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        Log("LLM semantic decline reuse failed: " + e.Message);
+                    }
+                }
+            }
+            else if (semanticDisposition == LlmSemanticWindowDisposition.TemporaryCpu)
+            {
+                try
+                {
+                    LogLlmJsonLine(
+                        LlmDecisionLogSerializer.SerializeSemanticWindowRecoveryFailed(
+                            snapshot,
+                            LlmSemanticOptionalResponse.ActiveFingerprint,
+                            LlmSemanticOptionalResponse.SuccessfulDeclineCommits + 1,
+                            LlmSemanticOptionalResponseTracker.RecoveryReasonSemanticLoop));
+                }
+                catch
+                {
+                }
+                LlmBrokerGate.Finish(snapshot.RunEffectSeq);
+                return TryStartLlmTemporaryCpuSelection(
+                    snapshot,
+                    LlmSemanticOptionalResponseTracker.RecoveryReasonSemanticLoop,
+                    true);
+            }
+
+            LlmPromptFamily family = LlmDecisionWindowPlanner.ClassifyPromptFamily(
+                snapshot,
+                snapshot.ViewType == DuelViewType.RunDialog && snapshot.ViewParam1 == 1);
+            if (!LlmStrategicPromptLease.IsLeaseEligibleFamily(family))
+            {
+                LlmBrokerGate.Finish(snapshot.RunEffectSeq);
+                LogLlmBrokerSkippedWindow(snapshot.RunEffectSeq, snapshot, "lease_ineligible_family");
+                return false;
+            }
+
             LogLlmBrokerRequestStarted(snapshot);
-            Thread thread = new Thread(() => RunLlmBrokerDecision(snapshot, duelGeneration));
+            Thread thread = new Thread(() => RunLlmBrokerDecision(
+                snapshot, duelGeneration, family));
             thread.IsBackground = true;
             thread.Start();
             return true;
         }
 
-        static void RunLlmBrokerDecision(DecisionSnapshot snapshot, int duelGeneration)
+        static void RunLlmBrokerDecision(
+            DecisionSnapshot snapshot,
+            int duelGeneration,
+            LlmPromptFamily family)
         {
             int timeoutMs = ClientSettings.LlmBrokerTimeoutMs > 0 ? ClientSettings.LlmBrokerTimeoutMs : 2000;
             LlmBrokerDecisionResult result;
             try
             {
-                result = LlmBrokerClient.RequestDecision(
-                    snapshot,
-                    new HttpLlmBrokerTransport(ClientSettings.LlmBrokerUrl),
-                    timeoutMs);
+                if (!TryAcquireStrategicPromptLease(snapshot, duelGeneration, family, timeoutMs))
+                {
+                    result = LlmBrokerDecisionResult.Failure(
+                        "strategic_lease_denied", null, null);
+                    try
+                    {
+                        LogStrategicContinuationDiverged(
+                            snapshot.RunEffectSeq,
+                            snapshot.RunEffectSeq,
+                            snapshot.ActingPlayer,
+                            "strategic_lease_denied",
+                            "cpu_fallback");
+                    }
+                    catch
+                    {
+                    }
+                }
+                else
+                {
+                    result = LlmBrokerClient.RequestDecision(
+                        snapshot,
+                        new HttpLlmBrokerTransport(ClientSettings.LlmBrokerUrl),
+                        timeoutMs);
+                }
             }
             catch
             {
@@ -1117,6 +1219,54 @@ namespace YgoMasterClient
                 ActionsToRunInNextSysAct.Add(() => TryCommitLlmBrokerDecision(
                     snapshot.RunEffectSeq, duelGeneration, result));
             }
+        }
+
+        static bool TryAcquireStrategicPromptLease(
+            DecisionSnapshot snapshot,
+            int duelGeneration,
+            LlmPromptFamily family,
+            int timeoutMs)
+        {
+            if (snapshot == null || Program.NetClient == null)
+            {
+                return false;
+            }
+
+            int leaseGeneration = LlmStrategicLeaseDuelGeneration > 0
+                ? LlmStrategicLeaseDuelGeneration
+                : 1;
+            LlmStrategicLeaseSession.BeginAcquireWait(snapshot.RunEffectSeq);
+
+            // ActorPlayer is also stamped by the session server from table membership;
+            // set it here so AbsoluteActingSeat matches for seat-1 (P2) and wire tests.
+            Program.NetClient.Send(new DuelComAcquireStrategicPromptLeaseMessage()
+            {
+                RunEffectSeq = snapshot.RunEffectSeq,
+                ActorPlayer = snapshot.ActingPlayer,
+                DuelGeneration = leaseGeneration,
+                AbsoluteActingSeat = snapshot.ActingPlayer,
+                PromptFamily = (int)family,
+                RequestedTimeoutMs = timeoutMs,
+            });
+
+            string denyReason;
+            bool granted = LlmStrategicLeaseSession.WaitForGrant(
+                StrategicLeaseGrantWaitMs, out denyReason);
+            if (!granted)
+            {
+                Log("LLM strategic prompt lease not granted seq:" + snapshot.RunEffectSeq +
+                    " reason:" + (denyReason ?? "denied") +
+                    " seat:" + snapshot.ActingPlayer +
+                    " gen:" + leaseGeneration);
+                LlmStrategicLeaseSession.ClearGrant();
+                return false;
+            }
+
+            Log("LLM strategic prompt lease granted seq:" + snapshot.RunEffectSeq +
+                " seat:" + snapshot.ActingPlayer +
+                " family:" + family +
+                " gen:" + LlmStrategicLeaseDuelGeneration);
+            return true;
         }
 
         static void TryCommitLlmBrokerDecision(
@@ -1263,7 +1413,10 @@ namespace YgoMasterClient
                 try
                 {
                     CommitLlmAction(validation.Action, requestSeq, result.Response);
-                    LlmStuckWindowWatchdog.Reset();
+                    NoteLlmCommitProgress(
+                        currentSnapshot,
+                        validation.Action,
+                        requestDuelGeneration);
                     AllowLlmAutomaticMain2FollowUp =
                         validation.Action.Kind == LegalActionKind.MovePhase &&
                         validation.Action.Phase == DuelPhase.Main2;
@@ -1278,6 +1431,8 @@ namespace YgoMasterClient
                         result.Response,
                         requestDuelGeneration);
                     LlmBrokerGate.MarkCompleted(requestSeq);
+                    // Native commit path releases server lease via accepted input.
+                    ClearStrategicPromptLeaseGrant("provider_commit", "committed", false);
                 }
                 catch (Exception e)
                 {
@@ -1291,8 +1446,15 @@ namespace YgoMasterClient
                         result != null ? result.Action : null))
                     {
                         LlmBrokerGate.MarkFailed(requestSeq);
+                        LogStrategicContinuationDiverged(
+                            requestSeq,
+                            currentSnapshot == null ? requestSeq : currentSnapshot.RunEffectSeq,
+                            currentSnapshot == null ? -1 : currentSnapshot.ActingPlayer,
+                            "commit_exception",
+                            "cpu_fallback");
                         FallbackLlmBrokerDecisionIfNeeded("commit_exception");
                     }
+                    ClearStrategicPromptLeaseGrant("commit_exception");
                     return;
                 }
             }
@@ -1414,6 +1576,44 @@ namespace YgoMasterClient
             LlmAutomaticActionGuard.Reset();
             LlmTemporaryCpuSelection.Reset();
             LlmStuckWindowWatchdog.Reset();
+            LlmSemanticOptionalResponse.Reset();
+            LlmStrategicLeaseSession.Reset();
+        }
+
+        /// <summary>
+        /// After a successful commit: decline/pass preserves semantic recurrence history
+        /// (Milestone 3C). Any other action is authoritative progress and clears recurrence.
+        /// </summary>
+        static void NoteLlmCommitProgress(
+            DecisionSnapshot snapshot,
+            LegalAction action,
+            int duelGeneration)
+        {
+            if (action != null &&
+                LlmSemanticOptionalResponse.ShouldPreserveHistoryAfterCommit(action))
+            {
+                NoteLlmSemanticDeclineCommit(snapshot, action, duelGeneration);
+                return;
+            }
+            LlmStuckWindowWatchdog.Reset();
+            LlmSemanticOptionalResponse.Reset();
+        }
+
+        static void NoteLlmSemanticDeclineCommit(
+            DecisionSnapshot snapshot,
+            LegalAction action,
+            int duelGeneration)
+        {
+            if (snapshot == null || action == null)
+            {
+                return;
+            }
+            LlmSemanticOptionalResponse.RecordSuccessfulDeclineOrPass(
+                snapshot,
+                action,
+                duelGeneration);
+            // Do not reset the stuck-window watchdog solely because a decline committed;
+            // sequence advancement alone is not progress for optional-response loops.
         }
 
         static void AdvanceLlmBrokerDuelGeneration()
@@ -1589,7 +1789,10 @@ namespace YgoMasterClient
 
                 LlmBrokerDecisionResponse recoveryResponse = result != null ? result.Response : null;
                 CommitLlmAction(recoveryAction, requestSeq, recoveryResponse);
-                LlmStuckWindowWatchdog.Reset();
+                NoteLlmCommitProgress(
+                    snapshot,
+                    recoveryAction,
+                    GetLlmBrokerDuelGeneration());
                 AllowLlmAutomaticMain2FollowUp =
                     recoveryAction.Kind == LegalActionKind.MovePhase &&
                     recoveryAction.Phase == DuelPhase.Main2;
@@ -1605,12 +1808,92 @@ namespace YgoMasterClient
                     recoveryResponse,
                     GetLlmBrokerDuelGeneration());
                 LlmBrokerGate.MarkCompleted(requestSeq);
+                // Milestone 3D: recovery is not a model choice. Matching native input may already
+                // have released the server lease; clear the client grant with recovery reason.
+                ClearStrategicPromptLeaseGrant(
+                    "provider_recovery", "provider_recovery", false);
                 return true;
             }
             catch (Exception e)
             {
                 Log("LLM broker recovery failed: " + e.Message);
                 return false;
+            }
+        }
+
+        static void ClearStrategicPromptLeaseGrant(string reason)
+        {
+            ClearStrategicPromptLeaseGrant(reason, "cpu_fallback", true);
+        }
+
+        static void ClearStrategicPromptLeaseGrant(
+            string reason,
+            string disposition,
+            bool requestServerRelease)
+        {
+            ulong seq = LlmStrategicLeaseSession.ActiveGrantedSeq;
+            bool hadGrant = LlmStrategicLeaseSession.HasActiveGrant;
+            if (hadGrant)
+            {
+                Log("LLM strategic prompt lease client grant cleared reason:" +
+                    (reason ?? "none") +
+                    " seq:" + seq);
+            }
+            // Provider error / recovery / fallback must release the server hold;
+            // native commit already released via matching input on the worker.
+            if (requestServerRelease &&
+                hadGrant &&
+                Program.NetClient != null &&
+                IsPvpDuel &&
+                reason != "provider_commit")
+            {
+                try
+                {
+                    int actingSeat = MyID;
+                    int leaseGen = LlmStrategicLeaseDuelGeneration > 0
+                        ? LlmStrategicLeaseDuelGeneration
+                        : 1;
+                    Program.NetClient.Send(new DuelComReleaseStrategicPromptLeaseMessage()
+                    {
+                        RunEffectSeq = seq,
+                        ActorPlayer = actingSeat,
+                        DuelGeneration = leaseGen,
+                        Reason = reason ?? "client_release",
+                        Disposition = disposition ?? "cpu_fallback",
+                    });
+                }
+                catch (Exception e)
+                {
+                    Log("LLM strategic prompt lease server release send failed: " + e.Message);
+                }
+            }
+            LlmStrategicLeaseSession.ClearGrant();
+        }
+
+        static void LogStrategicContinuationDiverged(
+            ulong originSeq,
+            ulong currentSeq,
+            int seat,
+            string reason,
+            string disposition)
+        {
+            if (!ClientSettings.LlmDecisionLogEnabled || !IsPvpDuel)
+            {
+                return;
+            }
+            try
+            {
+                LogLlmJsonLine(LlmDecisionLogSerializer.SerializeStrategicContinuationDiverged(
+                    originSeq,
+                    currentSeq,
+                    seat,
+                    LlmPromptFamily.RunDialog,
+                    reason ?? "unknown",
+                    disposition ?? "none",
+                    "strategic_prompt_lease_continuation"));
+            }
+            catch
+            {
             }
         }
 
@@ -1643,6 +1926,16 @@ namespace YgoMasterClient
 
         static void FallbackLlmBrokerDecisionIfNeeded(string reason)
         {
+            if (LlmStrategicLeaseSession.HasActiveGrant)
+            {
+                LogStrategicContinuationDiverged(
+                    LlmStrategicLeaseSession.ActiveGrantedSeq,
+                    LlmStrategicLeaseSession.ActiveGrantedSeq,
+                    MyID,
+                    reason ?? "fallback",
+                    "cpu_fallback");
+                ClearStrategicPromptLeaseGrant(reason ?? "fallback");
+            }
             if (HasDuelEnd || HasNetworkError || SpecialFinishType != DuelFinishType.None)
             {
                 return;
@@ -1840,6 +2133,8 @@ namespace YgoMasterClient
             AllowLlmAutomaticMain2FollowUp = false;
             ClearLlmAttackTargetContext();
             AdvanceLlmBrokerDuelGeneration();
+            // Match single-duel PvP worker strategic lease generation (BeginDuelGeneration → 1).
+            LlmStrategicLeaseDuelGeneration = 1;
             ResetLlmDuelHistoryForNewDuel();
         }
 
@@ -1871,6 +2166,7 @@ namespace YgoMasterClient
             AllowLlmAutomaticMain2FollowUp = false;
             ClearLlmAttackTargetContext();
             AdvanceLlmBrokerDuelGeneration();
+            LlmStrategicLeaseDuelGeneration = 1;
             ResetLlmDuelHistoryForNewDuel();
             SpectatorCount = 0;
             MyID = YgomSystem.Utility.ClientWork.GetByJsonPath<int>("Duel.MyID");
@@ -2345,6 +2641,64 @@ namespace YgoMasterClient
                                     new PvpEngineStateLegalActionQuery(pvpEngineState),
                                     pvpEngineState.Param1))
                                 {
+                                    int emptyDialogPlayer;
+                                    bool hasEmptyDialogPlayer =
+                                        TryGetLlmBrokerActingPlayer(out emptyDialogPlayer);
+                                    if (hasEmptyDialogPlayer && emptyDialogPlayer != MyID)
+                                    {
+                                        Log("LLM broker remote empty RunDialog: CpuThinking" +
+                                            " player:" + emptyDialogPlayer +
+                                            " my_id:" + MyID +
+                                            " param1:" + pvpEngineState.Param1 +
+                                            " param2:" + pvpEngineState.Param2 +
+                                            " param3:" + pvpEngineState.Param3);
+                                        RunEffect((int)DuelViewType.CpuThinking, 0, 0, 0);
+                                        break;
+                                    }
+
+                                    LegalAction acknowledgementAction;
+                                    if (hasEmptyDialogPlayer &&
+                                        emptyDialogPlayer == MyID &&
+                                        IsLlmBrokerControlPlayer(emptyDialogPlayer) &&
+                                        LegalActionExtractor.TryExtractForcedDialogAcknowledgement(
+                                            new PvpEngineStateLegalActionQuery(pvpEngineState),
+                                            pvpEngineState.Param1,
+                                            pvpEngineState.Param3,
+                                            out acknowledgementAction))
+                                    {
+                                        // Lease-aware: never let mechanical empty-dialog
+                                        // ack consume a different strategic continuation.
+                                        if (LlmStrategicLeaseSession.ShouldSuppressMechanicalAutomatic(
+                                                pvpEngineState.RunEffectSeq) ||
+                                            (LlmBrokerGate.IsRequestInFlight() &&
+                                                LlmStrategicLeaseSession.HasActiveGrant &&
+                                                LlmStrategicLeaseSession.ActiveGrantedSeq !=
+                                                    pvpEngineState.RunEffectSeq))
+                                        {
+                                            Log("LLM broker empty RunDialog acknowledgement suppressed" +
+                                                " by strategic prompt lease" +
+                                                " seq:" + pvpEngineState.RunEffectSeq +
+                                                " leased:" + LlmStrategicLeaseSession.ActiveGrantedSeq);
+                                            RunEffect((int)DuelViewType.CpuThinking, 0, 0, 0);
+                                            break;
+                                        }
+                                        Log("LLM broker automatic empty RunDialog acknowledgement" +
+                                            " player:" + emptyDialogPlayer +
+                                            " result:" + acknowledgementAction.DialogResult +
+                                            " param1:" + pvpEngineState.Param1 +
+                                            " param2:" + pvpEngineState.Param2 +
+                                            " param3:" + pvpEngineState.Param3);
+                                        LogLlmBrokerAutomaticAction(
+                                            pvpEngineState.RunEffectSeq,
+                                            "forced_dialog_acknowledgement",
+                                            acknowledgementAction);
+                                        CommitLlmAutomaticAction(
+                                            acknowledgementAction,
+                                            "forced_dialog_acknowledgement");
+                                        LlmStuckWindowWatchdog.Reset();
+                                        break;
+                                    }
+
                                     Log("LLM broker empty RunDialog: native default" +
                                         " param1:" + pvpEngineState.Param1 +
                                         " param2:" + pvpEngineState.Param2 +
@@ -2624,6 +2978,12 @@ namespace YgoMasterClient
                 case NetMessageType.DuelPublicActionEvent: OnDuelPublicActionEvent((DuelPublicActionEventMessage)message); break;
                 case NetMessageType.DuelRawViewEvidence: OnDuelRawViewEvidence((DuelRawViewEvidenceMessage)message); break;
                 case NetMessageType.DuelFaceProbeEvidence: OnDuelFaceProbeEvidence((DuelFaceProbeEvidenceMessage)message); break;
+                case NetMessageType.DuelStrategicPromptLeaseResult:
+                    OnDuelStrategicPromptLeaseResult((DuelStrategicPromptLeaseResultMessage)message);
+                    break;
+                case NetMessageType.DuelStrategicPromptLeaseEvent:
+                    OnDuelStrategicPromptLeaseEvent((DuelStrategicPromptLeaseEventMessage)message);
+                    break;
             }
         }
 
@@ -2885,6 +3245,47 @@ namespace YgoMasterClient
         static void OnDuelSpectatorCount(DuelSpectatorCountMessage message)
         {
             UpdateSpectatorCount(message.Count);
+        }
+
+        static void OnDuelStrategicPromptLeaseResult(DuelStrategicPromptLeaseResultMessage message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+            Log("OnDuelStrategicPromptLeaseResult seq:" + message.RunEffectSeq +
+                " granted:" + message.Granted +
+                " gen:" + message.DuelGeneration +
+                " reason:" + (message.DenialReason ?? string.Empty));
+            if (message.DuelGeneration > 0)
+            {
+                LlmStrategicLeaseDuelGeneration = message.DuelGeneration;
+            }
+            LlmStrategicLeaseSession.OnResult(
+                message.Granted,
+                message.RunEffectSeq,
+                message.DenialReason);
+            // Durable started/held/overtake/released/expired lines arrive via
+            // DuelStrategicPromptLeaseEvent from the authoritative worker.
+        }
+
+        static void OnDuelStrategicPromptLeaseEvent(DuelStrategicPromptLeaseEventMessage message)
+        {
+            if (message == null || string.IsNullOrEmpty(message.JsonLine))
+            {
+                return;
+            }
+            if (!ClientSettings.LlmDecisionLogEnabled || !IsPvpDuel)
+            {
+                return;
+            }
+            try
+            {
+                LogLlmJsonLine(message.JsonLine);
+            }
+            catch
+            {
+            }
         }
 
         static void OnDuelEngineState(DuelEngineStateMessage message)

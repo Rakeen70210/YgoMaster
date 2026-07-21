@@ -38,6 +38,12 @@ namespace YgoMaster.Net
         DuelListSetIndex,
         DuelListInitString,
         DuelComSetTemporaryCpu,
+        DuelComAcquireStrategicPromptLease,
+        DuelComReleaseStrategicPromptLease,
+        // PvP worker → duelists: grant/deny strategic prompt lease
+        DuelStrategicPromptLeaseResult,
+        // PvP worker → duelists: durable lease lifecycle telemetry (JSONL line)
+        DuelStrategicPromptLeaseEvent,
 
         // Authoritative public accepted-action events (PvP worker → session → duelists)
         DuelPublicActionEvent,

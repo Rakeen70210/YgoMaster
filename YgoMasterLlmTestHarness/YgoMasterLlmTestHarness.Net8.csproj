@@ -33,6 +33,9 @@
     <Compile Include="Llm005\Llm005Slice5PvpAuthorityRegressionTests.cs" />
     <Compile Include="Llm005\Llm005Slice5PvpAuthorityRemediationTests.cs" />
     <Compile Include="Llm005\Llm005Slice6BTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2HTests.cs" />
+    <Compile Include="Llm003\Llm003Milestone3BTests.cs" />
+    <Compile Include="Llm003\Llm003Milestone3CDTests.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmSelfResourceProjection.cs" Link="Llm\LlmSelfResourceProjection.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmSelfResourcesAuditPolicy.cs" Link="Llm\LlmSelfResourcesAuditPolicy.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmPlanningTypes.cs" Link="Llm\LlmPlanningTypes.cs" />
@@ -86,6 +89,10 @@
     <Compile Include="..\YgoMasterServer\Net\NetMessageType.cs" Link="Net\NetMessageType.cs" />
     <Compile Include="..\YgoMasterServer\Net\Message\DuelComMessage.cs" Link="Net\Message\DuelComMessage.cs" />
     <Compile Include="..\YgoMasterServer\Net\Message\DuelComDoCommandMessage.cs" Link="Net\Message\DuelComDoCommandMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComAcquireStrategicPromptLeaseMessage.cs" Link="Net\Message\DuelComAcquireStrategicPromptLeaseMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComReleaseStrategicPromptLeaseMessage.cs" Link="Net\Message\DuelComReleaseStrategicPromptLeaseMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelStrategicPromptLeaseResultMessage.cs" Link="Net\Message\DuelStrategicPromptLeaseResultMessage.cs" />
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelStrategicPromptLeaseEventMessage.cs" Link="Net\Message\DuelStrategicPromptLeaseEventMessage.cs" />
     <Compile Include="..\YgoMasterServer\Net\Message\DuelPublicActionEventMessage.cs" Link="Net\Message\DuelPublicActionEventMessage.cs" />
     <Compile Include="..\YgoMasterServer\Net\Message\DuelRawViewEvidenceMessage.cs" Link="Net\Message\DuelRawViewEvidenceMessage.cs" />
     <Compile Include="..\YgoMasterServer\Net\Message\DuelFaceProbeEvidenceMessage.cs" Link="Net\Message\DuelFaceProbeEvidenceMessage.cs" />
@@ -97,7 +104,10 @@
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerControlPolicy.cs" Link="Llm\LlmBrokerControlPolicy.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerPlayerResolver.cs" Link="Llm\LlmBrokerPlayerResolver.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRequestGate.cs" Link="Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmStrategicPromptLease.cs" Link="Llm\LlmStrategicPromptLease.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRecovery.cs" Link="Llm\LlmBrokerRecovery.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmSemanticWindowRecurrence.cs" Link="Llm\LlmSemanticWindowRecurrence.cs" />
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelCapabilities.cs" Link="Llm\LlmDuelCapabilities.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs" Link="Llm\LlmCardDataDirectoryResolver.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmCardCatalog.cs" Link="Llm\LlmCardCatalog.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs" Link="Llm\LlmBrokerProtocol.cs" />

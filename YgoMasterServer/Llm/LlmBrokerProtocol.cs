@@ -107,6 +107,13 @@ namespace YgoMaster
                 { "duel_history", LlmDecisionLogSerializer.SerializeDuelHistory(snapshot.DuelHistory) },
                 { "legal_actions", LlmDecisionLogSerializer.SerializeLegalActions(snapshot.LegalActions) },
             };
+            // Additive optional request fact (schema v4 compatible; Slice 2H).
+            LlmDuelCapabilities capabilities = snapshot.DuelCapabilities ??
+                LlmDuelCapabilitiesProjector.Project(snapshot);
+            if (capabilities != null)
+            {
+                data["duel_capabilities"] = capabilities.ToDictionary();
+            }
             if (snapshot.AttackTargetContext != null)
             {
                 AttackTargetContext origin = snapshot.AttackTargetContext;

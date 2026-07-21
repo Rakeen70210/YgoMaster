@@ -282,7 +282,16 @@ namespace YgoMaster.Net
                 case NetMessageType.DuelListSetIndex:
                 case NetMessageType.DuelListInitString:
                 case NetMessageType.DuelComSetTemporaryCpu:
+                case NetMessageType.DuelComAcquireStrategicPromptLease:
+                case NetMessageType.DuelComReleaseStrategicPromptLease:
                     OnDuelCom(client, message);
+                    break;
+
+                case NetMessageType.DuelStrategicPromptLeaseResult:
+                    OnDuelStrategicPromptLeaseResult(client, (DuelStrategicPromptLeaseResultMessage)message);
+                    break;
+                case NetMessageType.DuelStrategicPromptLeaseEvent:
+                    OnDuelStrategicPromptLeaseEvent(client, (DuelStrategicPromptLeaseEventMessage)message);
                     break;
 
                 case NetMessageType.DuelPublicActionEvent:
@@ -735,6 +744,45 @@ namespace YgoMaster.Net
 
             p1Client.Send(message);
             p2Client.Send(message);
+        }
+
+        void OnDuelStrategicPromptLeaseResult(
+            NetClient client,
+            DuelStrategicPromptLeaseResultMessage message)
+        {
+            FanOutPvpLeaseMessage(client, message);
+        }
+
+        void OnDuelStrategicPromptLeaseEvent(
+            NetClient client,
+            DuelStrategicPromptLeaseEventMessage message)
+        {
+            FanOutPvpLeaseMessage(client, message);
+        }
+
+        void FanOutPvpLeaseMessage(NetClient client, NetMessage message)
+        {
+            DuelRoomTable table = client.Table;
+            if (table == null || table.PvpClient != client || table.State != DuelRoomTableState.Dueling)
+            {
+                return;
+            }
+
+            Player p1 = table.Player1;
+            Player p2 = table.Player2;
+            if (p1 == null || p2 == null)
+            {
+                return;
+            }
+
+            if (p1.NetClient != null)
+            {
+                p1.NetClient.Send(message);
+            }
+            if (p2.NetClient != null)
+            {
+                p2.NetClient.Send(message);
+            }
         }
 
         void OnDuelIsBusyEffect(NetClient client, DuelIsBusyEffectMessage message)

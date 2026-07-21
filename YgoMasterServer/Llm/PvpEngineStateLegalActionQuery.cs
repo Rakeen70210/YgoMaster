@@ -2,7 +2,7 @@
 
 namespace YgoMaster
 {
-    class PvpEngineStateLegalActionQuery : ILegalActionQuery
+    class PvpEngineStateLegalActionQuery : ILegalActionQuery, ILlmOverlayQuery
     {
         readonly PvpEngineState state;
 
@@ -13,6 +13,11 @@ namespace YgoMaster
                 throw new ArgumentNullException("state");
             }
             this.state = state;
+        }
+
+        public int GetThisCardOverlayNum(int player, int locate)
+        {
+            return state.GetValue(PvpOperationType.DLL_DuelGetThisCardOverlayNum, player, locate);
         }
 
         public int GetCardNum(int player, int position)

@@ -209,6 +209,8 @@ namespace YgoMaster
                 snapshot.ControlledPlayer,
                 cardCatalog,
                 selfResourceFaceDomain);
+            // Slice 2H: grounded turn/phase capabilities (audit + request fact).
+            snapshot.DuelCapabilities = LlmDuelCapabilitiesProjector.Project(snapshot);
             return snapshot;
         }
 
@@ -405,6 +407,33 @@ namespace YgoMaster
             return true;
         }
 
+        public static bool TryExtractForcedDialogAcknowledgement(
+            ILegalActionQuery query,
+            int dialogType,
+            int defaultResult,
+            out LegalAction action)
+        {
+            action = null;
+            if (defaultResult < 0 ||
+                !IsDialogWithoutChoice(query, dialogType))
+            {
+                return false;
+            }
+
+            action = new LegalAction()
+            {
+                ActionId = 0,
+                Kind = LegalActionKind.DialogResult,
+                ActionLabel = "Acknowledge dialog",
+                ActionGroup = "dialog",
+                IsMechanical = true,
+                StrategicRole = "forced_acknowledgement",
+                TargetScope = "dialog_acknowledgement",
+                DialogResult = defaultResult,
+            };
+            return true;
+        }
+
         public static void ApplyViewContext(
             DecisionSnapshot snapshot,
             int viewParam1,
@@ -531,6 +560,7 @@ namespace YgoMaster
                 CancelDecide = false,
             });
             ClassifySnapshot(snapshot);
+            ApplyResponseDeclineTaxonomy(snapshot, menuType);
             if (emptyResponseWindow &&
                 snapshot.LegalActions.Count == 1 &&
                 snapshot.LegalActions[0].Kind == LegalActionKind.Cancel)
@@ -549,6 +579,43 @@ namespace YgoMaster
                 snapshot.MechanicalActionCount = 1;
                 snapshot.IsStrategicWindow = false;
                 snapshot.StrategicWindowReason = "mechanical_only";
+            }
+        }
+
+        /// <summary>
+        /// Menu 4 = CheckTiming → check_timing_decline; menu 5 = CheckChain → check_chain_decline.
+        /// ApplyActionSemantics defaults Cancel declines to check_chain_decline; correct after
+        /// the menu type is known (YGOMASTER-LLM-003 Milestone 3C).
+        /// </summary>
+        static void ApplyResponseDeclineTaxonomy(DecisionSnapshot snapshot, int menuType)
+        {
+            if (snapshot == null || snapshot.LegalActions == null)
+            {
+                return;
+            }
+            string scope;
+            if (menuType == (int)DuelMenuActType.CheckTiming)
+            {
+                scope = "check_timing_decline";
+            }
+            else if (menuType == (int)DuelMenuActType.CheckChain)
+            {
+                scope = "check_chain_decline";
+            }
+            else
+            {
+                return;
+            }
+            foreach (LegalAction action in snapshot.LegalActions)
+            {
+                if (action == null ||
+                    action.Kind != LegalActionKind.Cancel ||
+                    action.CancelDecide ||
+                    action.IsMechanical)
+                {
+                    continue;
+                }
+                action.TargetScope = scope;
             }
         }
 

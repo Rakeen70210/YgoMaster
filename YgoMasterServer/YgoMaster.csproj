@@ -73,7 +73,10 @@
     <Compile Include="Llm\LlmBrokerControlPolicy.cs" />
     <Compile Include="Llm\LlmBrokerPlayerResolver.cs" />
     <Compile Include="Llm\LlmBrokerRequestGate.cs" />
+    <Compile Include="Llm\LlmStrategicPromptLease.cs" />
     <Compile Include="Llm\LlmBrokerRecovery.cs" />
+    <Compile Include="Llm\LlmSemanticWindowRecurrence.cs" />
+    <Compile Include="Llm\LlmDuelCapabilities.cs" />
     <Compile Include="Llm\LlmCardDataDirectoryResolver.cs" />
     <Compile Include="Llm\LlmCardCatalog.cs" />
     <Compile Include="Llm\LlmSelfResourceProjection.cs" />
@@ -130,6 +133,10 @@
     <Compile Include="Net\Message\DuelComCancelCommandMessage.cs" />
     <Compile Include="Net\Message\DuelComDoCommandMessage.cs" />
     <Compile Include="Net\Message\DuelComSetTemporaryCpuMessage.cs" />
+    <Compile Include="Net\Message\DuelComAcquireStrategicPromptLeaseMessage.cs" />
+    <Compile Include="Net\Message\DuelComReleaseStrategicPromptLeaseMessage.cs" />
+    <Compile Include="Net\Message\DuelStrategicPromptLeaseResultMessage.cs" />
+    <Compile Include="Net\Message\DuelStrategicPromptLeaseEventMessage.cs" />
     <Compile Include="Net\Message\DuelComMessage.cs" />
     <Compile Include="Net\Message\DuelPublicActionEventMessage.cs" />
     <Compile Include="Net\Message\DuelRawViewEvidenceMessage.cs" />

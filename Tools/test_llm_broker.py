@@ -19,6 +19,10 @@ spec.loader.exec_module(broker)
 
 
 class LlmBrokerTests(unittest.TestCase):
+    def setUp(self):
+        # Isolate circuit-breaker state between intentional CLI failure tests.
+        broker.circuit_reset_all()
+
     def decision_request(self):
         return {
             "kind": "decision_request",
@@ -1051,6 +1055,92 @@ class LlmBrokerTests(unittest.TestCase):
             self.assertEqual(records[0]["ok"], False)
             self.assertEqual(records[0]["raw_text"], "not valid decision json at all")
             self.assertIsNotNone(records[0]["error"])
+
+
+class ProviderRecoveryPolicyTests(unittest.TestCase):
+    def setUp(self):
+        broker.circuit_reset_all()
+        self._env = {}
+        for key in (
+            "YGO_LLM_BROKER_GROK_MAX_TURNS",
+            "YGO_LLM_BROKER_CLI_RETRIES",
+            "YGO_LLM_BROKER_CIRCUIT_FAILURE_THRESHOLD",
+            "YGO_LLM_BROKER_CIRCUIT_COOLDOWN_SEC",
+        ):
+            self._env[key] = os.environ.get(key)
+            if key in os.environ:
+                del os.environ[key]
+
+    def tearDown(self):
+        for key, value in self._env.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+        broker.circuit_reset_all()
+
+    def test_grok_max_turns_validated_default_and_clamp(self):
+        self.assertEqual(broker.grok_max_turns(), 1)
+        os.environ["YGO_LLM_BROKER_GROK_MAX_TURNS"] = "2"
+        self.assertEqual(broker.grok_max_turns(), 2)
+        os.environ["YGO_LLM_BROKER_GROK_MAX_TURNS"] = "99"
+        self.assertEqual(broker.grok_max_turns(), 3)
+        os.environ["YGO_LLM_BROKER_GROK_MAX_TURNS"] = "0"
+        self.assertEqual(broker.grok_max_turns(), 1)
+
+    def test_build_grok_args_uses_validated_max_turns(self):
+        os.environ["YGO_LLM_BROKER_GROK_MAX_TURNS"] = "2"
+        with mock.patch.object(broker, "cli_provider_command", return_value="grok"):
+            args = broker.build_grok_cli_args("prompt-text")
+        self.assertIn("--max-turns", args)
+        idx = args.index("--max-turns")
+        self.assertEqual(args[idx + 1], "2")
+
+    def test_classify_max_turns_and_timeout(self):
+        self.assertEqual(
+            broker.classify_provider_failure(
+                "grok_cli exited with code 1: max turns reached",
+                returncode=1,
+                raw_text="stopReason: Cancelled structuredOutput: null",
+            ),
+            broker.PROVIDER_FAILURE_MAX_TURNS,
+        )
+        self.assertEqual(
+            broker.classify_provider_failure("grok_cli timed out after 20.0 seconds"),
+            broker.PROVIDER_FAILURE_TIMEOUT,
+        )
+
+    def test_schema_repair_prompt_is_compact_and_preserves_seq(self):
+        request = {
+            "run_effect_seq": 272,
+            "legal_actions": [
+                {
+                    "action_id": 0,
+                    "action_label": "Activate Call of the Haunted",
+                    "kind": "command",
+                    "card_id": 9707,
+                    "card": {"name": "Call of the Haunted"},
+                },
+                {
+                    "action_id": 1,
+                    "action_label": "Decline response",
+                    "kind": "cancel",
+                },
+            ],
+        }
+        prompt = broker.build_schema_repair_prompt(request, "max turns reached")
+        self.assertIn("272", prompt)
+        self.assertIn("Decline response", prompt)
+        self.assertNotIn("duel_history", prompt)
+
+    def test_circuit_breaker_opens_and_blocks(self):
+        os.environ["YGO_LLM_BROKER_CIRCUIT_FAILURE_THRESHOLD"] = "2"
+        os.environ["YGO_LLM_BROKER_CIRCUIT_COOLDOWN_SEC"] = "30"
+        broker.circuit_record_failure("grok_cli", now=100.0)
+        self.assertFalse(broker.circuit_is_open("grok_cli", now=100.1))
+        broker.circuit_record_failure("grok_cli", now=100.2)
+        self.assertTrue(broker.circuit_is_open("grok_cli", now=100.3))
+        self.assertFalse(broker.circuit_is_open("grok_cli", now=200.0))
 
 
 if __name__ == "__main__":

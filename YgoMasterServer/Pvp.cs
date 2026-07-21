@@ -765,6 +765,8 @@ namespace YgoMaster
         byte[] bufferLink;
         readonly LlmTemporaryCpuSelectionCoordinator temporaryCpuSelection =
             new LlmTemporaryCpuSelectionCoordinator();
+        readonly LlmStrategicPromptLeaseAuthority strategicLeaseAuthority =
+            new LlmStrategicPromptLeaseAuthority();
 
         public Pvp()
         {
@@ -876,6 +878,8 @@ namespace YgoMaster
                     ref nextRawEvidenceId,
                     ref nextFaceProbeId,
                     ref nextPublicEventId);
+                // Server-authoritative strategic lease generation for this PvP worker duel.
+                strategicLeaseAuthority.BeginDuelGeneration();
                 pendingAcceptedIntentCause = null;
                 LlmFaceProbeCapture.LastProbes = new System.Collections.Generic.List<LlmFaceProbeEvidence>();
 
@@ -969,10 +973,37 @@ namespace YgoMaster
 
                     for (int i = 0; i < callsPerSleep; i++)
                     {
-                        int res;
+                        int res = 0;
                         lock (engineState)
                         {
-                            res = DLL_DuelSysAct();
+                            DateTime now = DateTime.UtcNow;
+                            bool expiredHold;
+                            if (strategicLeaseAuthority.MaybeExpire(now, out expiredHold) &&
+                                expiredHold)
+                            {
+                                ApplyTemporaryCpuAfterLeaseExpiry();
+                                FlushStrategicLeaseTelemetry();
+                            }
+                            if (strategicLeaseAuthority.ShouldHoldSysAct(
+                                engineState.RunEffectSeq, now))
+                            {
+                                // Hold authoritative progression on the leased strategic prompt.
+                                strategicLeaseAuthority.HeldLogCounter++;
+                                if ((strategicLeaseAuthority.HeldLogCounter % 200) == 1)
+                                {
+                                    Console.WriteLine(
+                                        "Strategic prompt lease holding SysAct seq:" +
+                                        strategicLeaseAuthority.Lease.RunEffectSeq +
+                                        " seat:" + strategicLeaseAuthority.Lease.AbsoluteActingSeat +
+                                        " family:" + strategicLeaseAuthority.Lease.PromptFamily +
+                                        " gen:" + strategicLeaseAuthority.AuthoritativeDuelGeneration);
+                                }
+                                res = 0;
+                            }
+                            else
+                            {
+                                res = DLL_DuelSysAct();
+                            }
                         }
                         if (res > 0)
                         {
@@ -1009,6 +1040,7 @@ namespace YgoMaster
 
             lock (engineState)
             {
+                ForceReleaseStrategicPromptLease("shutdown");
                 RestoreTemporaryCpuSelection("worker_shutdown");
             }
             CloseClient();
@@ -1249,6 +1281,7 @@ namespace YgoMaster
                 case NetMessageType.OpponentDuelEnded:
                     lock (engineState)
                     {
+                        ForceReleaseStrategicPromptLease("duel_end");
                         RestoreTemporaryCpuSelection("opponent_duel_ended");
                     }
                     hasDuelEnd = true;
@@ -1264,6 +1297,12 @@ namespace YgoMaster
                 case NetMessageType.DuelListSetIndex: OnDuelListSetIndex((DuelListSetIndexMessage)message); break;
                 case NetMessageType.DuelListInitString: OnDuelListInitString((DuelListInitStringMessage)message); break;
                 case NetMessageType.DuelComSetTemporaryCpu: OnDuelComSetTemporaryCpu((DuelComSetTemporaryCpuMessage)message); break;
+                case NetMessageType.DuelComAcquireStrategicPromptLease:
+                    OnDuelComAcquireStrategicPromptLease((DuelComAcquireStrategicPromptLeaseMessage)message);
+                    break;
+                case NetMessageType.DuelComReleaseStrategicPromptLease:
+                    OnDuelComReleaseStrategicPromptLease((DuelComReleaseStrategicPromptLeaseMessage)message);
+                    break;
             }
         }
 
@@ -1271,6 +1310,14 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (strategicLeaseAuthority.IsActive &&
+                    strategicLeaseAuthority.BlocksMechanicalAutomaticCommit(message.RunEffectSeq))
+                {
+                    Console.WriteLine("Strategic prompt lease blocked temporary CPU overtake seq:" +
+                        message.RunEffectSeq + " leased:" +
+                        strategicLeaseAuthority.Lease.RunEffectSeq);
+                    return;
+                }
                 if (!LlmTemporaryCpuSelectionCoordinator.CanBeginRequest(
                         message.RunEffectSeq,
                         engineState.RunEffectSeq,
@@ -1291,6 +1338,259 @@ namespace YgoMaster
                     " seq:" + message.RunEffectSeq +
                     " watchdog_recovery:" + message.IsWatchdogRecovery);
             }
+        }
+
+        void OnDuelComAcquireStrategicPromptLease(DuelComAcquireStrategicPromptLeaseMessage message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+
+            LlmStrategicPromptLeaseAcquireResult result;
+            lock (engineState)
+            {
+                DateTime now = DateTime.UtcNow;
+                bool expired;
+                if (strategicLeaseAuthority.MaybeExpire(now, out expired) && expired)
+                {
+                    ApplyTemporaryCpuAfterLeaseExpiry();
+                }
+                bool isInfoDialog = engineState.ViewType == DuelViewType.RunDialog &&
+                    engineState.Param1 == 1;
+                LlmPromptFamily currentFamily = LlmDecisionWindowPlanner.ClassifyPromptFamily(
+                    engineState.ViewType, isInfoDialog);
+                int currentSeat = ResolveAbsoluteActingSeat();
+                LlmPromptFamily requestFamily = (LlmPromptFamily)message.PromptFamily;
+                result = strategicLeaseAuthority.TryAcquireFromWire(
+                    message.DuelGeneration,
+                    message.RunEffectSeq,
+                    message.AbsoluteActingSeat,
+                    requestFamily,
+                    message.RequestedTimeoutMs,
+                    message.ActorPlayer,
+                    engineState.RunEffectSeq,
+                    currentFamily,
+                    currentSeat,
+                    now);
+                if (result.Granted)
+                {
+                    Console.WriteLine("Strategic prompt lease granted seq:" +
+                        message.RunEffectSeq +
+                        " seat:" + message.AbsoluteActingSeat +
+                        " actor:" + message.ActorPlayer +
+                        " family:" + requestFamily +
+                        " gen:" + strategicLeaseAuthority.AuthoritativeDuelGeneration +
+                        " timeout_ms:" + result.ClampedTimeoutMs);
+                }
+                else
+                {
+                    Console.WriteLine("Strategic prompt lease denied seq:" +
+                        message.RunEffectSeq +
+                        " reason:" + (result.DenialReason ?? "denied") +
+                        " engine_seq:" + engineState.RunEffectSeq +
+                        " family:" + currentFamily +
+                        " seat:" + currentSeat +
+                        " actor:" + message.ActorPlayer +
+                        " req_seat:" + message.AbsoluteActingSeat +
+                        " gen_auth:" + strategicLeaseAuthority.AuthoritativeDuelGeneration +
+                        " gen_req:" + message.DuelGeneration);
+                }
+                FlushStrategicLeaseTelemetry();
+            }
+
+            if (netClient != null)
+            {
+                netClient.Send(new DuelStrategicPromptLeaseResultMessage()
+                {
+                    RunEffectSeq = message.RunEffectSeq,
+                    Granted = result != null && result.Granted,
+                    AbsoluteActingSeat = message.AbsoluteActingSeat,
+                    ClampedTimeoutMs = result == null ? 0 : result.ClampedTimeoutMs,
+                    DuelGeneration = strategicLeaseAuthority.AuthoritativeDuelGeneration,
+                    DenialReason = result == null ? "null_result" :
+                        (result.Granted ? string.Empty : (result.DenialReason ?? "denied")),
+                });
+            }
+        }
+
+        void OnDuelComReleaseStrategicPromptLease(DuelComReleaseStrategicPromptLeaseMessage message)
+        {
+            if (message == null)
+            {
+                return;
+            }
+            lock (engineState)
+            {
+                DateTime now = DateTime.UtcNow;
+                string fail;
+                bool released = strategicLeaseAuthority.TryReleaseFromWire(
+                    message.DuelGeneration,
+                    message.RunEffectSeq,
+                    message.ActorPlayer,
+                    message.Reason,
+                    message.Disposition,
+                    now,
+                    out fail);
+                if (released)
+                {
+                    Console.WriteLine("Strategic prompt lease client release seq:" +
+                        message.RunEffectSeq +
+                        " actor:" + message.ActorPlayer +
+                        " reason:" + (message.Reason ?? string.Empty) +
+                        " disposition:" + (message.Disposition ?? string.Empty));
+                    if (string.Equals(message.Disposition, "temporary_cpu",
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        int seat = message.ActorPlayer;
+                        if (seat >= 0 && seat <= 1 &&
+                            temporaryCpuSelection.TryBegin(message.RunEffectSeq, seat))
+                        {
+                            DLL_DuelSetPlayerType(seat, (int)DuelPlayerType.CPU);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Strategic prompt lease client release rejected: " +
+                        (fail ?? "unknown") +
+                        " seq:" + message.RunEffectSeq +
+                        " gen:" + message.DuelGeneration);
+                }
+                FlushStrategicLeaseTelemetry();
+            }
+        }
+
+        int ResolveAbsoluteActingSeat()
+        {
+            int turnPlayer = 0;
+            try
+            {
+                turnPlayer = (int)DLL_DuelWhichTurnNow();
+            }
+            catch
+            {
+                turnPlayer = engineState != null ? engineState.DoCommandUser : -1;
+            }
+            int player;
+            if (LlmBrokerPlayerResolver.TryResolve(
+                engineState.ViewType,
+                engineState.DoCommandUser,
+                engineState.RunDialogUser,
+                engineState.Param1,
+                0,
+                turnPlayer,
+                out player))
+            {
+                return player;
+            }
+            return -1;
+        }
+
+        void ApplyTemporaryCpuAfterLeaseExpiry()
+        {
+            int seat = strategicLeaseAuthority.Lease.AbsoluteActingSeat;
+            ulong seq = strategicLeaseAuthority.Lease.RunEffectSeq;
+            if (seat >= 0 && seat <= 1 &&
+                temporaryCpuSelection.TryBegin(seq, seat))
+            {
+                DLL_DuelSetPlayerType(seat, (int)DuelPlayerType.CPU);
+                Console.WriteLine("Strategic prompt lease expired → temporary CPU seat:" +
+                    seat + " seq:" + seq);
+            }
+        }
+
+        void FlushStrategicLeaseTelemetry()
+        {
+            if (netClient == null)
+            {
+                strategicLeaseAuthority.ClearTelemetry();
+                return;
+            }
+            IList<string> events = strategicLeaseAuthority.TelemetryEvents;
+            if (events == null || events.Count == 0)
+            {
+                return;
+            }
+            // Copy then clear so concurrent appends during send are not dropped incorrectly.
+            string[] snapshot = new string[events.Count];
+            for (int i = 0; i < events.Count; i++)
+            {
+                snapshot[i] = events[i];
+            }
+            strategicLeaseAuthority.ClearTelemetry();
+            for (int i = 0; i < snapshot.Length; i++)
+            {
+                if (string.IsNullOrEmpty(snapshot[i]))
+                {
+                    continue;
+                }
+                netClient.Send(new DuelStrategicPromptLeaseEventMessage()
+                {
+                    JsonLine = snapshot[i],
+                });
+            }
+        }
+
+        bool TryGuardStrategicPromptLeaseInput(
+            ulong inputSeq,
+            int actorSeat,
+            string inputKind)
+        {
+            DateTime now = DateTime.UtcNow;
+            bool expired;
+            if (strategicLeaseAuthority.MaybeExpire(now, out expired) && expired)
+            {
+                ApplyTemporaryCpuAfterLeaseExpiry();
+                FlushStrategicLeaseTelemetry();
+            }
+            string blockReason;
+            if (strategicLeaseAuthority.TryBlockOvertake(
+                inputSeq, actorSeat, inputKind, now, out blockReason))
+            {
+                Console.WriteLine("Strategic prompt lease overtake blocked kind:" +
+                    inputKind +
+                    " input_seq:" + inputSeq +
+                    " actor:" + actorSeat +
+                    " leased:" + strategicLeaseAuthority.Lease.RunEffectSeq +
+                    " reason:" + blockReason);
+                FlushStrategicLeaseTelemetry();
+                return false;
+            }
+            return true;
+        }
+
+        void ReleaseStrategicPromptLeaseAfterAcceptedInput(ulong inputSeq, int actorSeat)
+        {
+            if (!strategicLeaseAuthority.IsActive)
+            {
+                return;
+            }
+            DateTime now = DateTime.UtcNow;
+            string fail;
+            if (!strategicLeaseAuthority.TryReleaseAfterAcceptedInput(
+                inputSeq, actorSeat, now, out fail))
+            {
+                if (fail != "not_matching_lease" && fail != "lease_not_active")
+                {
+                    Console.WriteLine("Strategic prompt lease matching release skipped: " + fail);
+                }
+                return;
+            }
+            Console.WriteLine("Strategic prompt lease released after accepted input seq:" +
+                inputSeq + " seat:" + actorSeat);
+            FlushStrategicLeaseTelemetry();
+        }
+
+        void ForceReleaseStrategicPromptLease(string reason)
+        {
+            if (!strategicLeaseAuthority.IsActive)
+            {
+                return;
+            }
+            strategicLeaseAuthority.ForceRelease(reason, "none", DateTime.UtcNow);
+            Console.WriteLine("Strategic prompt lease force-released reason:" + reason);
+            FlushStrategicLeaseTelemetry();
         }
 
         void RestoreTemporaryCpuSelection(string reason)
@@ -1337,6 +1637,7 @@ namespace YgoMaster
             {
                 lock (engineState)
                 {
+                    ForceReleaseStrategicPromptLease("disconnect");
                     RestoreTemporaryCpuSelection("connection_failed");
                 }
                 CloseClient();
@@ -1347,6 +1648,7 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                ForceReleaseStrategicPromptLease("disconnect");
                 RestoreTemporaryCpuSelection("duel_error");
             }
             CloseClient();
@@ -1368,11 +1670,18 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "MovePhase"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     EmitPublicAcceptedMovePhase(message);
                     DLL_DuelComMovePhase(message.Phase);
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
 #else
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
@@ -1392,6 +1701,11 @@ namespace YgoMaster
                     "MovePhase",
                     payload,
                     () => DLL_DuelComMovePhase(message.Phase));
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }
@@ -1400,12 +1714,19 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "DoCommand"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     Console.WriteLine("OnDuelComDoCommand player:" + message.Player + " pos:" + message.Position + " indx:" + message.Index + " cmd:" + message.CommandId + " seq:" + engineState.RunEffectSeq + " mseq:" + message.RunEffectSeq);
                     EmitPublicAcceptedDoCommand(message);
                     DLL_DuelComDoCommand(message.Player, message.Position, message.Index, message.CommandId);
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
                 else
                 {
@@ -1437,6 +1758,11 @@ namespace YgoMaster
                     "DoCommand",
                     payload,
                     () => DLL_DuelComDoCommand(message.Player, message.Position, message.Index, message.CommandId));
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }
@@ -1534,10 +1860,17 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "CancelCommand"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelComCancelCommand();
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
 #else
                 Dictionary<string, object> payload = new Dictionary<string, object>()
@@ -1554,6 +1887,11 @@ namespace YgoMaster
                     payload,
                     () => DLL_DuelComCancelCommand(),
                     out nativeResult);
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }
@@ -1562,10 +1900,17 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "CancelCommand2"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelComCancelCommand2(message.Decide);
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
 #else
                 Dictionary<string, object> payload = new Dictionary<string, object>()
@@ -1583,6 +1928,11 @@ namespace YgoMaster
                     payload,
                     () => DLL_DuelComCancelCommand2(message.Decide),
                     out nativeResult);
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }
@@ -1591,10 +1941,17 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "Dialog"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelDlgSetResult(message.Result);
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
 #else
                 Dictionary<string, object> payload = new Dictionary<string, object>()
@@ -1610,6 +1967,11 @@ namespace YgoMaster
                     "Dialog",
                     payload,
                     () => DLL_DuelDlgSetResult(message.Result));
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }
@@ -1646,10 +2008,17 @@ namespace YgoMaster
         {
             lock (engineState)
             {
+                if (!TryGuardStrategicPromptLeaseInput(
+                    message.RunEffectSeq, message.ActorPlayer, "ListIndex"))
+                {
+                    return;
+                }
 #if YGO_MASTER_CLIENT
                 if (engineState.RunEffectSeq == message.RunEffectSeq)
                 {
                     DLL_DuelListSetIndex(message.Index);
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
                 }
 #else
                 Dictionary<string, object> payload = new Dictionary<string, object>()
@@ -1665,6 +2034,11 @@ namespace YgoMaster
                     "ListIndex",
                     payload,
                     () => DLL_DuelListSetIndex(message.Index));
+                if (engineState.RunEffectSeq == message.RunEffectSeq)
+                {
+                    ReleaseStrategicPromptLeaseAfterAcceptedInput(
+                        message.RunEffectSeq, message.ActorPlayer);
+                }
 #endif
             }
         }

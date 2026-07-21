@@ -94,6 +94,16 @@ namespace YgoMaster
         public int Def { get; private set; }
         public string Text { get; private set; }
         public uint CommandMask { get; private set; }
+        /// <summary>
+        /// Board role: monster_zone_occupant | spell_trap_zone | other.
+        /// Overlay materials are never independent field bodies (Slice 2H).
+        /// </summary>
+        public string BoardRole { get; private set; }
+        /// <summary>Overlay material count when known; null if unavailable.</summary>
+        public int? OverlayCount { get; private set; }
+        /// <summary>Independent field body for scoring/body counts.</summary>
+        public bool CountsAsIndependentBody { get; private set; }
+        public IList<string> ProjectionWarnings { get; private set; }
 
         internal static LlmSelfResourceCard Create(
             int cardId,
@@ -116,6 +126,47 @@ namespace YgoMaster
             string text,
             uint commandMask)
         {
+            return Create(
+                cardId, name, zone, index, face, isFaceUp, level, rank, usesRank, isTuner,
+                linkRating, frame, summonFamily, isExtraDeck, kind, atk, def, text, commandMask,
+                boardRole: null,
+                overlayCount: null,
+                countsAsIndependentBody: true,
+                projectionWarnings: null);
+        }
+
+        internal static LlmSelfResourceCard Create(
+            int cardId,
+            string name,
+            int zone,
+            int index,
+            int face,
+            bool isFaceUp,
+            int? level,
+            int? rank,
+            bool usesRank,
+            bool? isTuner,
+            int? linkRating,
+            string frame,
+            string summonFamily,
+            bool isExtraDeck,
+            string kind,
+            int atk,
+            int def,
+            string text,
+            uint commandMask,
+            string boardRole,
+            int? overlayCount,
+            bool countsAsIndependentBody,
+            List<string> projectionWarnings)
+        {
+            string role = boardRole;
+            if (string.IsNullOrEmpty(role))
+            {
+                // Zones 0-6 are typically monster; 7-12 spell/trap in MD locate map.
+                role = zone >= 0 && zone <= 6 ? "monster_zone_occupant" :
+                    zone >= 7 && zone <= 12 ? "spell_trap_zone" : "other";
+            }
             return new LlmSelfResourceCard()
             {
                 CardId = cardId,
@@ -137,8 +188,21 @@ namespace YgoMaster
                 Def = def,
                 Text = text,
                 CommandMask = commandMask,
+                BoardRole = role,
+                OverlayCount = overlayCount,
+                CountsAsIndependentBody = countsAsIndependentBody,
+                ProjectionWarnings = new ReadOnlyCollection<string>(
+                    projectionWarnings ?? new List<string>()),
             };
         }
+    }
+
+    /// <summary>
+    /// Optional engine surface for Xyz overlay counts (Slice 2H).
+    /// </summary>
+    interface ILlmOverlayQuery
+    {
+        int GetThisCardOverlayNum(int player, int locate);
     }
 
     class LlmSelfResourceExtraDeckEntry
@@ -488,7 +552,22 @@ namespace YgoMaster
                     { "is_extra_deck", card.IsExtraDeck },
                     { "atk", card.Atk },
                     { "def", card.Def },
+                    { "board_role", card.BoardRole },
+                    { "counts_as_independent_body", card.CountsAsIndependentBody },
                 };
+                if (card.OverlayCount.HasValue)
+                {
+                    data["overlay_count"] = card.OverlayCount.Value;
+                }
+                if (card.ProjectionWarnings != null && card.ProjectionWarnings.Count > 0)
+                {
+                    List<object> warns = new List<object>();
+                    foreach (string w in card.ProjectionWarnings)
+                    {
+                        warns.Add(w);
+                    }
+                    data["projection_warnings"] = warns;
+                }
                 if (card.Level.HasValue)
                 {
                     data["level"] = card.Level.Value;
@@ -617,6 +696,46 @@ namespace YgoMaster
                 bool usesRank;
                 ResolveLevelRank(meta, out level, out rank, out usesRank);
 
+                int? overlayCount = null;
+                string boardRole = null;
+                bool countsAsBody = true;
+                List<string> warnings = null;
+                // Monster zones 0-6: apply overlay/body role (Slice 2H).
+                if (position >= 0 && position <= 6)
+                {
+                    ILlmOverlayQuery overlayQuery = query as ILlmOverlayQuery;
+                    if (overlayQuery != null)
+                    {
+                        int overlay = overlayQuery.GetThisCardOverlayNum(
+                            controlledPlayer, position);
+                        if (overlay >= 0)
+                        {
+                            overlayCount = overlay;
+                        }
+                    }
+                    if (index > 0)
+                    {
+                        // Non-zero index on a monster zone is treated as overlay material
+                        // when an overlay count is known; otherwise undercount with warning.
+                        if (overlayCount.HasValue && overlayCount.Value > 0)
+                        {
+                            boardRole = "xyz_material";
+                            countsAsBody = false;
+                        }
+                        else
+                        {
+                            boardRole = "xyz_material";
+                            countsAsBody = false;
+                            warnings = new List<string>() { "overlay_identity_unknown" };
+                        }
+                    }
+                    else
+                    {
+                        boardRole = "monster_zone_occupant";
+                        countsAsBody = true;
+                    }
+                }
+
                 sink.Add(LlmSelfResourceCard.Create(
                     cardId,
                     meta != null ? meta.Name : null,
@@ -636,7 +755,11 @@ namespace YgoMaster
                     meta != null ? meta.Atk : 0,
                     meta != null ? meta.Def : 0,
                     meta != null ? meta.Text : null,
-                    query.GetCommandMask(controlledPlayer, position, index)));
+                    query.GetCommandMask(controlledPlayer, position, index),
+                    boardRole,
+                    overlayCount,
+                    countsAsBody,
+                    warnings));
             }
         }
 

@@ -886,14 +886,19 @@ namespace YgoMaster
                 action.TargetScope == "summon_placement";
         }
 
-        static LlmPromptFamily ClassifyPromptFamily(DecisionSnapshot snapshot, bool isInfoDialog)
+        public static LlmPromptFamily ClassifyPromptFamily(DecisionSnapshot snapshot, bool isInfoDialog)
         {
             if (snapshot == null)
             {
                 return LlmPromptFamily.Unsupported;
             }
 
-            switch (snapshot.ViewType)
+            return ClassifyPromptFamily(snapshot.ViewType, isInfoDialog);
+        }
+
+        public static LlmPromptFamily ClassifyPromptFamily(DuelViewType viewType, bool isInfoDialog)
+        {
+            switch (viewType)
             {
                 case DuelViewType.WaitInput:
                     return LlmPromptFamily.WaitInput;

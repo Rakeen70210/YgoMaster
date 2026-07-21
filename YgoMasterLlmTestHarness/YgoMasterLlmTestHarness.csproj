@@ -62,6 +62,9 @@
     <Compile Include="Llm005\Llm005Slice5PvpAuthorityRegressionTests.cs" />
     <Compile Include="Llm005\Llm005Slice5PvpAuthorityRemediationTests.cs" />
     <Compile Include="Llm005\Llm005Slice6BTests.cs" />
+    <Compile Include="Llm005\Llm005Slice2HTests.cs" />
+    <Compile Include="Llm003\Llm003Milestone3BTests.cs" />
+    <Compile Include="Llm003\Llm003Milestone3CDTests.cs" />
     <Compile Include="..\YgoMasterServer\Llm\LlmSelfResourceProjection.cs">
       <Link>Llm\LlmSelfResourceProjection.cs</Link>
     </Compile>
@@ -221,6 +224,18 @@
     <Compile Include="..\YgoMasterServer\Net\Message\DuelComDoCommandMessage.cs">
       <Link>Net\Message\DuelComDoCommandMessage.cs</Link>
     </Compile>
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComAcquireStrategicPromptLeaseMessage.cs">
+      <Link>Net\Message\DuelComAcquireStrategicPromptLeaseMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelComReleaseStrategicPromptLeaseMessage.cs">
+      <Link>Net\Message\DuelComReleaseStrategicPromptLeaseMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelStrategicPromptLeaseResultMessage.cs">
+      <Link>Net\Message\DuelStrategicPromptLeaseResultMessage.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Net\Message\DuelStrategicPromptLeaseEventMessage.cs">
+      <Link>Net\Message\DuelStrategicPromptLeaseEventMessage.cs</Link>
+    </Compile>
     <Compile Include="..\YgoMasterServer\Net\Message\DuelPublicActionEventMessage.cs">
       <Link>Net\Message\DuelPublicActionEventMessage.cs</Link>
     </Compile>
@@ -254,6 +269,9 @@
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRequestGate.cs">
       <Link>Llm\LlmBrokerRequestGate.cs</Link>
     </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmStrategicPromptLease.cs">
+      <Link>Llm\LlmStrategicPromptLease.cs</Link>
+    </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmCardDataDirectoryResolver.cs">
       <Link>Llm\LlmCardDataDirectoryResolver.cs</Link>
     </Compile>
@@ -262,6 +280,12 @@
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerRecovery.cs">
       <Link>Llm\LlmBrokerRecovery.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmSemanticWindowRecurrence.cs">
+      <Link>Llm\LlmSemanticWindowRecurrence.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\Llm\LlmDuelCapabilities.cs">
+      <Link>Llm\LlmDuelCapabilities.cs</Link>
     </Compile>
     <Compile Include="..\YgoMasterServer\Llm\LlmBrokerProtocol.cs">
       <Link>Llm\LlmBrokerProtocol.cs</Link>
