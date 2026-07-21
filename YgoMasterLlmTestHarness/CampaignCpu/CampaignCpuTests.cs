@@ -33,6 +33,7 @@ namespace YgoMaster
             ExactOnceOriginalContract();
             AlwaysNativeOwnedWindowUsesBeginFallback();
             ControlPolicyNeverOwnsMyId();
+            SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero();
             SoloTemporaryCpuNativeContinuationBlocksRestore();
             SoloTemporaryCpuMyIdBoundaryRestores();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
@@ -533,6 +534,35 @@ namespace YgoMaster
             AssertTrue(
                 !CampaignCpuControlPolicy.IsOwnedOpponentSeat(1, ownedSeat: 0, myId: 1),
                 "when myId=1, seat1 is human not owned");
+        }
+
+        static void SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero()
+        {
+            // Live SoloDuels leave GameMode at 0 (Normal); must still arm CampaignCpu.
+            const int GameModeNormal = 0;
+            const int GameModeSoloSingle = 9;
+            const int GameModeRoom = 10;
+            const int GameModeReplay = 7;
+            AssertTrue(
+                CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                    GameModeNormal, isPvpDuel: false, isPvpSpectator: false),
+                "Normal (0) is live solo");
+            AssertTrue(
+                CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                    GameModeSoloSingle, isPvpDuel: false, isPvpSpectator: false),
+                "SoloSingle accepted");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                    GameModeRoom, isPvpDuel: true, isPvpSpectator: false),
+                "Room/PvP rejected");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                    GameModeReplay, isPvpDuel: false, isPvpSpectator: false),
+                "Replay rejected");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                    GameModeNormal, isPvpDuel: true, isPvpSpectator: false),
+                "PvP flag rejects even Normal");
         }
 
         static void SoloTemporaryCpuNativeContinuationBlocksRestore()

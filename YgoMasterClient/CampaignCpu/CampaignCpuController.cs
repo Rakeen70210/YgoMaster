@@ -41,12 +41,23 @@ namespace YgoMasterClient
             {
                 return;
             }
-            if (gameMode != GameMode.SoloSingle)
+            if (!CampaignCpuControlPolicy.IsEligibleSoloCampaignMode(
+                (int)gameMode,
+                DuelDll.IsPvpDuel,
+                DuelDll.IsPvpSpectator))
             {
-                return;
-            }
-            if (DuelDll.IsPvpDuel || DuelDll.IsPvpSpectator)
-            {
+                // Probe-only: make silent non-solo skips visible (e.g. Room / Replay).
+                if (ClientSettings.CampaignCpuProbeLogging)
+                {
+                    CampaignCpuAuditLog.Write("gate_skipped", new Dictionary<string, object>
+                    {
+                        { "reason", "ineligible_game_mode" },
+                        { "game_mode", (int)gameMode },
+                        { "game_mode_name", gameMode.ToString() },
+                        { "is_pvp", DuelDll.IsPvpDuel },
+                        { "is_spectator", DuelDll.IsPvpSpectator },
+                    });
+                }
                 return;
             }
 
@@ -66,6 +77,8 @@ namespace YgoMasterClient
                 CampaignCpuAuditLog.Write("chapter_missing", new Dictionary<string, object>
                 {
                     { "my_id", MyId },
+                    { "game_mode", (int)gameMode },
+                    { "game_mode_name", gameMode.ToString() },
                 });
                 return;
             }
@@ -82,6 +95,7 @@ namespace YgoMasterClient
                 {
                     { "error", ex.Message },
                     { "rules_dir", rulesDir },
+                    { "chapter_id", ChapterId },
                 });
                 return;
             }
@@ -89,14 +103,22 @@ namespace YgoMasterClient
             CampaignCpuChapterIndexEntry entry;
             if (!CachedIndex.Chapters.TryGetValue(ChapterId, out entry) || entry == null)
             {
-                if (ClientSettings.CampaignCpuStrictChapterAllowlist)
+                CampaignCpuAuditLog.Write("chapter_not_allowlisted", new Dictionary<string, object>
                 {
-                    return;
-                }
+                    { "chapter_id", ChapterId },
+                    { "strict", ClientSettings.CampaignCpuStrictChapterAllowlist },
+                    { "reason", "missing_from_index" },
+                });
                 return;
             }
             if (!entry.Enabled && ClientSettings.CampaignCpuStrictChapterAllowlist)
             {
+                CampaignCpuAuditLog.Write("chapter_not_allowlisted", new Dictionary<string, object>
+                {
+                    { "chapter_id", ChapterId },
+                    { "strict", true },
+                    { "reason", "index_entry_disabled" },
+                });
                 return;
             }
 
