@@ -28,6 +28,12 @@ namespace YgoMasterClient
         /// Cleared when LogOnly is false and pack allows scripting (PR4b).
         /// </summary>
         static bool ForceAlwaysNativeLease;
+        /// <summary>
+        /// Seat coerce + seat_owned audit must wait until duel.dll work memory exists.
+        /// Calling SetPlayerType/IsHuman from OnDuelBegin AVs (null+0xc in duel.dll) —
+        /// live 2026-07-21 after pack_loaded, before seat_owned.
+        /// </summary>
+        static bool PendingSeatOwnershipAssert;
 
         public static bool IsGateActiveForDuel
         {
@@ -37,6 +43,8 @@ namespace YgoMasterClient
         public static void OnDuelBegin(GameMode gameMode)
         {
             ResetDuelLocal();
+            // Drop any stale pointer from a previous duel before engine re-inits.
+            CampaignCpuEngineWorkSeats.EngineWorkBase = IntPtr.Zero;
             if (!ClientSettings.CampaignCpuEnabled)
             {
                 return;
@@ -189,30 +197,12 @@ namespace YgoMasterClient
                 { "allow_scripted_commits", ClientSettings.CampaignCpuAllowScriptedCommits },
                 { "always_native_lease", ForceAlwaysNativeLease },
                 { "mode", ForceAlwaysNativeLease ? "pr4a_always_native" : "pr4b_scripted" },
+                { "seat_assert", "deferred_until_engine_work" },
             });
 
-            // Coerce opponent seat to Human for ownership (NativeLease will flip to CPU as needed).
-            try
-            {
-                DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
-            }
-            catch
-            {
-            }
-
-            int ownedIsHuman = TryReadIsHuman(OwnedSeat);
-            int myIsHuman = TryReadIsHuman(MyId);
-            CampaignCpuAuditLog.Write("seat_owned", new Dictionary<string, object>
-            {
-                { "owned_seat", OwnedSeat },
-                { "my_id", MyId },
-                { "duel_generation", DuelGeneration },
-                { "owned_is_human_readback", ownedIsHuman },
-                { "my_is_human_readback", myIsHuman },
-                { "player_type_readback", "DLL_DuelIsHuman" },
-                { "player_type_readback_note",
-                    "No DLL_DuelGetPlayerType export; IsHuman is the available native confirmation." },
-            });
+            // Defer SetPlayerType / IsHuman / seat_owned until DLL_SetWorkMemory has run.
+            // OnDuelBegin is too early: duel.dll player APIs AV on null engine state.
+            PendingSeatOwnershipAssert = true;
         }
 
         public static void OnDuelEnd()
@@ -236,6 +226,7 @@ namespace YgoMasterClient
             GateActiveForDuel = false;
             AlwaysNativeMode = false;
             ForceAlwaysNativeLease = false;
+            PendingSeatOwnershipAssert = false;
             ChapterId = 0;
             OwnedSeat = 1;
             MyId = 0;
@@ -243,6 +234,74 @@ namespace YgoMasterClient
             ActivePack = null;
             DecisionCount = 0;
             StateMachine.Reset();
+        }
+
+        /// <summary>
+        /// True once local duel.dll has published work memory for this duel.
+        /// Native player-type APIs are unsafe before this.
+        /// </summary>
+        static bool IsEngineWorkReady()
+        {
+            return CampaignCpuEngineWorkSeats.EngineWorkBase != IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Coerce OwnedSeat to Human and emit seat_owned once the engine is ready.
+        /// Safe to call from RunEffect / SysAct; no-ops until work memory exists.
+        /// </summary>
+        static void TryCompleteSeatOwnershipAssert(string reason)
+        {
+            if (!GateActiveForDuel || !PendingSeatOwnershipAssert)
+            {
+                return;
+            }
+            if (!IsEngineWorkReady())
+            {
+                return;
+            }
+
+            try
+            {
+                DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
+            }
+            catch
+            {
+            }
+
+            int ownedIsHuman = TryReadIsHuman(OwnedSeat);
+            int myIsHuman = TryReadIsHuman(MyId);
+            CampaignCpuAuditLog.Write("seat_owned", new Dictionary<string, object>
+            {
+                { "owned_seat", OwnedSeat },
+                { "my_id", MyId },
+                { "duel_generation", DuelGeneration },
+                { "owned_is_human_readback", ownedIsHuman },
+                { "my_is_human_readback", myIsHuman },
+                { "player_type_readback", "DLL_DuelIsHuman" },
+                { "player_type_readback_note",
+                    "No DLL_DuelGetPlayerType export; IsHuman is the available native confirmation." },
+                { "assert_reason", reason },
+                { "engine_work_base_nonzero", true },
+            });
+            PendingSeatOwnershipAssert = false;
+        }
+
+        /// <summary>
+        /// Apply SetPlayerType only when engine work memory is present (native-safe).
+        /// </summary>
+        static void TrySetPlayerTypeSafe(int player, int type)
+        {
+            if (!IsEngineWorkReady())
+            {
+                return;
+            }
+            try
+            {
+                DuelDll.CampaignCpu_SetPlayerType(player, type);
+            }
+            catch
+            {
+            }
         }
 
         /// <summary>
@@ -267,20 +326,17 @@ namespace YgoMasterClient
                 return null;
             }
 
+            TryCompleteSeatOwnershipAssert("run_effect");
+
             ViewSeq++;
             DuelViewType viewType = (DuelViewType)id;
 
             // Belt-and-suspenders: re-assert Human ownership at DuelStart (PR2b).
             if (viewType == DuelViewType.DuelStart
-                && StateMachine.State != SoloTemporaryCpuState.NativeLease)
+                && StateMachine.State != SoloTemporaryCpuState.NativeLease
+                && IsEngineWorkReady())
             {
-                try
-                {
-                    DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
-                }
-                catch
-                {
-                }
+                TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
                 CampaignCpuAuditLog.Write("seat_reassert_human", new Dictionary<string, object>
                 {
                     { "owned_seat", OwnedSeat },
@@ -395,13 +451,7 @@ namespace YgoMasterClient
                     param1,
                     out deny))
                 {
-                    try
-                    {
-                        DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
-                    }
-                    catch
-                    {
-                    }
+                    TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
                     var lease = StateMachine.ActiveLease;
                     StateMachine.RestoreHumanOwned();
                     CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
@@ -625,10 +675,10 @@ namespace YgoMasterClient
                 progress,
                 OwnedSeat,
                 DateTime.UtcNow);
-            try
+            TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.CPU);
+            // Ensure cpu param remains applied (typical solo 100).
+            if (IsEngineWorkReady())
             {
-                DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.CPU);
-                // Ensure cpu param remains applied (typical solo 100).
                 try
                 {
                     DuelDll.CampaignCpu_SetCpuParam(OwnedSeat, 100u);
@@ -636,9 +686,6 @@ namespace YgoMasterClient
                 catch
                 {
                 }
-            }
-            catch
-            {
             }
             // Exact-once: this is the sole originalRunEffect call on the BeginFallback path.
             int ret = originalRunEffect(id, p1, p2, p3);
@@ -662,6 +709,7 @@ namespace YgoMasterClient
             {
                 return;
             }
+            TryCompleteSeatOwnershipAssert("sysact");
             // PR4a always-native: AwaitingProgress only arms after scripted commits (PR4b).
             if (StateMachine.State != SoloTemporaryCpuState.AwaitingProgress)
             {
@@ -807,6 +855,10 @@ namespace YgoMasterClient
 
         static int TryReadIsHuman(int player)
         {
+            if (!IsEngineWorkReady())
+            {
+                return -1;
+            }
             try
             {
                 return DuelDll.CampaignCpu_IsHuman(player);
