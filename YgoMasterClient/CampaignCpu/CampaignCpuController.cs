@@ -149,10 +149,11 @@ namespace YgoMasterClient
             GateActiveForDuel = true;
             DuelGeneration++;
             StateMachine.ActivateHumanOwned();
-            // PR4a safety: when LogOnly, never script-commit; always NativeLease for owned windows.
-            // When not LogOnly and scripting not disabled, PR4b rule commits are allowed.
-            ForceAlwaysNativeLease = ClientSettings.CampaignCpuLogOnly;
-            AlwaysNativeMode = ClientSettings.CampaignCpuLogOnly;
+            // PR2b/PR4a default: always NativeLease for owned windows until PR4b enables commits.
+            ForceAlwaysNativeLease =
+                ClientSettings.CampaignCpuLogOnly
+                || !ClientSettings.CampaignCpuAllowScriptedCommits;
+            AlwaysNativeMode = ForceAlwaysNativeLease;
             DecisionCount = 0;
 
             CampaignCpuAuditLog.Write("pack_loaded", new Dictionary<string, object>
@@ -163,15 +164,12 @@ namespace YgoMasterClient
                 { "owned_seat", OwnedSeat },
                 { "my_id", MyId },
                 { "log_only", ClientSettings.CampaignCpuLogOnly },
-            });
-            CampaignCpuAuditLog.Write("seat_owned", new Dictionary<string, object>
-            {
-                { "owned_seat", OwnedSeat },
-                { "my_id", MyId },
-                { "duel_generation", DuelGeneration },
+                { "allow_scripted_commits", ClientSettings.CampaignCpuAllowScriptedCommits },
+                { "always_native_lease", ForceAlwaysNativeLease },
+                { "mode", ForceAlwaysNativeLease ? "pr4a_always_native" : "pr4b_scripted" },
             });
 
-            // Coerce opponent seat to Human for scripted ownership (unless we immediately lease).
+            // Coerce opponent seat to Human for ownership (NativeLease will flip to CPU as needed).
             try
             {
                 DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
@@ -179,6 +177,20 @@ namespace YgoMasterClient
             catch
             {
             }
+
+            int ownedIsHuman = TryReadIsHuman(OwnedSeat);
+            int myIsHuman = TryReadIsHuman(MyId);
+            CampaignCpuAuditLog.Write("seat_owned", new Dictionary<string, object>
+            {
+                { "owned_seat", OwnedSeat },
+                { "my_id", MyId },
+                { "duel_generation", DuelGeneration },
+                { "owned_is_human_readback", ownedIsHuman },
+                { "my_is_human_readback", myIsHuman },
+                { "player_type_readback", "DLL_DuelIsHuman" },
+                { "player_type_readback_note",
+                    "No DLL_DuelGetPlayerType export; IsHuman is the available native confirmation." },
+            });
         }
 
         public static void OnDuelEnd()
@@ -235,6 +247,27 @@ namespace YgoMasterClient
 
             ViewSeq++;
             DuelViewType viewType = (DuelViewType)id;
+
+            // Belt-and-suspenders: re-assert Human ownership at DuelStart (PR2b).
+            if (viewType == DuelViewType.DuelStart
+                && StateMachine.State != SoloTemporaryCpuState.NativeLease)
+            {
+                try
+                {
+                    DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
+                }
+                catch
+                {
+                }
+                CampaignCpuAuditLog.Write("seat_reassert_human", new Dictionary<string, object>
+                {
+                    { "owned_seat", OwnedSeat },
+                    { "view", "DuelStart" },
+                    { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                    { "my_is_human_readback", TryReadIsHuman(MyId) },
+                });
+            }
+
             int turnPlayer = -1;
             int phase = -1;
             try
@@ -248,7 +281,8 @@ namespace YgoMasterClient
 
             int doCommandUser = -1;
             int runDialogUser = -1;
-            CampaignCpuEngineWorkSeats.TryReadSeats(out doCommandUser, out runDialogUser);
+            bool seatsReadable = CampaignCpuEngineWorkSeats.TryReadSeats(
+                out doCommandUser, out runDialogUser);
 
             int actingPlayer;
             bool actingResolved = CampaignCpuActingPlayerResolver.TryResolve(
@@ -259,6 +293,21 @@ namespace YgoMasterClient
                 MyId,
                 turnPlayer,
                 out actingPlayer);
+
+            // PR2b probe: decision-family windows with seat sources + IsHuman readback.
+            if (ClientSettings.CampaignCpuProbeLogging
+                && IsProbeInterestingView(viewType, param1))
+            {
+                WriteActingPlayerProbe(
+                    viewType,
+                    param1,
+                    doCommandUser,
+                    runDialogUser,
+                    turnPlayer,
+                    seatsReadable,
+                    actingResolved,
+                    actingPlayer);
+            }
 
             string legalFp = string.Empty;
             var progress = CampaignCpuProgressToken.Create(
@@ -336,13 +385,30 @@ namespace YgoMasterClient
                     CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
                     {
                         { "entry_view_seq", lease != null ? lease.EntryViewSeq : 0UL },
+                        { "entry_reason", lease != null ? lease.Reason : null },
                         { "exit_view_seq", ViewSeq },
                         { "acting", actingResolved ? actingPlayer : -1 },
+                        { "window_class", CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                        { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                        { "my_is_human_readback", TryReadIsHuman(MyId) },
+                        { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
                         { "deny_was", deny },
                     });
                 }
                 else
                 {
+                    if (ClientSettings.CampaignCpuProbeLogging
+                        && IsProbeInterestingView(viewType, param1))
+                    {
+                        CampaignCpuAuditLog.Write("temporary_cpu_hold", new Dictionary<string, object>
+                        {
+                            { "view_seq", ViewSeq },
+                            { "deny", deny },
+                            { "window_class",
+                                CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                            { "acting", actingResolved ? actingPlayer : -1 },
+                        });
+                    }
                     return originalRunEffect(id, param1, param2, param3);
                 }
             }
@@ -365,8 +431,24 @@ namespace YgoMasterClient
                 return originalRunEffect(id, param1, param2, param3);
             }
 
-            if (actingPlayer == MyId
-                || !CampaignCpuControlPolicy.IsOwnedOpponentSeat(actingPlayer, OwnedSeat, MyId))
+            if (actingPlayer == MyId)
+            {
+                // Human seat: never CampaignCpu commit (PR2b pass criterion).
+                if (ClientSettings.CampaignCpuProbeLogging
+                    && IsProbeInterestingView(viewType, param1))
+                {
+                    CampaignCpuAuditLog.Write("pass_through_myid", new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "my_id", MyId },
+                        { "window_class",
+                            CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                    });
+                }
+                return originalRunEffect(id, param1, param2, param3);
+            }
+
+            if (!CampaignCpuControlPolicy.IsOwnedOpponentSeat(actingPlayer, OwnedSeat, MyId))
             {
                 return originalRunEffect(id, param1, param2, param3);
             }
@@ -377,11 +459,21 @@ namespace YgoMasterClient
                 || ActivePack == null
                 || !CampaignCpuWindowClassifier.IsScriptedWindow(viewType, param1, ActivePack))
             {
-                string reason = ForceAlwaysNativeLease
-                    ? "always_native_lease"
-                    : (StateMachine.ScriptingDisabledForDuel
-                        ? "scripting_disabled"
-                        : "v1_non_main_phase");
+                string reason;
+                if (ForceAlwaysNativeLease)
+                {
+                    reason = ClientSettings.CampaignCpuAllowScriptedCommits
+                        ? "log_only_or_always_native"
+                        : "always_native_lease";
+                }
+                else if (StateMachine.ScriptingDisabledForDuel)
+                {
+                    reason = "scripting_disabled";
+                }
+                else
+                {
+                    reason = "v1_non_main_phase";
+                }
                 return BeginFallback(
                     id, param1, param2, param3, progress, reason, originalRunEffect);
             }
@@ -526,13 +618,20 @@ namespace YgoMasterClient
             catch
             {
             }
+            // Exact-once: this is the sole originalRunEffect call on the BeginFallback path.
+            int ret = originalRunEffect(id, p1, p2, p3);
             CampaignCpuAuditLog.Write("temporary_cpu_begin", new Dictionary<string, object>
             {
                 { "reason", reason },
                 { "view_seq", ViewSeq },
                 { "owned_seat", OwnedSeat },
+                { "window_class",
+                    CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1) },
+                { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                { "my_is_human_readback", TryReadIsHuman(MyId) },
+                { "exact_once_forward", true },
             });
-            return originalRunEffect(id, p1, p2, p3);
+            return ret;
         }
 
         public static void OnSoloSysActTick()
@@ -541,6 +640,7 @@ namespace YgoMasterClient
             {
                 return;
             }
+            // PR4a always-native: AwaitingProgress only arms after scripted commits (PR4b).
             if (StateMachine.State != SoloTemporaryCpuState.AwaitingProgress)
             {
                 return;
@@ -578,17 +678,121 @@ namespace YgoMasterClient
             }
             if (player == MyId)
             {
+                // Never rewrite human seat type.
                 return type;
             }
             if (player != OwnedSeat)
             {
                 return type;
             }
-            if (StateMachine.State == SoloTemporaryCpuState.NativeLease)
+            int coerced = StateMachine.State == SoloTemporaryCpuState.NativeLease
+                ? (int)DuelPlayerType.CPU
+                : (int)DuelPlayerType.Human;
+            if (coerced != type && ClientSettings.CampaignCpuProbeLogging)
             {
-                return (int)DuelPlayerType.CPU;
+                CampaignCpuAuditLog.Write("set_player_type_coerce", new Dictionary<string, object>
+                {
+                    { "player", player },
+                    { "requested_type", type },
+                    { "coerced_type", coerced },
+                    { "state", StateMachine.State.ToString() },
+                    { "owned_seat", OwnedSeat },
+                    { "my_id", MyId },
+                });
             }
-            return (int)DuelPlayerType.Human;
+            return coerced;
+        }
+
+        static bool IsProbeInterestingView(DuelViewType viewType, int param1)
+        {
+            if (viewType == DuelViewType.RunDialog || viewType == DuelViewType.RunList)
+            {
+                return true;
+            }
+            if (viewType == DuelViewType.WaitInput)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static void WriteActingPlayerProbe(
+            DuelViewType viewType,
+            int param1,
+            int doCommandUser,
+            int runDialogUser,
+            int turnPlayer,
+            bool seatsReadable,
+            bool actingResolved,
+            int actingPlayer)
+        {
+            string family = CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1);
+            string expectedSource = "unknown";
+            if (viewType == DuelViewType.WaitInput)
+            {
+                if (param1 >= (int)DuelMenuActType.CheckTiming
+                    && param1 <= (int)DuelMenuActType.LockOn)
+                {
+                    expectedSource = "do_command_user";
+                }
+                else
+                {
+                    expectedSource = "turn_player";
+                }
+            }
+            else if (viewType == DuelViewType.RunDialog)
+            {
+                expectedSource = param1 == 1 ? "none_info" : "run_dialog_user";
+            }
+            else if (viewType == DuelViewType.RunList)
+            {
+                expectedSource = "param1_or_turn";
+            }
+
+            bool isMyId = actingResolved && actingPlayer == MyId;
+            bool isOwned = actingResolved
+                && CampaignCpuControlPolicy.IsOwnedOpponentSeat(actingPlayer, OwnedSeat, MyId);
+
+            CampaignCpuAuditLog.Write("acting_player_probe", new Dictionary<string, object>
+            {
+                { "view_seq", ViewSeq },
+                { "window_class", family },
+                { "view", viewType.ToString() },
+                { "param1", param1 },
+                { "do_command_user", doCommandUser },
+                { "run_dialog_user", runDialogUser },
+                { "turn_player", turnPlayer },
+                { "seats_readable", seatsReadable },
+                { "engine_work_base_nonzero",
+                    CampaignCpuEngineWorkSeats.EngineWorkBase != IntPtr.Zero },
+                { "do_command_offset",
+                    CampaignCpuEngineWorkSeats.EffectiveDoCommandUserOffset },
+                { "run_dialog_offset",
+                    CampaignCpuEngineWorkSeats.EffectiveRunDialogUserOffset },
+                { "acting_resolved", actingResolved },
+                { "acting_player", actingResolved ? actingPlayer : -1 },
+                { "expected_source", expectedSource },
+                { "is_my_id", isMyId },
+                { "is_owned_seat", isOwned },
+                { "owned_seat", OwnedSeat },
+                { "my_id", MyId },
+                { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                { "my_is_human_readback", TryReadIsHuman(MyId) },
+                { "sm_state", StateMachine.State.ToString() },
+                { "always_native", ForceAlwaysNativeLease },
+            });
+        }
+
+        static int TryReadIsHuman(int player)
+        {
+            try
+            {
+                return DuelDll.CampaignCpu_IsHuman(player);
+            }
+            catch
+            {
+                return -1;
+            }
         }
 
         static string ResolveRulesDir()

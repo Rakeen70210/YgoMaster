@@ -189,5 +189,14 @@ namespace YgoMasterClient
         {
             hookDLL_DuelSetCpuParam.Original(player, param);
         }
+
+        /// <summary>
+        /// Player-type readback for PR2b evidence. Returns DLL_DuelIsHuman (non-zero = Human).
+        /// No direct GetPlayerType export; this is the available native confirmation surface.
+        /// </summary>
+        public static int CampaignCpu_IsHuman(int player)
+        {
+            return DLL_DuelIsHuman(player);
+        }
     }
 }

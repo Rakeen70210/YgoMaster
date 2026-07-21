@@ -81,6 +81,16 @@ namespace YgoMasterClient
         public static bool CampaignCpuStrictChapterAllowlist = true;
         /// <summary>When true, score/audit only; always NativeLease (no scripted commits).</summary>
         public static bool CampaignCpuLogOnly;
+        /// <summary>
+        /// PR4b gate: when false (default), CampaignCpu always NativeLease for owned windows
+        /// (PR2b/PR4a safety). When true and not LogOnly, Main Phase rule commits are allowed.
+        /// </summary>
+        public static bool CampaignCpuAllowScriptedCommits;
+        /// <summary>
+        /// When true (default), audit rich acting-player / seat probe lines for WaitInput,
+        /// RunDialog, and RunList (PR2b checklist evidence).
+        /// </summary>
+        public static bool CampaignCpuProbeLogging = true;
         /// <summary>0 = use built-in CampaignCpuDefaults.DoCommandUserOffset.</summary>
         public static int CampaignCpuEngineWorkDoCommandUserOffset;
         /// <summary>0 = use built-in CampaignCpuDefaults.RunDialogUserOffset.</summary>
@@ -247,6 +257,8 @@ namespace YgoMasterClient
             CampaignCpuProgressTimeoutMs = Utils.GetValue<int>(data, "CampaignCpuProgressTimeoutMs", 2000);
             CampaignCpuStrictChapterAllowlist = Utils.GetValue<bool>(data, "CampaignCpuStrictChapterAllowlist", true);
             CampaignCpuLogOnly = Utils.GetValue<bool>(data, "CampaignCpuLogOnly");
+            CampaignCpuAllowScriptedCommits = Utils.GetValue<bool>(data, "CampaignCpuAllowScriptedCommits");
+            CampaignCpuProbeLogging = Utils.GetValue<bool>(data, "CampaignCpuProbeLogging", true);
             CampaignCpuEngineWorkDoCommandUserOffset =
                 Utils.GetValue<int>(data, "CampaignCpuEngineWorkDoCommandUserOffset", 0);
             CampaignCpuEngineWorkRunDialogUserOffset =

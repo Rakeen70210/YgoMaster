@@ -30,6 +30,11 @@ namespace YgoMaster
             CommitIndeterminateOnNativeThrow();
             WindowClassifierMainPhaseOnly();
             ProgressTokenFreshness();
+            ExactOnceOriginalContract();
+            AlwaysNativeOwnedWindowUsesBeginFallback();
+            ControlPolicyNeverOwnsMyId();
+            SoloTemporaryCpuNativeContinuationBlocksRestore();
+            SoloTemporaryCpuMyIdBoundaryRestores();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
 
@@ -483,6 +488,91 @@ namespace YgoMaster
             var c = CampaignCpuProgressToken.Create(1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "y");
             AssertTrue(!CampaignCpuProgressToken.IsFreshSemanticProgress(b, a), "same not fresh");
             AssertTrue(CampaignCpuProgressToken.IsFreshSemanticProgress(c, a), "changed is fresh");
+        }
+
+        static void ExactOnceOriginalContract()
+        {
+            int calls = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.ForwardOriginalOnce,
+                () => 7);
+            AssertEqual(1, calls, "pass-through calls original once");
+
+            calls = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.ScriptedHandledNoOriginal,
+                () => 7);
+            AssertEqual(0, calls, "scripted path never calls original");
+
+            calls = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.BeginFallbackThenReturn,
+                () => 7);
+            AssertEqual(1, calls, "BeginFallback calls original once only");
+        }
+
+        static void AlwaysNativeOwnedWindowUsesBeginFallback()
+        {
+            AssertEqual(
+                CampaignCpuRunEffectContract.OuterAction.BeginFallbackThenReturn,
+                CampaignCpuRunEffectContract.DecideAlwaysNativeOwnedWindow(),
+                "PR4a always-native owned window");
+            AssertEqual(
+                CampaignCpuRunEffectContract.OuterAction.ForwardOriginalOnce,
+                CampaignCpuRunEffectContract.DecidePassThrough(),
+                "pass-through forwards once");
+        }
+
+        static void ControlPolicyNeverOwnsMyId()
+        {
+            int owned = CampaignCpuControlPolicy.ResolveOwnedSeat(myId: 0);
+            AssertEqual(1, owned, "myId0 owns seat1");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsOwnedOpponentSeat(0, owned, myId: 0),
+                "never own MyID");
+            AssertTrue(
+                CampaignCpuControlPolicy.IsOwnedOpponentSeat(1, owned, myId: 0),
+                "own rival");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsOwnedOpponentSeat(1, ownedSeat: 0, myId: 1),
+                "when myId=1, seat1 is human not owned");
+        }
+
+        static void SoloTemporaryCpuNativeContinuationBlocksRestore()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var entry = CampaignCpuProgressToken.Create(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 1, 0, "a");
+            sm.BeginNativeLease("v1_non_main_phase", 1, 10, entry, 1, DateTime.UtcNow);
+            // MyID boundary would otherwise restore, but RunDialog is a native continuation.
+            var next = CampaignCpuProgressToken.Create(
+                1, DuelViewType.RunDialog, 0, 0, 0, 0, 1, 0, "b");
+            string deny;
+            bool can = sm.CanRestoreFromNativeLease(
+                1, 11, next, resolvedActingSeat: 0, ownedSeat: 1, myId: 0,
+                requireCpuThinking: false,
+                viewType: DuelViewType.RunDialog,
+                param1: 0,
+                out deny);
+            AssertTrue(!can, "RunDialog is native continuation");
+            AssertEqual("native_continuation_view", deny, "deny reason");
+        }
+
+        static void SoloTemporaryCpuMyIdBoundaryRestores()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var entry = CampaignCpuProgressToken.Create(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 1, 0, "a");
+            sm.BeginNativeLease("always_native_lease", 1, 10, entry, 1, DateTime.UtcNow);
+            var next = CampaignCpuProgressToken.Create(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 0, 2, 0, "c");
+            string deny;
+            bool can = sm.CanRestoreFromNativeLease(
+                1, 12, next, resolvedActingSeat: 0, ownedSeat: 1, myId: 0,
+                requireCpuThinking: false,
+                viewType: DuelViewType.WaitInput,
+                param1: (int)DuelMenuActType.MainPhase,
+                out deny);
+            AssertTrue(can, "MyID boundary after progress restores");
         }
 
         static void AssertTrue(bool value, string message)
