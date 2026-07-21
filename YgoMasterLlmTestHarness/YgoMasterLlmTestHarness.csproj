@@ -42,6 +42,43 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="DuelRoomTestStubs.cs" />
+    <Compile Include="CampaignCpu\CampaignCpuTests.cs" />
+    <Compile Include="..\YgoMasterServer\Utils.cs">
+      <Link>Utils.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuTypes.cs">
+      <Link>CampaignCpu\CampaignCpuTypes.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuObservation.cs">
+      <Link>CampaignCpu\CampaignCpuObservation.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuDeckFingerprint.cs">
+      <Link>CampaignCpu\CampaignCpuDeckFingerprint.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuCommandAliases.cs">
+      <Link>CampaignCpu\CampaignCpuCommandAliases.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRulePack.cs">
+      <Link>CampaignCpu\CampaignCpuRulePack.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuMatchers.cs">
+      <Link>CampaignCpu\CampaignCpuMatchers.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuScorer.cs">
+      <Link>CampaignCpu\CampaignCpuScorer.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuActingPlayerResolver.cs">
+      <Link>CampaignCpu\CampaignCpuActingPlayerResolver.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuControlPolicy.cs">
+      <Link>CampaignCpu\CampaignCpuControlPolicy.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\SoloTemporaryCpuStateMachine.cs">
+      <Link>CampaignCpu\SoloTemporaryCpuStateMachine.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs">
+      <Link>CampaignCpu\CampaignCpuAuditSerializer.cs</Link>
+    </Compile>
     <Compile Include="Llm004\Llm004Slice0Tests.cs" />
     <Compile Include="Llm004\Llm004Slice2Tests.cs" />
     <Compile Include="Llm004\Llm004Slice3Tests.cs" />

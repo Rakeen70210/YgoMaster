@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "chapter_id": 11010001,
+  "deck_hash": "",
+  "meta": {
+    "name": "harness-only fixture (disabled)",
+    "archetype": "test"
+  },
+  "policy": {
+    "on_no_match": "native_cpu",
+    "on_unsupported_window": "native_cpu",
+    "on_zero_legal": "native_cpu",
+    "mechanical_windows": "auto_or_native",
+    "scripted_views": ["WaitInput_MainPhase"],
+    "max_decisions_per_duel": 0
+  },
+  "never": [
+    {
+      "id": "never-surrender",
+      "match": { "command": "Surrender" },
+      "reason": "test"
+    }
+  ],
+  "priority": [],
+  "fallback_scoring": [
+    { "id": "prefer-action", "match": { "command": "Action" }, "score": 10 }
+  ]
+}

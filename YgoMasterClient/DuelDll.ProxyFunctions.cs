@@ -1631,6 +1631,11 @@ namespace YgoMasterClient
             }
             else
             {
+                // CampaignCpu dual-driver lock: coerce OwnedSeat Human/CPU; never rewrite MyID.
+                if (CampaignCpuController.IsGateActiveForDuel)
+                {
+                    type = CampaignCpuController.CoercePlayerType(player, type);
+                }
                 hookDLL_DuelSetPlayerType.Original(player, type);
             }
         }
@@ -1813,6 +1818,10 @@ namespace YgoMasterClient
             if (IsPvpDuel)
             {
                 // TODO
+            }
+            else
+            {
+                CampaignCpuEngineWorkSeats.EngineWorkBase = pWork;
             }
             return hookDLL_SetWorkMemory.Original(pWork);
         }

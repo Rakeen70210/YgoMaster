@@ -69,6 +69,22 @@ namespace YgoMasterClient
         public static bool PvpLogToFile;
         public static bool LlmDecisionLogEnabled;
         public static bool LlmBrokerEnabled;
+        // --- CampaignCpu (Track B) — isolated from Llm* flags ---
+        /// <summary>Master enable for solo scripted CampaignCpu. Default off.</summary>
+        public static bool CampaignCpuEnabled;
+        /// <summary>Rules directory name under Data/ (default CampaignCpuRules).</summary>
+        public static string CampaignCpuRulesDir;
+        public static bool CampaignCpuAuditLogEnabled = true;
+        public static string CampaignCpuAuditLogPath;
+        public static int CampaignCpuAuditMaxLines = 50000;
+        public static int CampaignCpuProgressTimeoutMs = 2000;
+        public static bool CampaignCpuStrictChapterAllowlist = true;
+        /// <summary>When true, score/audit only; always NativeLease (no scripted commits).</summary>
+        public static bool CampaignCpuLogOnly;
+        /// <summary>0 = use built-in CampaignCpuDefaults.DoCommandUserOffset.</summary>
+        public static int CampaignCpuEngineWorkDoCommandUserOffset;
+        /// <summary>0 = use built-in CampaignCpuDefaults.RunDialogUserOffset.</summary>
+        public static int CampaignCpuEngineWorkRunDialogUserOffset;
         /// <summary>
         /// Default-off accepted-input transcript capture (YGOMASTER-LLM-005 Slice 5).
         /// Enables LlmAcceptedInputTranscriptRecorder after native acceptance only.
@@ -223,6 +239,18 @@ namespace YgoMasterClient
             PvpLogToFile = Utils.GetValue<bool>(data, "PvpLogToFile");
             LlmDecisionLogEnabled = Utils.GetValue<bool>(data, "LlmDecisionLogEnabled");
             LlmBrokerEnabled = Utils.GetValue<bool>(data, "LlmBrokerEnabled");
+            CampaignCpuEnabled = Utils.GetValue<bool>(data, "CampaignCpuEnabled");
+            CampaignCpuRulesDir = Utils.GetValue<string>(data, "CampaignCpuRulesDir") ?? "CampaignCpuRules";
+            CampaignCpuAuditLogEnabled = Utils.GetValue<bool>(data, "CampaignCpuAuditLogEnabled", true);
+            CampaignCpuAuditLogPath = Utils.GetValue<string>(data, "CampaignCpuAuditLogPath") ?? string.Empty;
+            CampaignCpuAuditMaxLines = Utils.GetValue<int>(data, "CampaignCpuAuditMaxLines", 50000);
+            CampaignCpuProgressTimeoutMs = Utils.GetValue<int>(data, "CampaignCpuProgressTimeoutMs", 2000);
+            CampaignCpuStrictChapterAllowlist = Utils.GetValue<bool>(data, "CampaignCpuStrictChapterAllowlist", true);
+            CampaignCpuLogOnly = Utils.GetValue<bool>(data, "CampaignCpuLogOnly");
+            CampaignCpuEngineWorkDoCommandUserOffset =
+                Utils.GetValue<int>(data, "CampaignCpuEngineWorkDoCommandUserOffset", 0);
+            CampaignCpuEngineWorkRunDialogUserOffset =
+                Utils.GetValue<int>(data, "CampaignCpuEngineWorkRunDialogUserOffset", 0);
             LlmAcceptedInputTranscriptEnabled = Utils.GetValue<bool>(data, "LlmAcceptedInputTranscriptEnabled");
             LlmAcceptedInputTranscriptFlushPath = Utils.GetValue<string>(data, "LlmAcceptedInputTranscriptFlushPath");
 

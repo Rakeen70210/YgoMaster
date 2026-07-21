@@ -16,6 +16,8 @@ namespace YgoMaster
             try
             {
                 Llm004Slice0Tests.RunAll();
+                // YGOMASTER-CAMPAIGN-CPU-001 Track B pure scorer/state tests.
+                CampaignCpuTests.RunAll();
                 // YGOMASTER-LLM-003 Milestone 3B + LLM-005 Slice 2G strategic prompt lease.
                 Llm003Milestone3BTests.RunAll();
                 // YGOMASTER-LLM-003 Milestones 3C/3D semantic recurrence + safe recovery.

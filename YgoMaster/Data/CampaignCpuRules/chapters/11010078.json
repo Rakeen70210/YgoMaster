@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "chapter_id": 11010078,
+  "deck_hash": "sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835",
+  "meta": {
+    "name": "LE 11010078 DSOD Pt. 2 slice",
+    "archetype": "seto-kaiba-dsod"
+  },
+  "policy": {
+    "on_no_match": "native_cpu",
+    "on_unsupported_window": "native_cpu",
+    "on_zero_legal": "native_cpu",
+    "mechanical_windows": "auto_or_native",
+    "scripted_views": ["WaitInput_MainPhase"],
+    "max_decisions_per_duel": 0
+  },
+  "never": [
+    {
+      "id": "never-surrender",
+      "match": { "command": "Surrender" },
+      "reason": "campaign CPU should not concede"
+    }
+  ],
+  "priority": [
+    {
+      "id": "g1-opening-special-or-action",
+      "priority": 100,
+      "required_for_slice": true,
+      "when": {
+        "phase_in": ["Main1"],
+        "turn_lte": 5,
+        "self_has_card_id": [12488, 12253, 4007]
+      },
+      "prefer": [
+        { "command": "SummonSp", "card_id": 12488 },
+        { "command": "Action", "card_id": 12253 },
+        { "command": "Summon", "card_id": 4007 }
+      ],
+      "score_bonus": 50
+    },
+    {
+      "id": "g2-next-preferred-without-top",
+      "priority": 90,
+      "required_for_slice": true,
+      "when": {
+        "phase_in": ["Main1"],
+        "turn_lte": 5,
+        "self_has_card_id": [12253, 4007]
+      },
+      "prefer": [
+        { "command": "Action", "card_id": 12253 },
+        { "command": "Summon", "card_id": 4007 }
+      ],
+      "score_bonus": 40
+    }
+  ],
+  "fallback_scoring": [
+    {
+      "id": "prefer-action",
+      "required_for_slice": true,
+      "match": { "command": "Action" },
+      "score": 10
+    },
+    {
+      "id": "prefer-summon",
+      "match": { "command": "Summon" },
+      "score": 8
+    },
+    {
+      "id": "prefer-summon-sp",
+      "match": { "command": "SummonSp" },
+      "score": 8
+    },
+    {
+      "id": "prefer-set",
+      "match": { "command": "Set" },
+      "score": 5
+    },
+    {
+      "id": "prefer-set-monst",
+      "match": { "command": "SetMonst" },
+      "score": 4
+    },
+    {
+      "id": "penalize-early-end",
+      "match": { "kind": "MovePhase", "phase": "End" },
+      "score": -20
+    }
+  ]
+}

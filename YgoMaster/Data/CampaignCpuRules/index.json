@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "default_enabled": false,
+  "chapters": {
+    "11010078": {
+      "pack": "chapters/11010078.json",
+      "enabled": true,
+      "notes": "vertical slice: DSOD Pt. 2 Seto Kaiba (product first slice)"
+    },
+    "11010001": {
+      "pack": "chapters/11010001.json",
+      "enabled": false,
+      "notes": "optional harness fixture only; disabled for product"
+    }
+  }
+}

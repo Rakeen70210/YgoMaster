@@ -2204,6 +2204,8 @@ namespace YgoMasterClient
             }
 
             DuelTapSync.ClearState();
+            // CampaignCpu: SoloSingle only; independent of Llm* (Track B).
+            CampaignCpuController.OnDuelBegin(gameMode);
         }
 
         public static void OnDuelEnd()
@@ -2220,6 +2222,7 @@ namespace YgoMasterClient
             ResetLlmSummonInteractionState();
             // History must not survive duel end (plan reset invariant).
             ResetLlmDuelHistoryForNewDuel();
+            CampaignCpuController.OnDuelEnd();
         }
 
         static void ClearEngineState()
@@ -2400,6 +2403,20 @@ namespace YgoMasterClient
                         break;
                 }
             }
+            // CampaignCpu: non-PvP SoloSingle only. Do not extend PvP path.
+            if (!IsPvpDuel && !IsPvpSpectator && CampaignCpuController.IsGateActiveForDuel)
+            {
+                int? campaignRet = CampaignCpuController.OnRunEffect(
+                    id,
+                    param1,
+                    param2,
+                    param3,
+                    (a, b, c, d) => originalRunEffect(a, b, c, d));
+                if (campaignRet.HasValue)
+                {
+                    return campaignRet.Value;
+                }
+            }
             return originalRunEffect(id, param1, param2, param3);
         }
 
@@ -2414,6 +2431,11 @@ namespace YgoMasterClient
 
         public static int DLL_DuelSysAct()
         {
+            // CampaignCpu solo progress tick ONLY — never enters IsPvpDuel pvpEngineState switch.
+            if (!IsPvpDuel && !IsPvpSpectator && CampaignCpuController.IsGateActiveForDuel)
+            {
+                CampaignCpuController.OnSoloSysActTick();
+            }
             if (IsPvpDuel || IsPvpSpectator)
             {
                 if (LastSysActLogTime < DateTime.UtcNow - TimeSpan.FromSeconds(3))
