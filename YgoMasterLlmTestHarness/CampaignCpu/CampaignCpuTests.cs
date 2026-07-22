@@ -31,8 +31,22 @@ namespace YgoMaster
             CommitNotStartedWhenNullAction();
             CommitAppliedOnSuccessfulNative();
             CommitIndeterminateOnNativeThrow();
+            CommitNotStartedWhenDelegateMissing();
+            CommitMovePhaseDispatchesOnce();
+            CommitDialogResultDispatchesOnce();
+            CommitListIndexDispatchesOnce();
+            CommitCancelDispatchesOnce();
+            CommitSummonPlacementRewritesPositionIndex();
+            CommitUnsupportedKindNotStarted();
             WindowClassifierMainPhaseOnly();
             ProgressTokenFreshness();
+            ProgressTokenArmVsCheckPathNotFalseFresh();
+            ProgressTokenKnownLegalChangeIsFresh();
+            ProgressTokenKnownToUnknownNotFresh();
+            ProgressTokenEmptyLegalKnownVsUnknown();
+            PostCommitIndeterminateSameViewSuppressesOriginal();
+            PostCommitTimeoutQuarantinesWithoutOriginal();
+            PostCommitFreshAfterQuarantineForwardsOnce();
             ExactOnceOriginalContract();
             AlwaysNativeOwnedWindowUsesBeginFallback();
             ControlPolicyNeverOwnsMyId();
@@ -627,49 +641,199 @@ namespace YgoMaster
 
         static void CommitNotStartedWhenNullAction()
         {
-            // Pure commit plan path via a tiny harness of local delegates —
-            // CampaignCpuCommit is in YgoMasterClient; test mapping via scorer only here.
-            // Commit outcome pure-test is inlined with local function equivalent:
-            CampaignCpuCommitOutcome outcome = SimulateCommit(null, throwNative: false);
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                null,
+                phase => { },
+                (p, pos, idx, cmd) => { },
+                r => { },
+                i => { },
+                d => { });
             AssertEqual(CampaignCpuCommitOutcome.NotStarted, outcome, "null action NotStarted");
         }
 
         static void CommitAppliedOnSuccessfulNative()
         {
             var action = Cmd(1, DuelCommandType.Summon, 4007);
-            CampaignCpuCommitOutcome outcome = SimulateCommit(action, throwNative: false);
+            int calls = 0;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) => { calls++; },
+                r => { },
+                i => { },
+                d => { });
             AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "applied");
+            AssertEqual(1, calls, "doCommand once");
         }
 
         static void CommitIndeterminateOnNativeThrow()
         {
             var action = Cmd(1, DuelCommandType.Summon, 4007);
-            CampaignCpuCommitOutcome outcome = SimulateCommit(action, throwNative: true);
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) => { throw new InvalidOperationException("native"); },
+                r => { },
+                i => { },
+                d => { });
             AssertEqual(CampaignCpuCommitOutcome.Indeterminate, outcome, "indeterminate");
         }
 
-        /// <summary>
-        /// Mirrors CampaignCpuCommit.TryApply logic for harness (client type not linked).
-        /// </summary>
-        static CampaignCpuCommitOutcome SimulateCommit(CampaignCpuLegalAction action, bool throwNative)
+        static void CommitNotStartedWhenDelegateMissing()
         {
-            if (action == null)
+            var action = Cmd(1, DuelCommandType.Summon, 4007);
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                null,
+                (p, pos, idx, cmd) => { },
+                r => { },
+                i => { },
+                d => { });
+            AssertEqual(CampaignCpuCommitOutcome.NotStarted, outcome, "missing movePhase");
+        }
+
+        static void CommitMovePhaseDispatchesOnce()
+        {
+            var action = new CampaignCpuLegalAction
             {
-                return CampaignCpuCommitOutcome.NotStarted;
-            }
-            try
+                ActionId = 1,
+                Kind = LegalActionKind.MovePhase,
+                Phase = DuelPhase.Battle,
+                Player = 1,
+            };
+            int calls = 0;
+            int seenPhase = -1;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { calls++; seenPhase = phase; },
+                (p, pos, idx, cmd) => { calls += 10; },
+                r => { calls += 100; },
+                i => { calls += 1000; },
+                d => { calls += 10000; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "move phase applied");
+            AssertEqual(1, calls, "only movePhase once");
+            AssertEqual((int)DuelPhase.Battle, seenPhase, "phase id");
+        }
+
+        static void CommitDialogResultDispatchesOnce()
+        {
+            var action = new CampaignCpuLegalAction
             {
-                if (throwNative)
+                ActionId = 1,
+                Kind = LegalActionKind.DialogResult,
+                DialogResult = 2,
+            };
+            int calls = 0;
+            uint seen = 0;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { calls += 10; },
+                (p, pos, idx, cmd) => { calls += 100; },
+                r => { calls++; seen = r; },
+                i => { calls += 1000; },
+                d => { calls += 10000; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "dialog applied");
+            AssertEqual(1, calls, "only dlg once");
+            AssertEqual(2u, seen, "dialog result");
+        }
+
+        static void CommitListIndexDispatchesOnce()
+        {
+            var action = new CampaignCpuLegalAction
+            {
+                ActionId = 1,
+                Kind = LegalActionKind.ListIndex,
+                Index = 4,
+            };
+            int calls = 0;
+            int seen = -1;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { calls += 10; },
+                (p, pos, idx, cmd) => { calls += 100; },
+                r => { calls += 1000; },
+                i => { calls++; seen = i; },
+                d => { calls += 10000; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "list applied");
+            AssertEqual(1, calls, "only list once");
+            AssertEqual(4, seen, "list index");
+        }
+
+        static void CommitCancelDispatchesOnce()
+        {
+            var action = new CampaignCpuLegalAction
+            {
+                ActionId = 1,
+                Kind = LegalActionKind.Cancel,
+                CancelDecide = true,
+            };
+            int calls = 0;
+            bool seen = false;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { calls += 10; },
+                (p, pos, idx, cmd) => { calls += 100; },
+                r => { calls += 1000; },
+                i => { calls += 10000; },
+                d => { calls++; seen = d; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "cancel applied");
+            AssertEqual(1, calls, "only cancel once");
+            AssertTrue(seen, "cancel decide");
+        }
+
+        static void CommitSummonPlacementRewritesPositionIndex()
+        {
+            var action = new CampaignCpuLegalAction
+            {
+                ActionId = 1,
+                Kind = LegalActionKind.Command,
+                Command = DuelCommandType.Decide,
+                TargetScope = "summon_placement",
+                Player = 1,
+                Position = 3, // zone index in Position for summon_placement
+                Index = 9,
+            };
+            int seenPos = -1;
+            int seenIdx = -1;
+            int seenCmd = -1;
+            int calls = 0;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) =>
                 {
-                    throw new InvalidOperationException("native");
-                }
-                // pretend native succeeded
-                return CampaignCpuCommitOutcome.Applied;
-            }
-            catch
+                    calls++;
+                    seenPos = pos;
+                    seenIdx = idx;
+                    seenCmd = cmd;
+                },
+                r => { },
+                i => { },
+                d => { });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "placement applied");
+            AssertEqual(1, calls, "doCommand once");
+            AssertEqual(CampaignCpuNativeCommit.PosSelect, seenPos, "PosSelect rewrite");
+            AssertEqual(3, seenIdx, "zone from Position");
+            AssertEqual((int)DuelCommandType.Decide, seenCmd, "command id");
+        }
+
+        static void CommitUnsupportedKindNotStarted()
+        {
+            var action = new CampaignCpuLegalAction
             {
-                return CampaignCpuCommitOutcome.Indeterminate;
-            }
+                ActionId = 1,
+                Kind = (LegalActionKind)999,
+            };
+            CampaignCpuNativePlan plan;
+            AssertTrue(!CampaignCpuNativeCommit.TryBuildPlan(action, out plan), "plan rejected");
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) => { },
+                r => { },
+                i => { },
+                d => { });
+            AssertEqual(CampaignCpuCommitOutcome.NotStarted, outcome, "unsupported NotStarted");
         }
 
         static void WindowClassifierMainPhaseOnly()
@@ -836,11 +1000,159 @@ namespace YgoMaster
 
         static void ProgressTokenFreshness()
         {
-            var a = CampaignCpuProgressToken.Create(1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "x");
-            var b = CampaignCpuProgressToken.Create(1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "x");
-            var c = CampaignCpuProgressToken.Create(1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "y");
+            var a = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "x");
+            var b = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "x");
+            var c = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "y");
             AssertTrue(!CampaignCpuProgressToken.IsFreshSemanticProgress(b, a), "same not fresh");
             AssertTrue(CampaignCpuProgressToken.IsFreshSemanticProgress(c, a), "changed is fresh");
+        }
+
+        /// <summary>
+        /// Production bug: arm path stored full token (Turn + known legal); check path used
+        /// Turn=0 and empty string fingerprint, so a repeated same-view callback looked fresh.
+        /// </summary>
+        static void ProgressTokenArmVsCheckPathNotFalseFresh()
+        {
+            var armed = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                duelGeneration: 1,
+                viewType: DuelViewType.WaitInput,
+                p1: (int)DuelMenuActType.MainPhase,
+                p2: 0,
+                p3: 0,
+                actingSeat: 1,
+                turn: 2,
+                phase: (int)DuelPhase.Main1,
+                legalActionFingerprint: "Command|Summon|4007|13|0|");
+            // Same callback through the lightweight/check builder (unknown legal).
+            var check = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                duelGeneration: 1,
+                viewType: DuelViewType.WaitInput,
+                p1: (int)DuelMenuActType.MainPhase,
+                p2: 0,
+                p3: 0,
+                actingSeat: 1,
+                turn: 2,
+                phase: (int)DuelPhase.Main1);
+            AssertTrue(
+                !CampaignCpuProgressToken.IsFreshSemanticProgress(check, armed),
+                "arm vs check same base is not fresh");
+            AssertEqual(
+                CampaignCpuProgressCheckResult.SuppressSameView,
+                CampaignCpuProgressCheck.EvaluateAwaitingProgress(check, armed),
+                "awaiting suppresses same view");
+            AssertEqual(
+                CampaignCpuProgressCheckResult.SuppressSameView,
+                CampaignCpuProgressCheck.EvaluateCommitQuarantine(check, armed),
+                "quarantine suppresses same view");
+        }
+
+        static void ProgressTokenKnownLegalChangeIsFresh()
+        {
+            var a = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "Command|Summon|4007|13|0|");
+            var b = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "Command|SummonSp|12488|13|0|");
+            AssertTrue(
+                CampaignCpuProgressToken.IsFreshSemanticProgress(b, a),
+                "same base + different known legal is fresh");
+        }
+
+        static void ProgressTokenKnownToUnknownNotFresh()
+        {
+            var known = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "x");
+            var unknown = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1);
+            AssertTrue(
+                !CampaignCpuProgressToken.IsFreshSemanticProgress(unknown, known),
+                "known→unknown is not fresh");
+        }
+
+        static void ProgressTokenEmptyLegalKnownVsUnknown()
+        {
+            var knownEmpty = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, null);
+            AssertTrue(knownEmpty.LegalFingerprintKnown, "known empty flag");
+            AssertEqual("empty", knownEmpty.LegalActionFingerprint, "empty sentinel");
+            var unknown = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0);
+            AssertTrue(!unknown.LegalFingerprintKnown, "unknown flag");
+            AssertTrue(
+                !CampaignCpuProgressToken.IsFreshSemanticProgress(unknown, knownEmpty),
+                "known empty vs unknown not fresh");
+            // Base field change is still fresh even with unknown legal.
+            var nextPhase = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, (int)DuelPhase.Battle);
+            AssertTrue(
+                CampaignCpuProgressToken.IsFreshSemanticProgress(nextPhase, knownEmpty),
+                "phase change is fresh with unknown legal");
+        }
+
+        static void PostCommitIndeterminateSameViewSuppressesOriginal()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var armed = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "Command|Summon|4007|13|0|");
+            sm.EnterCommitQuarantine(5, armed, "id", DateTime.UtcNow, "commit_indeterminate");
+            var sameCheck = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1);
+            CampaignCpuProgressCheckResult check = CampaignCpuProgressCheck.EvaluateCommitQuarantine(
+                sameCheck, sm.QuarantineWatch.CommittedToken);
+            AssertEqual(
+                CampaignCpuProgressCheckResult.SuppressSameView, check, "suppress same view");
+            int originals = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.ScriptedHandledNoOriginal,
+                () => 7);
+            AssertEqual(0, originals, "indeterminate same-view: zero original forwards");
+        }
+
+        static void PostCommitTimeoutQuarantinesWithoutOriginal()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var token = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "x");
+            sm.ArmAwaitingProgress(5, token, "id", DateTime.UtcNow.AddSeconds(-5));
+            AssertTrue(sm.IsProgressTimedOut(DateTime.UtcNow, 2000), "timeout");
+            sm.EnterCommitQuarantine(5, token, "id", DateTime.UtcNow, "post_commit_stall");
+            AssertEqual(SoloTemporaryCpuState.CommitQuarantine, sm.State, "quarantine");
+            int originals = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.ScriptedHandledNoOriginal,
+                () => 7);
+            AssertEqual(0, originals, "timeout quarantine never invokes original");
+        }
+
+        static void PostCommitFreshAfterQuarantineForwardsOnce()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var armed = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "x");
+            sm.EnterCommitQuarantine(5, armed, "id", DateTime.UtcNow, "commit_indeterminate");
+            // Truly fresh: different turn (base field), check-path unknown legal still OK.
+            var fresh = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 3,
+                (int)DuelPhase.Main1);
+            CampaignCpuProgressCheckResult check = CampaignCpuProgressCheck.EvaluateCommitQuarantine(
+                fresh, sm.QuarantineWatch.CommittedToken);
+            AssertEqual(
+                CampaignCpuProgressCheckResult.FreshAfterQuarantine, check, "fresh after quarantine");
+            // Production path: FreshAfterQuarantine → BeginFallback → original once.
+            int originals = CampaignCpuRunEffectContract.CountOriginalInvocations(
+                CampaignCpuRunEffectContract.OuterAction.BeginFallbackThenReturn,
+                () => 7);
+            AssertEqual(1, originals, "fresh after quarantine forwards exactly once");
         }
 
         static void ExactOnceOriginalContract()

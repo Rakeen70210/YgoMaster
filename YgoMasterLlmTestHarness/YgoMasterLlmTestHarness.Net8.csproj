@@ -27,6 +27,7 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\SoloTemporaryCpuStateMachine.cs" Link="CampaignCpu\SoloTemporaryCpuStateMachine.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs" Link="CampaignCpu\CampaignCpuAuditSerializer.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs" Link="CampaignCpu\CampaignCpuRunEffectContract.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeCommit.cs" Link="CampaignCpu\CampaignCpuNativeCommit.cs" />
     <Compile Include="Llm004\Llm004Slice0Tests.cs" />
     <Compile Include="Llm004\Llm004Slice2Tests.cs" />
     <Compile Include="Llm004\Llm004Slice3Tests.cs" />

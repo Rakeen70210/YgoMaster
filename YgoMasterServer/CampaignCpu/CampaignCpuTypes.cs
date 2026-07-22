@@ -135,8 +135,73 @@ namespace YgoMaster
         public int ActingSeat;
         public int Turn;
         public int Phase;
+        /// <summary>
+        /// When false, <see cref="LegalActionFingerprint"/> must not participate in freshness.
+        /// Empty legal menu is known via fingerprint "empty"; unavailable is not the same.
+        /// </summary>
+        public bool LegalFingerprintKnown;
         public string LegalActionFingerprint;
 
+        /// <summary>
+        /// Production check-path builder: same base fields as arming, legal fingerprint unknown.
+        /// </summary>
+        public static CampaignCpuProgressToken CreateWithoutLegalFingerprint(
+            int duelGeneration,
+            DuelViewType viewType,
+            int p1,
+            int p2,
+            int p3,
+            int actingSeat,
+            int turn,
+            int phase)
+        {
+            return CreateCore(
+                duelGeneration,
+                viewType,
+                p1,
+                p2,
+                p3,
+                actingSeat,
+                turn,
+                phase,
+                legalFingerprintKnown: false,
+                legalActionFingerprint: string.Empty);
+        }
+
+        /// <summary>
+        /// Production arming/extract builder: legal fingerprint is known (empty menu → "empty").
+        /// </summary>
+        public static CampaignCpuProgressToken CreateWithLegalFingerprint(
+            int duelGeneration,
+            DuelViewType viewType,
+            int p1,
+            int p2,
+            int p3,
+            int actingSeat,
+            int turn,
+            int phase,
+            string legalActionFingerprint)
+        {
+            string fp = string.IsNullOrEmpty(legalActionFingerprint)
+                ? "empty"
+                : legalActionFingerprint;
+            return CreateCore(
+                duelGeneration,
+                viewType,
+                p1,
+                p2,
+                p3,
+                actingSeat,
+                turn,
+                phase,
+                legalFingerprintKnown: true,
+                legalActionFingerprint: fp);
+        }
+
+        /// <summary>
+        /// Backward-compatible factory: treats the supplied fingerprint as known.
+        /// Prefer <see cref="CreateWithLegalFingerprint"/> / <see cref="CreateWithoutLegalFingerprint"/>.
+        /// </summary>
         public static CampaignCpuProgressToken Create(
             int duelGeneration,
             DuelViewType viewType,
@@ -146,6 +211,30 @@ namespace YgoMaster
             int actingSeat,
             int turn,
             int phase,
+            string legalActionFingerprint)
+        {
+            return CreateWithLegalFingerprint(
+                duelGeneration,
+                viewType,
+                p1,
+                p2,
+                p3,
+                actingSeat,
+                turn,
+                phase,
+                legalActionFingerprint);
+        }
+
+        static CampaignCpuProgressToken CreateCore(
+            int duelGeneration,
+            DuelViewType viewType,
+            int p1,
+            int p2,
+            int p3,
+            int actingSeat,
+            int turn,
+            int phase,
+            bool legalFingerprintKnown,
             string legalActionFingerprint)
         {
             return new CampaignCpuProgressToken
@@ -158,11 +247,12 @@ namespace YgoMaster
                 ActingSeat = actingSeat,
                 Turn = turn,
                 Phase = phase,
+                LegalFingerprintKnown = legalFingerprintKnown,
                 LegalActionFingerprint = legalActionFingerprint ?? string.Empty,
             };
         }
 
-        public bool Equals(CampaignCpuProgressToken other)
+        public bool BaseFieldsEqual(CampaignCpuProgressToken other)
         {
             if (other == null)
             {
@@ -175,7 +265,17 @@ namespace YgoMaster
                 && ViewParam3 == other.ViewParam3
                 && ActingSeat == other.ActingSeat
                 && Turn == other.Turn
-                && Phase == other.Phase
+                && Phase == other.Phase;
+        }
+
+        public bool Equals(CampaignCpuProgressToken other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+            return BaseFieldsEqual(other)
+                && LegalFingerprintKnown == other.LegalFingerprintKnown
                 && string.Equals(
                     LegalActionFingerprint,
                     other.LegalActionFingerprint,
@@ -200,6 +300,7 @@ namespace YgoMaster
                 hash = hash * 31 + ActingSeat;
                 hash = hash * 31 + Turn;
                 hash = hash * 31 + Phase;
+                hash = hash * 31 + (LegalFingerprintKnown ? 1 : 0);
                 hash = hash * 31 + (LegalActionFingerprint != null
                     ? LegalActionFingerprint.GetHashCode()
                     : 0);
@@ -207,6 +308,11 @@ namespace YgoMaster
             }
         }
 
+        /// <summary>
+        /// Freshness for AwaitingProgress / CommitQuarantine / lease restore.
+        /// Base-field change is always fresh. Legal-menu change is fresh only when both
+        /// fingerprints are known and differ. Stored-known / current-unknown is not fresh.
+        /// </summary>
         public static bool IsFreshSemanticProgress(
             CampaignCpuProgressToken current,
             CampaignCpuProgressToken previous)
@@ -223,7 +329,53 @@ namespace YgoMaster
             {
                 return true;
             }
-            return !current.Equals(previous);
+            if (!current.BaseFieldsEqual(previous))
+            {
+                return true;
+            }
+            // Base fields identical: fingerprint may only prove progress when both known.
+            if (!current.LegalFingerprintKnown || !previous.LegalFingerprintKnown)
+            {
+                return false;
+            }
+            return !string.Equals(
+                current.LegalActionFingerprint,
+                previous.LegalActionFingerprint,
+                StringComparison.Ordinal);
+        }
+    }
+
+    /// <summary>
+    /// Pure post-commit progress / quarantine gate used by production controller and harness.
+    /// </summary>
+    enum CampaignCpuProgressCheckResult
+    {
+        /// <summary>Same-view / indeterminate: no originalRunEffect, return scripted handled.</summary>
+        SuppressSameView,
+        /// <summary>AwaitingProgress observed true progress; clear watch and continue routing.</summary>
+        ProgressObserved,
+        /// <summary>CommitQuarantine saw a truly fresh view; disable scripting and native-forward once.</summary>
+        FreshAfterQuarantine,
+    }
+
+    static class CampaignCpuProgressCheck
+    {
+        public static CampaignCpuProgressCheckResult EvaluateAwaitingProgress(
+            CampaignCpuProgressToken current,
+            CampaignCpuProgressToken committed)
+        {
+            return CampaignCpuProgressToken.IsFreshSemanticProgress(current, committed)
+                ? CampaignCpuProgressCheckResult.ProgressObserved
+                : CampaignCpuProgressCheckResult.SuppressSameView;
+        }
+
+        public static CampaignCpuProgressCheckResult EvaluateCommitQuarantine(
+            CampaignCpuProgressToken current,
+            CampaignCpuProgressToken committed)
+        {
+            return CampaignCpuProgressToken.IsFreshSemanticProgress(current, committed)
+                ? CampaignCpuProgressCheckResult.FreshAfterQuarantine
+                : CampaignCpuProgressCheckResult.SuppressSameView;
         }
     }
 

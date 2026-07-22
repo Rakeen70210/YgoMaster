@@ -82,6 +82,9 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs">
       <Link>CampaignCpu\CampaignCpuRunEffectContract.cs</Link>
     </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeCommit.cs">
+      <Link>CampaignCpu\CampaignCpuNativeCommit.cs</Link>
+    </Compile>
     <Compile Include="Llm004\Llm004Slice0Tests.cs" />
     <Compile Include="Llm004\Llm004Slice2Tests.cs" />
     <Compile Include="Llm004\Llm004Slice3Tests.cs" />

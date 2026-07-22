@@ -363,10 +363,13 @@ namespace YgoMasterClient
 
             int turnPlayer = -1;
             int phase = -1;
+            int turn = -1;
             try
             {
                 turnPlayer = DuelDll.CampaignCpu_GetTurnPlayer();
                 phase = DuelDll.CampaignCpu_GetCurrentPhase();
+                // Same turn source for check-path and arm-path tokens (PR4b M1 parity).
+                turn = DuelDll.CampaignCpu_GetTurnNum();
             }
             catch
             {
@@ -402,25 +405,26 @@ namespace YgoMasterClient
                     actingPlayer);
             }
 
-            string legalFp = string.Empty;
-            var progress = CampaignCpuProgressToken.Create(
+            // Check path: same base fields as arming; legal fingerprint unavailable until extract.
+            var progress = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
                 DuelGeneration,
                 viewType,
                 param1,
                 param2,
                 param3,
                 actingResolved ? actingPlayer : -1,
-                0,
-                phase,
-                legalFp);
+                turn,
+                phase);
 
             // CommitQuarantine
             if (StateMachine.State == SoloTemporaryCpuState.CommitQuarantine)
             {
-                if (!CampaignCpuProgressToken.IsFreshSemanticProgress(
-                    progress, StateMachine.QuarantineWatch != null
+                CampaignCpuProgressCheckResult qCheck = CampaignCpuProgressCheck.EvaluateCommitQuarantine(
+                    progress,
+                    StateMachine.QuarantineWatch != null
                         ? StateMachine.QuarantineWatch.CommittedToken
-                        : null))
+                        : null);
+                if (qCheck == CampaignCpuProgressCheckResult.SuppressSameView)
                 {
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
@@ -432,11 +436,12 @@ namespace YgoMasterClient
             // AwaitingProgress
             if (StateMachine.State == SoloTemporaryCpuState.AwaitingProgress)
             {
-                if (!CampaignCpuProgressToken.IsFreshSemanticProgress(
+                CampaignCpuProgressCheckResult pCheck = CampaignCpuProgressCheck.EvaluateAwaitingProgress(
                     progress,
                     StateMachine.ProgressWatch != null
                         ? StateMachine.ProgressWatch.CommittedToken
-                        : null))
+                        : null);
+                if (pCheck == CampaignCpuProgressCheckResult.SuppressSameView)
                 {
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
@@ -600,7 +605,7 @@ namespace YgoMasterClient
                     out automatic,
                     out multiSelect);
 
-                progress = CampaignCpuProgressToken.Create(
+                progress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
                     DuelGeneration,
                     viewType,
                     param1,

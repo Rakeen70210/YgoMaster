@@ -90,6 +90,7 @@
     <Compile Include="YgoMasterServer\CampaignCpu\SoloTemporaryCpuStateMachine.cs" />
     <Compile Include="YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs" />
     <Compile Include="YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs" />
+    <Compile Include="YgoMasterServer\CampaignCpu\CampaignCpuNativeCommit.cs" />
     <Compile Include="YgoMasterClient\ActionSheetViewController.cs" />
     <Compile Include="YgoMasterClient\AssetHelper.cs" />
     <Compile Include="YgoMasterClient\AssetHelper.Solo.cs" />
