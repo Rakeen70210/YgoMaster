@@ -555,6 +555,12 @@ namespace YgoMasterClient
                 {
                     reason = "scripting_disabled";
                 }
+                else if (CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(viewType, param1))
+                {
+                    // Dual-Human residual: re-lease CPU for trap/timing so MD does not
+                    // paint opponent activate UI on the local human screen after restore.
+                    reason = "owned_response_hold";
+                }
                 else
                 {
                     reason = "v1_non_main_phase";
@@ -721,13 +727,14 @@ namespace YgoMasterClient
                 { "exact_once_forward", true },
             });
 
-            // When scripted Main is enabled (PR3 shadow or PR4b), do not keep the rival as
-            // CPU for the rest of the turn after non-Main native windows (esp. DrawPhase).
-            // Long PR4a leases prevent rival Main WaitInput from surfacing for extract.
-            // One-shot: flip Human again after this forward so the next Main menu is HumanOwned.
-            // Main WaitInput entries keep the lease (Location/Selection continuations need CPU).
-            bool oneShotRestore = ClientSettings.CampaignCpuAllowScriptedCommits
-                && !CampaignCpuWindowClassifier.IsMainPhaseWaitInput((DuelViewType)id, p1);
+            // Under AllowScriptedCommits, one-shot Human restore only after pure DrawPhase.
+            // Long Draw leases eat rival Main extract; response/battle leases must hold CPU
+            // until handshake restore (owned Main or MyID boundary) so dual-Human does not
+            // paint opponent trap/timing UI on the local human screen.
+            bool oneShotRestore = CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                ClientSettings.CampaignCpuAllowScriptedCommits,
+                (DuelViewType)id,
+                p1);
             if (oneShotRestore
                 && StateMachine.State == SoloTemporaryCpuState.NativeLease)
             {
@@ -738,9 +745,10 @@ namespace YgoMasterClient
                     { "reason", reason },
                     { "view_seq", ViewSeq },
                     { "window_class", windowClass },
+                    { "oneshot_policy", "draw_phase_only" },
                     { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
                     { "my_is_human_readback", TryReadIsHuman(MyId) },
-                    { "note", "AllowScriptedCommits: restore Human after non-Main native window so Main menus can be extracted" },
+                    { "note", "AllowScriptedCommits: restore Human after DrawPhase so Main menus can be extracted" },
                 });
             }
             return ret;

@@ -39,6 +39,8 @@ namespace YgoMaster
             SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero();
             SoloTemporaryCpuNativeContinuationBlocksRestore();
             SoloTemporaryCpuMyIdBoundaryRestores();
+            OneShotRestoreOnlyDrawPhaseUnderAllowScripted();
+            OwnedResponseNativeWindowClassifier();
             AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
@@ -684,6 +686,92 @@ namespace YgoMaster
                 CampaignCpuWindowClassifier.ClassifyWindow(
                     DuelViewType.WaitInput, (int)DuelMenuActType.BattlePhase),
                 "battle class");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsDrawPhaseWaitInput(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "draw phase wait input");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsDrawPhaseWaitInput(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "main is not draw");
+        }
+
+        /// <summary>
+        /// Option B: under AllowScripted, oneshot only pure DrawPhase — not all non-Main.
+        /// </summary>
+        static void OneShotRestoreOnlyDrawPhaseUnderAllowScripted()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "Draw + AllowScripted oneshots");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "Main never oneshots");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.WaitInput, (int)DuelMenuActType.CheckTiming),
+                "CheckTiming holds lease");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.WaitInput, (int)DuelMenuActType.CheckChain),
+                "CheckChain holds lease");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.WaitInput, (int)DuelMenuActType.BattlePhase),
+                "Battle holds lease");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.RunDialog, 0),
+                "RunDialog holds lease");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    true, DuelViewType.RunList, 0),
+                "RunList holds lease");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldOneShotRestoreAfterNativeForward(
+                    false, DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "PR4a !AllowScripted never oneshots");
+        }
+
+        /// <summary>
+        /// Option A: owned response windows that re-lease TemporaryCpu when HumanOwned.
+        /// </summary>
+        static void OwnedResponseNativeWindowClassifier()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.RunDialog, 0),
+                "activate/select RunDialog");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.RunDialog, 1),
+                "Info RunDialog excluded");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.RunList, 0),
+                "RunList");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.CheckTiming),
+                "CheckTiming");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.CheckChain),
+                "CheckChain");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "Main is scripted path not response hold");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "Draw uses oneshot policy not response classifier");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.BattlePhase),
+                "Battle is non-main lease not response family");
         }
 
         static void ProgressTokenFreshness()

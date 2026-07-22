@@ -235,6 +235,53 @@ namespace YgoMaster
                 && param1 == (int)DuelMenuActType.MainPhase;
         }
 
+        /// <summary>
+        /// Draw-phase WaitInput only. Used for TemporaryCpu one-shot restore so a long
+        /// Draw lease does not eat rival Main extract, without restoring Human after every
+        /// non-Main native window (dialogs / timing / battle).
+        /// </summary>
+        public static bool IsDrawPhaseWaitInput(DuelViewType viewType, int param1)
+        {
+            return viewType == DuelViewType.WaitInput
+                && param1 == (int)DuelMenuActType.DrawPhase;
+        }
+
+        /// <summary>
+        /// Under AllowScriptedCommits, one-shot Human restore after BeginFallback only for
+        /// pure DrawPhase. All other native leases hold until handshake restore.
+        /// </summary>
+        public static bool ShouldOneShotRestoreAfterNativeForward(
+            bool allowScriptedCommits,
+            DuelViewType viewType,
+            int param1)
+        {
+            return allowScriptedCommits && IsDrawPhaseWaitInput(viewType, param1);
+        }
+
+        /// <summary>
+        /// Owned response windows that must re-lease TemporaryCpu when HumanOwned so MD
+        /// does not paint opponent activate/timing UI on the local human seat. Info
+        /// RunDialog (param1==1) is excluded — acting is unresolved.
+        /// </summary>
+        public static bool IsOwnedResponseNativeWindow(DuelViewType viewType, int param1)
+        {
+            if (viewType == DuelViewType.RunDialog)
+            {
+                // 1 = YgomGame.Duel.Engine.DialogType.Info — no acting seat.
+                return param1 != 1;
+            }
+            if (viewType == DuelViewType.RunList)
+            {
+                return true;
+            }
+            if (viewType == DuelViewType.WaitInput)
+            {
+                return param1 == (int)DuelMenuActType.CheckTiming
+                    || param1 == (int)DuelMenuActType.CheckChain;
+            }
+            return false;
+        }
+
         public static string ClassifyWindow(DuelViewType viewType, int param1)
         {
             if (IsMainPhaseWaitInput(viewType, param1))
