@@ -57,6 +57,7 @@ namespace YgoMaster
             OwnedResponseNativeWindowClassifier();
             DualHumanMyIdResponseHoldA4();
             NativeLeaseBoundaryProbeViewsM3();
+            FieldDiffDetectsSetTrapAndFaceChange();
             AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
@@ -1071,6 +1072,69 @@ namespace YgoMaster
                 "TurnChange",
                 CampaignCpuWindowClassifier.ClassifyWindow(DuelViewType.TurnChange, 0),
                 "classify TurnChange");
+        }
+
+        static void FieldDiffDetectsSetTrapAndFaceChange()
+        {
+            AssertTrue(
+                CampaignCpuFieldDiff.IsFieldProbeView(DuelViewType.CardSet, 0),
+                "CardSet is field probe");
+            AssertTrue(
+                CampaignCpuFieldDiff.IsFieldProbeView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "Main WaitInput is field probe");
+            AssertTrue(
+                !CampaignCpuFieldDiff.IsFieldProbeView(DuelViewType.WaitFrame, 0),
+                "WaitFrame not field probe");
+
+            var prev = new List<CampaignCpuZoneCard>();
+            var curr = new List<CampaignCpuZoneCard>
+            {
+                new CampaignCpuZoneCard
+                {
+                    Position = 8,
+                    Index = 0,
+                    UniqueId = 42,
+                    CardId = 12493,
+                    Face = CampaignCpuZoneCard.FaceDownOrNonPublic,
+                    IsTrap = true,
+                },
+            };
+            var added = new List<CampaignCpuZoneCard>();
+            var removed = new List<CampaignCpuZoneCard>();
+            var changed = new List<CampaignCpuZoneCard>();
+            CampaignCpuFieldDiff.Diff(prev, curr, added, removed, changed);
+            AssertEqual(1, added.Count, "added set");
+            AssertEqual(0, removed.Count, "no removed");
+            AssertTrue(added[0].IsTrap, "trap flag");
+            AssertEqual(
+                "set_trap_or_traplike",
+                CampaignCpuFieldDiff.DescribePlayHint(added[0]),
+                "set trap hint");
+
+            var flipped = new List<CampaignCpuZoneCard>
+            {
+                new CampaignCpuZoneCard
+                {
+                    Position = 8,
+                    Index = 0,
+                    UniqueId = 42,
+                    CardId = 12493,
+                    Face = CampaignCpuZoneCard.FaceUpPublic,
+                    IsTrap = true,
+                },
+            };
+            CampaignCpuFieldDiff.Diff(curr, flipped, added, removed, changed);
+            AssertEqual(0, added.Count, "same unique not added");
+            AssertEqual(1, changed.Count, "face change");
+            AssertEqual(
+                "face_up_trap",
+                CampaignCpuFieldDiff.DescribePlayHint(changed[0]),
+                "face-up trap hint");
+
+            string fp1 = CampaignCpuFieldDiff.Fingerprint(curr);
+            string fp2 = CampaignCpuFieldDiff.Fingerprint(flipped);
+            AssertTrue(fp1 != fp2, "fingerprint changes with face");
         }
 
         /// <summary>

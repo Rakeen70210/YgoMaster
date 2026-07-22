@@ -34,6 +34,9 @@ namespace YgoMasterClient
         /// live 2026-07-21 after pack_loaded, before seat_owned.
         /// </summary>
         static bool PendingSeatOwnershipAssert;
+        /// <summary>Last owned-seat field snapshot for probe play-delta logging.</summary>
+        static List<CampaignCpuZoneCard> LastOwnedFieldSnapshot;
+        static string LastOwnedFieldFingerprint;
 
         public static bool IsGateActiveForDuel
         {
@@ -248,6 +251,8 @@ namespace YgoMasterClient
             ViewSeq = 0;
             ActivePack = null;
             DecisionCount = 0;
+            LastOwnedFieldSnapshot = null;
+            LastOwnedFieldFingerprint = null;
             StateMachine.Reset();
         }
 
@@ -429,6 +434,18 @@ namespace YgoMasterClient
                     phase,
                     actingResolved,
                     actingPlayer);
+            }
+
+            // Probe: log owned-seat field cards (incl. face-down ST + is_trap) when plays move.
+            if (ClientSettings.CampaignCpuProbeLogging
+                && CampaignCpuFieldDiff.IsFieldProbeView(viewType, param1))
+            {
+                TryWriteOwnedFieldProbe(
+                    viewType,
+                    param1,
+                    turn,
+                    turnPlayer,
+                    phase);
             }
 
             // Check path: same base fields as arming; legal fingerprint unavailable until extract.
@@ -937,6 +954,172 @@ namespace YgoMasterClient
                 { "my_is_human_readback", TryReadIsHuman(MyId) },
                 { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
             });
+        }
+
+        /// <summary>
+        /// Probe-only: snapshot OwnedSeat field zones 0–12, emit delta when cards change.
+        /// Solo engine exposes face-down card_ids locally so we can label set traps vs spells.
+        /// </summary>
+        static void TryWriteOwnedFieldProbe(
+            DuelViewType viewType,
+            int param1,
+            int turn,
+            int turnPlayer,
+            int phase)
+        {
+            if (!IsEngineWorkReady())
+            {
+                return;
+            }
+            List<CampaignCpuZoneCard> current;
+            try
+            {
+                current = SnapshotOwnedFieldZones(OwnedSeat);
+            }
+            catch
+            {
+                return;
+            }
+            string fp = CampaignCpuFieldDiff.Fingerprint(current);
+            if (string.Equals(fp, LastOwnedFieldFingerprint, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            var added = new List<CampaignCpuZoneCard>();
+            var removed = new List<CampaignCpuZoneCard>();
+            var changed = new List<CampaignCpuZoneCard>();
+            CampaignCpuFieldDiff.Diff(LastOwnedFieldSnapshot, current, added, removed, changed);
+
+            var setFacedownSt = new List<object>();
+            var setTraps = new List<object>();
+            for (int i = 0; i < added.Count; i++)
+            {
+                CampaignCpuZoneCard c = added[i];
+                if (c == null || !c.IsSpellTrapZone || !c.IsFaceDown)
+                {
+                    continue;
+                }
+                Dictionary<string, object> d = c.ToAuditDict();
+                d["play_hint"] = CampaignCpuFieldDiff.DescribePlayHint(c);
+                setFacedownSt.Add(d);
+                if (c.IsTrap)
+                {
+                    setTraps.Add(d);
+                }
+            }
+
+            CampaignCpuAuditLog.Write("owned_field_delta", new Dictionary<string, object>
+            {
+                { "duel_generation", DuelGeneration },
+                { "view_seq", ViewSeq },
+                { "view", viewType.ToString() },
+                { "param1", param1 },
+                { "window_class", CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                { "turn", turn },
+                { "turn_player", turnPlayer },
+                { "phase", phase },
+                { "owned_seat", OwnedSeat },
+                { "note", "card_id is engine-local (solo); face-down ids are known to the client engine" },
+                { "added", CampaignCpuFieldDiff.ToAuditList(added) },
+                { "removed", CampaignCpuFieldDiff.ToAuditList(removed) },
+                { "changed", CampaignCpuFieldDiff.ToAuditList(changed) },
+                { "set_facedown_spell_trap", setFacedownSt },
+                { "set_facedown_traps", setTraps },
+                { "field", CampaignCpuFieldDiff.ToAuditList(current) },
+                { "field_fingerprint", fp },
+            });
+
+            // One line per newly set face-down ST for easy grepping.
+            for (int i = 0; i < added.Count; i++)
+            {
+                CampaignCpuZoneCard c = added[i];
+                if (c == null || !c.IsSpellTrapZone || !c.IsFaceDown)
+                {
+                    continue;
+                }
+                CampaignCpuAuditLog.Write("owned_card_set", new Dictionary<string, object>
+                {
+                    { "duel_generation", DuelGeneration },
+                    { "view_seq", ViewSeq },
+                    { "turn", turn },
+                    { "turn_player", turnPlayer },
+                    { "phase", phase },
+                    { "owned_seat", OwnedSeat },
+                    { "position", c.Position },
+                    { "card_id", c.CardId },
+                    { "unique_id", c.UniqueId },
+                    { "face", c.Face },
+                    { "is_trap", c.IsTrap },
+                    { "is_trap_monster", c.IsTrapMonster },
+                    { "play_hint", CampaignCpuFieldDiff.DescribePlayHint(c) },
+                    { "view", viewType.ToString() },
+                });
+            }
+
+            LastOwnedFieldSnapshot = current;
+            LastOwnedFieldFingerprint = fp;
+        }
+
+        static List<CampaignCpuZoneCard> SnapshotOwnedFieldZones(int player)
+        {
+            var cards = new List<CampaignCpuZoneCard>();
+            // Monster 0–6 + Spell/Trap 7–12 (single-card zones; index usually 0).
+            for (int pos = 0; pos <= CampaignCpuZoneCard.PosSpellTrapMax; pos++)
+            {
+                int n = 0;
+                try
+                {
+                    n = DuelDll.CampaignCpu_GetCardNum(player, pos);
+                }
+                catch
+                {
+                    continue;
+                }
+                if (n <= 0)
+                {
+                    continue;
+                }
+                for (int idx = 0; idx < n; idx++)
+                {
+                    int uid = 0;
+                    int cardId = 0;
+                    int face = CampaignCpuZoneCard.FaceDownOrNonPublic;
+                    bool isTrap = false;
+                    bool isTrapMonster = false;
+                    try
+                    {
+                        uid = DuelDll.CampaignCpu_GetCardUniqueId(player, pos, idx);
+                        if (uid > 0)
+                        {
+                            cardId = DuelDll.CampaignCpu_GetCardIdByUniqueId(uid);
+                        }
+                        face = DuelDll.CampaignCpu_GetCardFace(player, pos, idx);
+                        // locate == position for single-card field zones.
+                        isTrap = DuelDll.CampaignCpu_IsThisTrap(player, pos);
+                        isTrapMonster = DuelDll.CampaignCpu_IsThisTrapMonster(player, pos) != 0;
+                    }
+                    catch
+                    {
+                        // Keep partial card row; still useful if id/face succeeded.
+                    }
+                    if (uid <= 0 && cardId <= 0)
+                    {
+                        continue;
+                    }
+                    cards.Add(new CampaignCpuZoneCard
+                    {
+                        Position = pos,
+                        Index = idx,
+                        UniqueId = uid,
+                        CardId = cardId,
+                        Face = face,
+                        IsTrap = isTrap,
+                        IsTrapMonster = isTrapMonster,
+                    });
+                }
+            }
+            return cards;
         }
 
         static void WriteActingPlayerProbe(

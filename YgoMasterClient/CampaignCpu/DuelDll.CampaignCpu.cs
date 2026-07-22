@@ -198,5 +198,19 @@ namespace YgoMasterClient
         {
             return DLL_DuelIsHuman(player);
         }
+
+        /// <summary>
+        /// Field-zone trap query. <paramref name="locate"/> is the engine zone locate
+        /// (field positions 0–12 for single-card zones).
+        /// </summary>
+        public static bool CampaignCpu_IsThisTrap(int player, int locate)
+        {
+            return DLL_DuelIsThisTrap(player, locate);
+        }
+
+        public static int CampaignCpu_IsThisTrapMonster(int player, int locate)
+        {
+            return DLL_DuelIsThisTrapMonster(player, locate);
+        }
     }
 }
