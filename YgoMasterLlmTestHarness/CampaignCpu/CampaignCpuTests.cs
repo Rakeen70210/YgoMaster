@@ -57,6 +57,7 @@ namespace YgoMaster
             OwnedResponseNativeWindowClassifier();
             DualHumanMyIdResponseHoldA4();
             NativeLeaseBoundaryProbeViewsM3();
+            OwnedMainCaptureBoundaryA5();
             FieldDiffDetectsSetTrapAndFaceChange();
             AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
@@ -1072,6 +1073,154 @@ namespace YgoMaster
                 "TurnChange",
                 CampaignCpuWindowClassifier.ClassifyWindow(DuelViewType.TurnChange, 0),
                 "classify TurnChange");
+        }
+
+        /// <summary>
+        /// A5: PhaseChange → Main1/Main2 for OwnedSeat is the capture boundary
+        /// (live: param2 = new phase; GetCurrentPhase is still old). Response re-lease
+        /// (A4) remains independent; stale MyID on owned Main is fail-closed.
+        /// </summary>
+        static void OwnedMainCaptureBoundaryA5()
+        {
+            const int owned = 1;
+            const int myId = 0;
+
+            // Live-shaped Main1 entry: param1=owned, param2=Main1, current phase still Standby.
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.PhaseChange,
+                    param1: owned,
+                    param2: (int)DuelPhase.Main1,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "PhaseChange → Main1 owned is capture boundary");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.PhaseChange,
+                    param1: owned,
+                    param2: (int)DuelPhase.Main2,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "PhaseChange → Main2 owned is capture boundary");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.PhaseChange,
+                    param1: owned,
+                    param2: (int)DuelPhase.Main1,
+                    turnPlayer: myId,
+                    ownedSeat: owned),
+                "human turn PhaseChange Main is not owned capture");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.PhaseChange,
+                    param1: owned,
+                    param2: (int)DuelPhase.Standby,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "Standby entry is not Main capture");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.PhaseChange,
+                    param1: owned,
+                    param2: (int)DuelPhase.Draw,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "Draw entry is not Main capture (preserve draw FX)");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.MainPhase,
+                    param2: 0,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "WaitInput Main is not PhaseChange capture");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                    DuelViewType.RunDialog,
+                    param1: 0,
+                    param2: (int)DuelPhase.Main1,
+                    turnPlayer: owned,
+                    ownedSeat: owned),
+                "RunDialog never A5 capture (A4 path)");
+
+            // Stale MyID on owned-turn Main → fail-closed, never pass-through commit.
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase,
+                    actingResolved: true,
+                    actingPlayer: myId,
+                    turnPlayer: owned,
+                    ownedSeat: owned,
+                    myId: myId),
+                "stale MyID + owned turn_player Main");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase,
+                    actingResolved: true,
+                    actingPlayer: myId,
+                    turnPlayer: myId,
+                    ownedSeat: owned,
+                    myId: myId),
+                "true human Main is not stale owned");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase,
+                    actingResolved: true,
+                    actingPlayer: owned,
+                    turnPlayer: owned,
+                    ownedSeat: owned,
+                    myId: myId),
+                "fresh owned acting is not stale");
+
+            // SM: response lease → owned Main PhaseChange restores once (no acting required).
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            var entry = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1,
+                DuelViewType.RunDialog,
+                0, 0, 0,
+                actingSeat: myId,
+                turn: 0,
+                phase: (int)DuelPhase.Main1);
+            sm.BeginNativeLease(
+                "dual_human_myid_response_hold", 1, 81, entry, owned, DateTime.UtcNow);
+
+            // Still in Draw for owned turn — no restore.
+            var drawChange = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.PhaseChange, owned, (int)DuelPhase.Draw, 0, -1, 1, (int)DuelPhase.Null);
+            string deny;
+            AssertTrue(
+                !sm.CanRestoreOwnedMainCaptureBoundary(
+                    1, 119, drawChange, DuelViewType.PhaseChange,
+                    param1: owned, param2: (int)DuelPhase.Draw,
+                    turnPlayer: owned, ownedSeat: owned, out deny),
+                "Draw PhaseChange holds CPU");
+            AssertEqual("not_owned_main_capture_boundary", deny, "draw deny");
+
+            // Main1 PhaseChange — restore.
+            var mainChange = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                1, DuelViewType.PhaseChange, owned, (int)DuelPhase.Main1, 0, -1, 1, (int)DuelPhase.Standby);
+            AssertTrue(
+                sm.CanRestoreOwnedMainCaptureBoundary(
+                    1, 130, mainChange, DuelViewType.PhaseChange,
+                    param1: owned, param2: (int)DuelPhase.Main1,
+                    turnPlayer: owned, ownedSeat: owned, out deny),
+                "Main1 PhaseChange can restore");
+            sm.RestoreHumanOwned();
+            AssertEqual(SoloTemporaryCpuState.HumanOwned, sm.State, "HumanOwned after A5");
+
+            // A4 still re-leases response after restore.
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    sm.State, DuelViewType.RunDialog, 0),
+                "A4 re-lease after A5 restore");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    sm.State, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "Main never A4 response hold");
         }
 
         static void FieldDiffDetectsSetTrapAndFaceChange()

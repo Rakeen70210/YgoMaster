@@ -471,6 +471,63 @@ namespace YgoMaster
         }
 
         /// <summary>
+        /// True for Main1/Main2 phase ids (not Battle/End/Draw/Standby).
+        /// </summary>
+        public static bool IsMainPhaseId(int phaseId)
+        {
+            return phaseId == (int)DuelPhase.Main1 || phaseId == (int)DuelPhase.Main2;
+        }
+
+        /// <summary>
+        /// A5 owned-Main capture boundary: PhaseChange entering Main1/Main2 for OwnedSeat.
+        /// Live (2026-07-22): PhaseChange.param1 = seat, param2 = **new** phase id;
+        /// DLL_DuelGetCurrentPhase still reports the **old** phase at callback time.
+        /// Prefer param2 over current phase. Does not apply to response windows.
+        /// </summary>
+        public static bool IsOwnedMainCapturePhaseChange(
+            DuelViewType viewType,
+            int param1,
+            int param2,
+            int turnPlayer,
+            int ownedSeat)
+        {
+            if (viewType != DuelViewType.PhaseChange)
+            {
+                return false;
+            }
+            if (turnPlayer != ownedSeat || param1 != ownedSeat)
+            {
+                return false;
+            }
+            return IsMainPhaseId(param2);
+        }
+
+        /// <summary>
+        /// Stale MyID authority on an owned-turn Main WaitInput: under dual-Human residual,
+        /// MD can report acting=MyId while turn_player is OwnedSeat. Never score/commit that
+        /// sample as owned Main; fail closed to native lease instead of pass_through_myid.
+        /// </summary>
+        public static bool IsStaleMyIdOwnedMainWaitInput(
+            DuelViewType viewType,
+            int param1,
+            bool actingResolved,
+            int actingPlayer,
+            int turnPlayer,
+            int ownedSeat,
+            int myId)
+        {
+            if (!IsMainPhaseWaitInput(viewType, param1))
+            {
+                return false;
+            }
+            if (turnPlayer != ownedSeat)
+            {
+                return false;
+            }
+            return actingResolved && actingPlayer == myId;
+        }
+
+        /// <summary>
         /// M3 owned-Main handoff probe: candidate views while NativeLease is active.
         /// Instrumentation only — does not change restore policy.
         /// </summary>

@@ -141,19 +141,12 @@ namespace YgoMaster
         }
 
         /// <summary>
-        /// Restoration requires generation match, semantic progress past entry,
-        /// resolved acting seat at boundary, and optional CpuThinking evidence.
+        /// Shared lease-progress gates for any NativeLease restore (generation, seq, token).
         /// </summary>
-        public bool CanRestoreFromNativeLease(
+        bool TryLeaseProgressGates(
             int currentDuelGeneration,
             ulong currentViewSeq,
             CampaignCpuProgressToken currentToken,
-            int? resolvedActingSeat,
-            int ownedSeat,
-            int myId,
-            bool requireCpuThinking,
-            DuelViewType viewType,
-            int param1,
             out string denyReason)
         {
             denyReason = null;
@@ -176,6 +169,68 @@ namespace YgoMaster
                 currentToken, ActiveLease.EntryProgressToken))
             {
                 denyReason = "semantic_token_unchanged";
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// A5: restore Human on owned-turn PhaseChange entering Main1/Main2.
+        /// Does not require acting-seat resolution (PhaseChange has no acting seat live).
+        /// Never treats response windows as capture boundaries.
+        /// </summary>
+        public bool CanRestoreOwnedMainCaptureBoundary(
+            int currentDuelGeneration,
+            ulong currentViewSeq,
+            CampaignCpuProgressToken currentToken,
+            DuelViewType viewType,
+            int param1,
+            int param2,
+            int turnPlayer,
+            int ownedSeat,
+            out string denyReason)
+        {
+            if (!TryLeaseProgressGates(
+                currentDuelGeneration, currentViewSeq, currentToken, out denyReason))
+            {
+                return false;
+            }
+            if (IsNativeContinuationView(viewType, param1))
+            {
+                denyReason = "native_continuation_view";
+                return false;
+            }
+            if (!CampaignCpuWindowClassifier.IsOwnedMainCapturePhaseChange(
+                viewType, param1, param2, turnPlayer, ownedSeat))
+            {
+                denyReason = "not_owned_main_capture_boundary";
+                return false;
+            }
+            denyReason = null;
+            return true;
+        }
+
+        /// <summary>
+        /// Restoration requires generation match, semantic progress past entry,
+        /// resolved acting seat at boundary, and optional CpuThinking evidence.
+        /// A5 PhaseChange capture uses <see cref="CanRestoreOwnedMainCaptureBoundary"/> instead.
+        /// </summary>
+        public bool CanRestoreFromNativeLease(
+            int currentDuelGeneration,
+            ulong currentViewSeq,
+            CampaignCpuProgressToken currentToken,
+            int? resolvedActingSeat,
+            int ownedSeat,
+            int myId,
+            bool requireCpuThinking,
+            DuelViewType viewType,
+            int param1,
+            out string denyReason)
+        {
+            denyReason = null;
+            if (!TryLeaseProgressGates(
+                currentDuelGeneration, currentViewSeq, currentToken, out denyReason))
+            {
                 return false;
             }
             if (!resolvedActingSeat.HasValue)

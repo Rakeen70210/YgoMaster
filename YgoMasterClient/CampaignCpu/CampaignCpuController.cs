@@ -504,7 +504,47 @@ namespace YgoMasterClient
 
                 string deny;
                 bool requireCpuThinking = false; // PR4a spike may enable
-                if (StateMachine.CanRestoreFromNativeLease(
+
+                // A5: restore Human on owned-turn PhaseChange → Main1/Main2 *before*
+                // forwarding. Live M3: param2 is the new phase; GetCurrentPhase is still old;
+                // OwnedSeat remains CPU until this flip. Do not score this boundary.
+                if (StateMachine.CanRestoreOwnedMainCaptureBoundary(
+                    DuelGeneration,
+                    ViewSeq,
+                    progress,
+                    viewType,
+                    param1,
+                    param2,
+                    turnPlayer,
+                    OwnedSeat,
+                    out deny))
+                {
+                    TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
+                    var lease = StateMachine.ActiveLease;
+                    StateMachine.RestoreHumanOwned();
+                    CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
+                    {
+                        { "reason", "owned_main_capture_boundary" },
+                        { "entry_view_seq", lease != null ? lease.EntryViewSeq : 0UL },
+                        { "entry_reason", lease != null ? lease.Reason : null },
+                        { "exit_view_seq", ViewSeq },
+                        { "window_class",
+                            CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                        { "turn", turn },
+                        { "turn_player", turnPlayer },
+                        { "phase_current", phase },
+                        { "phase_new", param2 },
+                        { "phase_change_seat", param1 },
+                        { "acting", actingResolved ? actingPlayer : -1 },
+                        { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                        { "my_is_human_readback", TryReadIsHuman(MyId) },
+                        { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
+                        { "deny_was", deny },
+                    });
+                    // Fall through as HumanOwned. PhaseChange is not a scripted window and
+                    // acting is unresolved → single original forward below (no score/commit).
+                }
+                else if (StateMachine.CanRestoreFromNativeLease(
                     DuelGeneration,
                     ViewSeq,
                     progress,
@@ -521,6 +561,7 @@ namespace YgoMasterClient
                     StateMachine.RestoreHumanOwned();
                     CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
                     {
+                        { "reason", "handshake_boundary" },
                         { "entry_view_seq", lease != null ? lease.EntryViewSeq : 0UL },
                         { "entry_reason", lease != null ? lease.Reason : null },
                         { "exit_view_seq", ViewSeq },
@@ -559,6 +600,7 @@ namespace YgoMasterClient
             // opponent trap/chain RunDialog + CheckChain to MyId (run_dialog_user=0).
             // Re-lease OwnedSeat→CPU for every response-class window while HumanOwned,
             // before pass_through_myid — independent of acting resolution.
+            // Response leases never one-shot restore (A5 does not weaken this).
             if (CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
                 StateMachine.State, viewType, param1))
             {
@@ -586,6 +628,16 @@ namespace YgoMasterClient
 
             if (actingPlayer == MyId)
             {
+                // A5 fail-closed: MyId sample on owned-turn Main is stale dual-Human
+                // residual — never pass-through as human Main; never score/commit. Re-lease.
+                if (CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
+                    viewType, param1, actingResolved, actingPlayer, turnPlayer, OwnedSeat, MyId))
+                {
+                    return BeginFallback(
+                        id, param1, param2, param3, progress,
+                        "stale_myid_owned_main", originalRunEffect);
+                }
+
                 // Human seat: never CampaignCpu commit (PR2b pass criterion).
                 // Response-class windows already re-leased above (A4).
                 if (ClientSettings.CampaignCpuProbeLogging
