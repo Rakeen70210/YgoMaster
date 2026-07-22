@@ -56,6 +56,7 @@ namespace YgoMaster
             OneShotRestoreOnlyDrawPhaseUnderAllowScripted();
             OwnedResponseNativeWindowClassifier();
             DualHumanMyIdResponseHoldA4();
+            NativeLeaseBoundaryProbeViewsM3();
             AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
@@ -1008,6 +1009,68 @@ namespace YgoMaster
                 1, DuelViewType.WaitInput, 2, 0, 0, 1, 1, 0, "y");
             AssertTrue(!CampaignCpuProgressToken.IsFreshSemanticProgress(b, a), "same not fresh");
             AssertTrue(CampaignCpuProgressToken.IsFreshSemanticProgress(c, a), "changed is fresh");
+        }
+
+        /// <summary>
+        /// M3: pure classification of owned-Main boundary probe candidates.
+        /// Does not change TemporaryCpu restore policy.
+        /// </summary>
+        static void NativeLeaseBoundaryProbeViewsM3()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.TurnChange, 0),
+                "TurnChange");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.PhaseChange, 0),
+                "PhaseChange");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.CpuThinking, 0),
+                "CpuThinking");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.CutinDraw, 0),
+                "CutinDraw");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "WaitInput_DrawPhase");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "WaitInput_MainPhase");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.BattlePhase),
+                "BattlePhase not boundary");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.RunDialog, 0),
+                "RunDialog not M3 boundary (A4 response path)");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    DuelViewType.WaitFrame, 0),
+                "WaitFrame not M3 boundary candidate");
+
+            AssertEqual(
+                "PhaseChange",
+                CampaignCpuWindowClassifier.BoundaryProbeKind(DuelViewType.PhaseChange, 0),
+                "phase probe kind");
+            AssertEqual(
+                "WaitInput_MainPhase",
+                CampaignCpuWindowClassifier.BoundaryProbeKind(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "main probe kind");
+            AssertEqual(
+                "CpuThinking",
+                CampaignCpuWindowClassifier.ClassifyWindow(DuelViewType.CpuThinking, 0),
+                "classify CpuThinking");
+            AssertEqual(
+                "TurnChange",
+                CampaignCpuWindowClassifier.ClassifyWindow(DuelViewType.TurnChange, 0),
+                "classify TurnChange");
         }
 
         /// <summary>

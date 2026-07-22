@@ -470,11 +470,75 @@ namespace YgoMaster
             return "dual_human_unknown_response_hold";
         }
 
+        /// <summary>
+        /// M3 owned-Main handoff probe: candidate views while NativeLease is active.
+        /// Instrumentation only — does not change restore policy.
+        /// </summary>
+        public static bool IsNativeLeaseBoundaryProbeView(DuelViewType viewType, int param1)
+        {
+            if (viewType == DuelViewType.TurnChange
+                || viewType == DuelViewType.PhaseChange
+                || viewType == DuelViewType.CpuThinking
+                || viewType == DuelViewType.CutinDraw)
+            {
+                return true;
+            }
+            if (viewType == DuelViewType.WaitInput)
+            {
+                return param1 == (int)DuelMenuActType.DrawPhase
+                    || param1 == (int)DuelMenuActType.MainPhase;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Stable probe kind string for M3 boundary audits (includes PhaseChange/TurnChange).
+        /// </summary>
+        public static string BoundaryProbeKind(DuelViewType viewType, int param1)
+        {
+            if (viewType == DuelViewType.WaitInput)
+            {
+                if (param1 == (int)DuelMenuActType.DrawPhase)
+                {
+                    return "WaitInput_DrawPhase";
+                }
+                if (param1 == (int)DuelMenuActType.MainPhase)
+                {
+                    return "WaitInput_MainPhase";
+                }
+                return "WaitInput_" + ((DuelMenuActType)param1).ToString();
+            }
+            if (viewType == DuelViewType.TurnChange
+                || viewType == DuelViewType.PhaseChange
+                || viewType == DuelViewType.CpuThinking
+                || viewType == DuelViewType.CutinDraw)
+            {
+                return viewType.ToString();
+            }
+            return ClassifyWindow(viewType, param1);
+        }
+
         public static string ClassifyWindow(DuelViewType viewType, int param1)
         {
             if (IsMainPhaseWaitInput(viewType, param1))
             {
                 return "WaitInput_MainPhase";
+            }
+            if (viewType == DuelViewType.TurnChange)
+            {
+                return "TurnChange";
+            }
+            if (viewType == DuelViewType.PhaseChange)
+            {
+                return "PhaseChange";
+            }
+            if (viewType == DuelViewType.CpuThinking)
+            {
+                return "CpuThinking";
+            }
+            if (viewType == DuelViewType.CutinDraw)
+            {
+                return "CutinDraw";
             }
             if (viewType == DuelViewType.RunDialog)
             {

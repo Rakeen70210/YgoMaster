@@ -405,6 +405,32 @@ namespace YgoMasterClient
                     actingPlayer);
             }
 
+            // M3: owned-Main boundary candidates while NativeLease is active (no policy change).
+            // Capture acting seat BEFORE any TemporaryCpu restore flip below.
+            if (StateMachine.State == SoloTemporaryCpuState.NativeLease
+                && viewType == DuelViewType.CpuThinking)
+            {
+                // Record real CpuThinking before the boundary probe line for this view.
+                StateMachine.MarkCpuThinkingObserved();
+            }
+            if (ClientSettings.CampaignCpuProbeLogging
+                && StateMachine.State == SoloTemporaryCpuState.NativeLease
+                && CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(viewType, param1))
+            {
+                WriteOwnedMainBoundaryProbe(
+                    viewType,
+                    param1,
+                    param2,
+                    param3,
+                    doCommandUser,
+                    runDialogUser,
+                    turnPlayer,
+                    turn,
+                    phase,
+                    actingResolved,
+                    actingPlayer);
+            }
+
             // Check path: same base fields as arming; legal fingerprint unavailable until extract.
             var progress = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
                 DuelGeneration,
@@ -451,8 +477,10 @@ namespace YgoMasterClient
             // NativeLease restore handshake
             if (StateMachine.State == SoloTemporaryCpuState.NativeLease)
             {
-                // Track CpuThinking-like continuation heuristically via non-decision wait frames
-                if (viewType == DuelViewType.WaitFrame || viewType == DuelViewType.CursorSet)
+                // Prefer real CpuThinking; keep WaitFrame/CursorSet heuristic as secondary evidence.
+                if (viewType == DuelViewType.CpuThinking
+                    || viewType == DuelViewType.WaitFrame
+                    || viewType == DuelViewType.CursorSet)
                 {
                     StateMachine.MarkCpuThinkingObserved();
                 }
@@ -851,7 +879,64 @@ namespace YgoMasterClient
             {
                 return true;
             }
+            // M3 candidates also appear in general acting probes when decision-family is sparse.
+            if (CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(viewType, param1))
+            {
+                return true;
+            }
             return false;
+        }
+
+        /// <summary>
+        /// M3 LogOnly instrumentation: candidate pre-Main handoff views under NativeLease.
+        /// Does not flip player types or alter restore policy.
+        /// </summary>
+        static void WriteOwnedMainBoundaryProbe(
+            DuelViewType viewType,
+            int param1,
+            int param2,
+            int param3,
+            int doCommandUser,
+            int runDialogUser,
+            int turnPlayer,
+            int turn,
+            int phase,
+            bool actingResolved,
+            int actingPlayer)
+        {
+            var lease = StateMachine.ActiveLease;
+            int phaseMain1 = (int)DuelPhase.Main1;
+            int phaseMain2 = (int)DuelPhase.Main2;
+            CampaignCpuAuditLog.Write("owned_main_boundary_probe", new Dictionary<string, object>
+            {
+                { "duel_generation", DuelGeneration },
+                { "view_seq", ViewSeq },
+                { "view", viewType.ToString() },
+                { "param1", param1 },
+                { "param2", param2 },
+                { "param3", param3 },
+                { "probe_kind", CampaignCpuWindowClassifier.BoundaryProbeKind(viewType, param1) },
+                { "window_class", CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                { "turn", turn },
+                { "turn_player", turnPlayer },
+                { "phase", phase },
+                { "turn_player_is_owned", turnPlayer == OwnedSeat },
+                { "phase_is_main", phase == phaseMain1 || phase == phaseMain2 },
+                { "do_command_user", doCommandUser },
+                { "run_dialog_user", runDialogUser },
+                { "acting_resolved", actingResolved },
+                // Acting seat sampled before any TemporaryCpu restore flip on this callback.
+                { "acting_player_before_flip", actingResolved ? actingPlayer : -1 },
+                { "owned_seat", OwnedSeat },
+                { "my_id", MyId },
+                { "lease_reason", lease != null ? lease.Reason : null },
+                { "lease_entry_view_seq", lease != null ? lease.EntryViewSeq : 0UL },
+                { "lease_entry_reason", lease != null ? lease.Reason : null },
+                { "sm_state", StateMachine.State.ToString() },
+                { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                { "my_is_human_readback", TryReadIsHuman(MyId) },
+                { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
+            });
         }
 
         static void WriteActingPlayerProbe(
