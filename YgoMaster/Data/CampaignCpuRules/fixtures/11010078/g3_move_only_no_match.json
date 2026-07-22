@@ -1,0 +1,55 @@
+{
+  "fixture_id": "g3_move_only_no_match",
+  "golden_case": "G3",
+  "source": {
+    "kind": "derived_from_g1_ablation",
+    "parent_fixture": "g1_opening_a_main1",
+    "notes": "Main1 menu with only MovePhase Battle and empty hand \u2192 no priority when + zero fallback scores \u2192 NativeLease no_match. (End Phase alone would hit penalize-early-end -20 and still RuleCommit.)"
+  },
+  "observation": {
+    "chapter_id": 11010078,
+    "view_type": "WaitInput",
+    "view_param1_name": "MainPhase",
+    "acting_player": 1,
+    "owned_seat": 1,
+    "turn": 1,
+    "turn_player": 1,
+    "phase": 2,
+    "self_lp": 5000,
+    "opp_lp": 5000,
+    "is_main_phase_wait_input": true,
+    "is_multi_select": false,
+    "window_class": "WaitInput_MainPhase",
+    "self_hand_card_ids": [],
+    "self_field_face_up_card_ids": [],
+    "opp_field_face_up_card_ids": [
+      12522
+    ],
+    "legal_actions": [
+      {
+        "action_id": 0,
+        "kind": "MovePhase",
+        "command": "Attack",
+        "phase": "Battle",
+        "card_id": 0,
+        "position": 0,
+        "index": 0,
+        "dialog_result": 0,
+        "cancel_decide": false,
+        "label": "Battle Phase",
+        "is_mechanical": false,
+        "target_scope": "",
+        "player": 0,
+        "identity": "MovePhase|Battle|0|0|3|"
+      }
+    ],
+    "legal_fingerprint": "MovePhase|Battle|0|0|3|"
+  },
+  "expect": {
+    "route": "FallbackNative",
+    "reason": "no_match",
+    "rule_id": "",
+    "action_identity": null,
+    "matched": false
+  }
+}

@@ -4,7 +4,9 @@
   "deck_hash": "sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835",
   "meta": {
     "name": "LE 11010078 DSOD Pt. 2 slice",
-    "archetype": "seto-kaiba-dsod"
+    "archetype": "seto-kaiba-dsod",
+    "pr3_contract": "fixtures/11010078/CONTRACT.json",
+    "notes": "Priority prefer list mined from live pr3_capture_shadow Main1 menu (2026-07-21). Top: SummonSp Kaiser Vorse Raider 12485; next: Summon Sage with Eyes of Blue 12292; then Action Solidarity 8344."
   },
   "policy": {
     "on_no_match": "native_cpu",
@@ -29,12 +31,12 @@
       "when": {
         "phase_in": ["Main1"],
         "turn_lte": 5,
-        "self_has_card_id": [12488, 12253, 4007]
+        "self_has_card_id": [12485, 12292, 8344]
       },
       "prefer": [
-        { "command": "SummonSp", "card_id": 12488 },
-        { "command": "Action", "card_id": 12253 },
-        { "command": "Summon", "card_id": 4007 }
+        { "command": "SummonSp", "card_id": 12485 },
+        { "command": "Summon", "card_id": 12292 },
+        { "command": "Action", "card_id": 8344 }
       ],
       "score_bonus": 50
     },
@@ -45,11 +47,11 @@
       "when": {
         "phase_in": ["Main1"],
         "turn_lte": 5,
-        "self_has_card_id": [12253, 4007]
+        "self_has_card_id": [12292, 8344]
       },
       "prefer": [
-        { "command": "Action", "card_id": 12253 },
-        { "command": "Summon", "card_id": 4007 }
+        { "command": "Summon", "card_id": 12292 },
+        { "command": "Action", "card_id": 8344 }
       ],
       "score_bonus": 40
     }

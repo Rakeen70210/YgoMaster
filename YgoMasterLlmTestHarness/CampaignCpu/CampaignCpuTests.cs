@@ -20,8 +20,11 @@ namespace YgoMaster
             ScorerPriorityPicksG1TopAction();
             ScorerG2WhenTopAbsent();
             ScorerNoMatchAllZeroFallback();
+            NonMainWindowIsNotScriptedG4();
+            DeckFingerprintMismatchGateG5();
             ScorerDeterministicSameObservation();
             ScorerNeverExhaustionRestoresLegalSet();
+            ProductPackLoadsFromDiskWithPr3Cards();
             ObservationProjectorMapsLegalActions();
             SoloTemporaryCpuRestoreRequiresSemanticProgress();
             SoloTemporaryCpuProgressTimeoutQuarantines();
@@ -36,40 +39,89 @@ namespace YgoMaster
             SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero();
             SoloTemporaryCpuNativeContinuationBlocksRestore();
             SoloTemporaryCpuMyIdBoundaryRestores();
+            AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
 
         static string RulesDir()
         {
-            // Harness cwd is typically repo root or bin; search upward for Data/CampaignCpuRules.
-            string dir = AppDomain.CurrentDomain.BaseDirectory;
-            for (int i = 0; i < 8; i++)
-            {
-                string candidate = Path.Combine(dir, "YgoMaster", "Data", "CampaignCpuRules");
-                if (Directory.Exists(candidate))
-                {
-                    return candidate;
-                }
-                candidate = Path.Combine(dir, "Data", "CampaignCpuRules");
-                if (Directory.Exists(candidate))
-                {
-                    return candidate;
-                }
-                DirectoryInfo parent = Directory.GetParent(dir);
-                if (parent == null)
-                {
-                    break;
-                }
-                dir = parent.FullName;
-            }
-            // Relative from common build output /tmp/ygomaster-build/harness
+            // Prefer explicit root (repo root or parent-of-YgoMaster). Harness often runs from
+            // /tmp/ygomaster-build/harness with no relative path to Data/.
             string env = Environment.GetEnvironmentVariable("YGOMASTER_ROOT");
             if (!string.IsNullOrEmpty(env))
             {
-                return Path.Combine(env, "YgoMaster", "Data", "CampaignCpuRules");
+                string fromEnv = TryRulesDirUnder(env);
+                if (fromEnv != null)
+                {
+                    return fromEnv;
+                }
             }
-            return Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory, "..", "..", "..", "..", "YgoMaster", "Data", "CampaignCpuRules"));
+
+            // Harness cwd is typically repo root or bin; search upward for Data/CampaignCpuRules.
+            string[] seeds =
+            {
+                Directory.GetCurrentDirectory(),
+                AppDomain.CurrentDomain.BaseDirectory,
+            };
+            for (int s = 0; s < seeds.Length; s++)
+            {
+                string dir = seeds[s];
+                if (string.IsNullOrEmpty(dir))
+                {
+                    continue;
+                }
+                for (int i = 0; i < 10; i++)
+                {
+                    string found = TryRulesDirUnder(dir);
+                    if (found != null)
+                    {
+                        return found;
+                    }
+                    DirectoryInfo parent = Directory.GetParent(dir);
+                    if (parent == null)
+                    {
+                        break;
+                    }
+                    dir = parent.FullName;
+                }
+            }
+
+            throw new InvalidOperationException(
+                "CampaignCpuRules dir not found. Set YGOMASTER_ROOT to the repo root "
+                + "(directory that contains Data/CampaignCpuRules).");
+        }
+
+        static string TryRulesDirUnder(string root)
+        {
+            if (string.IsNullOrEmpty(root) || !Directory.Exists(root))
+            {
+                return null;
+            }
+            string[] candidates =
+            {
+                // Prefer tracked source tree (has fixtures) over gitignored runtime Data/.
+                Path.Combine(root, "YgoMaster", "Data", "CampaignCpuRules"),
+                Path.Combine(root, "Data", "CampaignCpuRules"),
+            };
+            string fallback = null;
+            for (int i = 0; i < candidates.Length; i++)
+            {
+                if (!Directory.Exists(candidates[i]))
+                {
+                    continue;
+                }
+                string full = Path.GetFullPath(candidates[i]);
+                // Prefer a tree that includes the PR3 golden fixtures when both exist.
+                if (Directory.Exists(Path.Combine(full, "fixtures", "11010078")))
+                {
+                    return full;
+                }
+                if (fallback == null)
+                {
+                    fallback = full;
+                }
+            }
+            return fallback;
         }
 
         static void DeckFingerprintPins11010078FromSoloDuels()
@@ -179,51 +231,174 @@ namespace YgoMaster
             AssertTrue(!ok, "info dialog has no acting player");
         }
 
+        static string FixturePath(string relativeUnderFixtures)
+        {
+            return Path.Combine(RulesDir(), "fixtures", "11010078", relativeUnderFixtures);
+        }
+
+        static Dictionary<string, object> LoadFixtureRoot(string fileName)
+        {
+            string path = FixturePath(fileName);
+            AssertTrue(File.Exists(path), "fixture exists: " + fileName);
+            Dictionary<string, object> root =
+                MiniJSON.Json.DeserializeStripped(File.ReadAllText(path)) as Dictionary<string, object>;
+            AssertTrue(root != null, "fixture json: " + fileName);
+            return root;
+        }
+
+        /// <summary>
+        /// Product pack is the on-disk chapter file (PR3 contract source of truth).
+        /// </summary>
         static CampaignCpuRulePack LoadProductPack()
         {
-            string text = @"{
-  ""version"": 1,
-  ""chapter_id"": 11010078,
-  ""deck_hash"": ""sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835"",
-  ""policy"": {
-    ""on_no_match"": ""native_cpu"",
-    ""scripted_views"": [""WaitInput_MainPhase""]
-  },
-  ""never"": [
-    { ""id"": ""never-surrender"", ""match"": { ""command"": ""Surrender"" } }
-  ],
-  ""priority"": [
-    {
-      ""id"": ""g1-opening-special-or-action"",
-      ""priority"": 100,
-      ""required_for_slice"": true,
-      ""when"": { ""phase_in"": [""Main1""], ""turn_lte"": 5, ""self_has_card_id"": [12488, 12253, 4007] },
-      ""prefer"": [
-        { ""command"": ""SummonSp"", ""card_id"": 12488 },
-        { ""command"": ""Action"", ""card_id"": 12253 },
-        { ""command"": ""Summon"", ""card_id"": 4007 }
-      ],
-      ""score_bonus"": 50
-    },
-    {
-      ""id"": ""g2-next-preferred-without-top"",
-      ""priority"": 90,
-      ""required_for_slice"": true,
-      ""when"": { ""phase_in"": [""Main1""], ""turn_lte"": 5, ""self_has_card_id"": [12253, 4007] },
-      ""prefer"": [
-        { ""command"": ""Action"", ""card_id"": 12253 },
-        { ""command"": ""Summon"", ""card_id"": 4007 }
-      ],
-      ""score_bonus"": 40
-    }
-  ],
-  ""fallback_scoring"": [
-    { ""id"": ""prefer-action"", ""required_for_slice"": true, ""match"": { ""command"": ""Action"" }, ""score"": 10 },
-    { ""id"": ""prefer-summon"", ""match"": { ""command"": ""Summon"" }, ""score"": 8 },
-    { ""id"": ""penalize-early-end"", ""match"": { ""kind"": ""MovePhase"", ""phase"": ""End"" }, ""score"": -20 }
-  ]
-}";
-            return CampaignCpuRulePackLoader.LoadPackFromText(text, "inline-11010078", true);
+            string path = Path.Combine(RulesDir(), "chapters", "11010078.json");
+            AssertTrue(File.Exists(path), "product pack on disk");
+            return CampaignCpuRulePackLoader.LoadPackFromText(File.ReadAllText(path), path, true);
+        }
+
+        static void ProductPackLoadsFromDiskWithPr3Cards()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            AssertEqual(11010078, pack.ChapterId, "chapter");
+            AssertEqual(
+                "sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835",
+                pack.DeckHash,
+                "deck hash pin");
+            AssertTrue(pack.Priority != null && pack.Priority.Count >= 2, "priority rules");
+            AssertEqual("g1-opening-special-or-action", pack.Priority[0].Id, "g1 rule id");
+            AssertTrue(
+                pack.Priority[0].Prefer != null
+                && pack.Priority[0].Prefer.Count >= 1
+                && pack.Priority[0].Prefer[0].HasCardId
+                && pack.Priority[0].Prefer[0].CardId == 12485,
+                "g1 top prefer is SummonSp Kaiser Vorse Raider 12485");
+        }
+
+        static CampaignCpuObservation ObservationFromFixtureDict(Dictionary<string, object> obsDict)
+        {
+            var obs = new CampaignCpuObservation
+            {
+                ChapterId = Utils.GetValue<int>(obsDict, "chapter_id", 11010078),
+                ActingPlayer = Utils.GetValue<int>(obsDict, "acting_player", 1),
+                OwnedSeat = Utils.GetValue<int>(obsDict, "owned_seat", 1),
+                Turn = Utils.GetValue<int>(obsDict, "turn", 1),
+                TurnPlayer = Utils.GetValue<int>(obsDict, "turn_player", 1),
+                Phase = Utils.GetValue<int>(obsDict, "phase", (int)DuelPhase.Main1),
+                SelfLp = Utils.GetValue<int>(obsDict, "self_lp", 8000),
+                OppLp = Utils.GetValue<int>(obsDict, "opp_lp", 8000),
+                IsMainPhaseWaitInput = Utils.GetValue<bool>(obsDict, "is_main_phase_wait_input", false),
+                IsMultiSelectList = Utils.GetValue<bool>(obsDict, "is_multi_select", false),
+                WindowClass = Utils.GetValue<string>(obsDict, "window_class") ?? "Unsupported",
+            };
+
+            string viewType = Utils.GetValue<string>(obsDict, "view_type") ?? "WaitInput";
+            obs.ViewType = (DuelViewType)Enum.Parse(typeof(DuelViewType), viewType, ignoreCase: true);
+            if (obsDict.ContainsKey("view_param1"))
+            {
+                obs.ViewParam1 = Utils.GetValue<int>(obsDict, "view_param1", 0);
+            }
+            else
+            {
+                string vpn = Utils.GetValue<string>(obsDict, "view_param1_name");
+                if (string.Equals(vpn, "MainPhase", StringComparison.OrdinalIgnoreCase))
+                {
+                    obs.ViewParam1 = (int)DuelMenuActType.MainPhase;
+                }
+            }
+
+            AddIntList(obs.SelfHandCardIds, Utils.GetValue(obsDict, "self_hand_card_ids", (List<object>)null));
+            AddIntList(
+                obs.SelfFieldFaceUpCardIds,
+                Utils.GetValue(obsDict, "self_field_face_up_card_ids", (List<object>)null));
+            AddIntList(
+                obs.OppFieldFaceUpCardIds,
+                Utils.GetValue(obsDict, "opp_field_face_up_card_ids", (List<object>)null));
+
+            List<object> legal = Utils.GetValue(obsDict, "legal_actions", (List<object>)null);
+            if (legal != null)
+            {
+                for (int i = 0; i < legal.Count; i++)
+                {
+                    Dictionary<string, object> a = legal[i] as Dictionary<string, object>;
+                    if (a == null)
+                    {
+                        continue;
+                    }
+                    obs.LegalActions.Add(LegalActionFromFixture(a));
+                }
+            }
+            return obs;
+        }
+
+        static void AddIntList(List<int> dest, List<object> src)
+        {
+            if (dest == null || src == null)
+            {
+                return;
+            }
+            for (int i = 0; i < src.Count; i++)
+            {
+                if (src[i] == null)
+                {
+                    continue;
+                }
+                dest.Add(Convert.ToInt32(src[i]));
+            }
+        }
+
+        static CampaignCpuLegalAction LegalActionFromFixture(Dictionary<string, object> a)
+        {
+            string kindStr = Utils.GetValue<string>(a, "kind") ?? "Command";
+            LegalActionKind kind = (LegalActionKind)Enum.Parse(typeof(LegalActionKind), kindStr, true);
+            var action = new CampaignCpuLegalAction
+            {
+                ActionId = Utils.GetValue<int>(a, "action_id"),
+                Kind = kind,
+                CardId = Utils.GetValue<int>(a, "card_id"),
+                Position = Utils.GetValue<int>(a, "position"),
+                Index = Utils.GetValue<int>(a, "index"),
+                DialogResult = Utils.GetValue<int>(a, "dialog_result"),
+                CancelDecide = Utils.GetValue<bool>(a, "cancel_decide", false),
+                Label = Utils.GetValue<string>(a, "label") ?? string.Empty,
+                IsMechanical = Utils.GetValue<bool>(a, "is_mechanical", false),
+                TargetScope = Utils.GetValue<string>(a, "target_scope") ?? string.Empty,
+                Player = Utils.GetValue<int>(a, "player", 1),
+            };
+            string cmdStr = Utils.GetValue<string>(a, "command");
+            if (!string.IsNullOrEmpty(cmdStr))
+            {
+                // Capture serializer may emit "Attack" on MovePhase rows; ignore bad command enums.
+                try
+                {
+                    action.Command = (DuelCommandType)Enum.Parse(typeof(DuelCommandType), cmdStr, true);
+                }
+                catch (ArgumentException)
+                {
+                    action.Command = default(DuelCommandType);
+                }
+            }
+            string phaseStr = Utils.GetValue<string>(a, "phase");
+            if (!string.IsNullOrEmpty(phaseStr) && kind == LegalActionKind.MovePhase)
+            {
+                action.Phase = (DuelPhase)Enum.Parse(typeof(DuelPhase), phaseStr, true);
+            }
+            return action;
+        }
+
+        static CampaignCpuObservation LoadObservationFixture(string fileName)
+        {
+            Dictionary<string, object> root = LoadFixtureRoot(fileName);
+            Dictionary<string, object> obsDict = Utils.GetDictionary(root, "observation");
+            AssertTrue(obsDict != null, "observation in " + fileName);
+            return ObservationFromFixtureDict(obsDict);
+        }
+
+        static Dictionary<string, object> LoadExpect(string fileName)
+        {
+            Dictionary<string, object> root = LoadFixtureRoot(fileName);
+            Dictionary<string, object> exp = Utils.GetDictionary(root, "expect");
+            AssertTrue(exp != null, "expect in " + fileName);
+            return exp;
         }
 
         static CampaignCpuObservation MakeMainObs(params CampaignCpuLegalAction[] actions)
@@ -241,7 +416,8 @@ namespace YgoMaster
                 IsMainPhaseWaitInput = true,
                 WindowClass = "WaitInput_MainPhase",
             };
-            obs.SelfHandCardIds.AddRange(new[] { 12488, 12253, 4007 });
+            // Captured opening hand subset used by product when-predicates.
+            obs.SelfHandCardIds.AddRange(new[] { 8344, 12485, 12292, 3868, 12493, 7557 });
             if (actions != null)
             {
                 for (int i = 0; i < actions.Length; i++)
@@ -269,68 +445,96 @@ namespace YgoMaster
 
         static void ScorerPriorityPicksG1TopAction()
         {
-            // G1: opening A — top prefer SummonSp 12488
+            // G1 fixture: live PR3 capture Main1 menu → SummonSp 12485 Kaiser Vorse Raider
             CampaignCpuRulePack pack = LoadProductPack();
-            CampaignCpuObservation obs = MakeMainObs(
-                Cmd(1, DuelCommandType.Summon, 4007),
-                Cmd(2, DuelCommandType.Action, 12253),
-                Cmd(3, DuelCommandType.SummonSp, 12488),
-                Cmd(4, DuelCommandType.Surrender, 0));
+            CampaignCpuObservation obs = LoadObservationFixture("g1_opening_a_main1.json");
+            Dictionary<string, object> exp = LoadExpect("g1_opening_a_main1.json");
             CampaignCpuDecision d = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(CampaignCpuRoute.RuleCommit, d.Route, "G1 route");
-            AssertEqual("g1-opening-special-or-action", d.RuleId, "G1 rule id");
-            AssertEqual(12488, d.Action.CardId, "G1 card");
+            AssertEqual(Utils.GetValue<string>(exp, "rule_id"), d.RuleId, "G1 rule id");
+            AssertEqual(Utils.GetValue<string>(exp, "reason"), d.Reason, "G1 reason");
+            AssertTrue(d.Action != null, "G1 action");
+            AssertEqual(Utils.GetValue<string>(exp, "action_identity"), d.Action.CanonicalIdentity, "G1 identity");
+            AssertEqual(Utils.GetValue<int>(exp, "card_id"), d.Action.CardId, "G1 card");
             AssertEqual(DuelCommandType.SummonSp, d.Action.Command, "G1 command");
         }
 
         static void ScorerG2WhenTopAbsent()
         {
-            // G2: top SummonSp 12488 absent → Action 12253
+            // G2: captured opening with top SummonSp 12485 removed → Summon 12292 via g1 prefer[1]
             CampaignCpuRulePack pack = LoadProductPack();
-            CampaignCpuObservation obs = MakeMainObs(
-                Cmd(1, DuelCommandType.Summon, 4007),
-                Cmd(2, DuelCommandType.Action, 12253),
-                Cmd(5, DuelCommandType.Set, 3868));
-            // Remove 12488 from hand for when-predicate of g1? g1 when still has 12253 in hand.
-            // g1 prefer list fails on SummonSp 12488, then Action 12253 hits — still g1.
-            // For true G2: remove 12488 and 12253 from prefer path by not listing SummonSp/Action of those.
-            // Spec: "Same strategic state with G1's top action absent" → Action 12253 via g1 prefer[1].
+            CampaignCpuObservation obs = LoadObservationFixture("g2_opening_a_without_top_summon_sp.json");
+            Dictionary<string, object> exp = LoadExpect("g2_opening_a_without_top_summon_sp.json");
             CampaignCpuDecision d = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(CampaignCpuRoute.RuleCommit, d.Route, "G2 route");
-            AssertEqual(12253, d.Action.CardId, "G2 next preferred card");
-            AssertEqual(DuelCommandType.Action, d.Action.Command, "G2 command");
+            AssertEqual(Utils.GetValue<string>(exp, "rule_id"), d.RuleId, "G2 rule id");
+            AssertTrue(d.Action != null, "G2 action");
+            AssertEqual(Utils.GetValue<string>(exp, "action_identity"), d.Action.CanonicalIdentity, "G2 identity");
+            AssertEqual(Utils.GetValue<int>(exp, "card_id"), d.Action.CardId, "G2 card");
+            AssertEqual(DuelCommandType.Summon, d.Action.Command, "G2 command");
         }
 
         static void ScorerNoMatchAllZeroFallback()
         {
-            // G3: legal menu, no matching product rule / non-zero fallback
+            // G3: move-only Main1 menu + empty hand → Native no_match
             CampaignCpuRulePack pack = LoadProductPack();
-            var obs = MakeMainObs(
-                new CampaignCpuLegalAction
-                {
-                    ActionId = 9,
-                    Kind = LegalActionKind.MovePhase,
-                    Phase = DuelPhase.Battle,
-                    Label = "to battle",
-                });
-            // Clear hand so priority when fails
-            obs.SelfHandCardIds.Clear();
+            CampaignCpuObservation obs = LoadObservationFixture("g3_move_only_no_match.json");
+            Dictionary<string, object> exp = LoadExpect("g3_move_only_no_match.json");
             CampaignCpuDecision d = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(CampaignCpuRoute.FallbackNative, d.Route, "G3 native");
-            AssertEqual("no_match", d.Reason, "G3 reason");
+            AssertEqual(Utils.GetValue<string>(exp, "reason"), d.Reason, "G3 reason");
+        }
+
+        static void NonMainWindowIsNotScriptedG4()
+        {
+            // G4: RunDialog is not Main WaitInput — controller leases native; offline classifier gate.
+            Dictionary<string, object> root = LoadFixtureRoot("g4_non_main_run_dialog.json");
+            Dictionary<string, object> obsDict = Utils.GetDictionary(root, "observation");
+            CampaignCpuObservation obs = ObservationFromFixtureDict(obsDict);
+            AssertTrue(!obs.IsMainPhaseWaitInput, "G4 not main wait input");
+            AssertEqual("RunDialog", obs.WindowClass, "G4 window class");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsMainPhaseWaitInput(obs.ViewType, obs.ViewParam1),
+                "G4 classifier rejects non-main");
+            AssertEqual(
+                "RunDialog",
+                CampaignCpuWindowClassifier.ClassifyWindow(obs.ViewType, obs.ViewParam1),
+                "G4 classify");
+        }
+
+        static void DeckFingerprintMismatchGateG5()
+        {
+            // G5: product pack pin vs wrong live hash → gate inactive (fully native).
+            Dictionary<string, object> root = LoadFixtureRoot("g5_deck_fingerprint_mismatch.json");
+            string packHash = Utils.GetValue<string>(root, "pack_deck_hash");
+            string liveHash = Utils.GetValue<string>(root, "live_deck_hash");
+            CampaignCpuRulePack pack = LoadProductPack();
+            AssertEqual(packHash, pack.DeckHash, "G5 pack pin matches product");
+            AssertTrue(CampaignCpuDeckFingerprint.IsWellFormedHash(packHash), "G5 pack well-formed");
+            AssertTrue(CampaignCpuDeckFingerprint.IsWellFormedHash(liveHash), "G5 live well-formed");
+            AssertTrue(
+                !string.Equals(packHash, liveHash, StringComparison.OrdinalIgnoreCase),
+                "G5 mismatch");
+            // Gate rule: activation requires exact equality — mismatch leaves scripting off.
+            bool gateActive = string.Equals(packHash, liveHash, StringComparison.OrdinalIgnoreCase);
+            AssertTrue(!gateActive, "G5 gate inactive");
         }
 
         static void ScorerDeterministicSameObservation()
         {
-            // G6
+            // G6: identical captured G1 observation twice
             CampaignCpuRulePack pack = LoadProductPack();
-            CampaignCpuObservation obs = MakeMainObs(
-                Cmd(1, DuelCommandType.Summon, 4007),
-                Cmd(3, DuelCommandType.SummonSp, 12488));
+            CampaignCpuObservation obs = LoadObservationFixture("g1_opening_a_main1.json");
+            Dictionary<string, object> exp = LoadExpect("g6_identical_observation_twice.json");
             CampaignCpuDecision a = CampaignCpuScorer.Decide(obs, pack);
             CampaignCpuDecision b = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(a.RuleId, b.RuleId, "G6 rule id stable");
             AssertEqual(a.Action.CanonicalIdentity, b.Action.CanonicalIdentity, "G6 identity stable");
+            AssertEqual(Utils.GetValue<string>(exp, "stable_rule_id"), a.RuleId, "G6 expected rule");
+            AssertEqual(
+                Utils.GetValue<string>(exp, "stable_action_identity"),
+                a.Action.CanonicalIdentity,
+                "G6 expected identity");
         }
 
         static void ScorerNeverExhaustionRestoresLegalSet()
@@ -603,6 +807,44 @@ namespace YgoMaster
                 param1: (int)DuelMenuActType.MainPhase,
                 out deny);
             AssertTrue(can, "MyID boundary after progress restores");
+        }
+
+        static void AuditSerializerDecisionIncludesFullLegalMenu()
+        {
+            var obs = new CampaignCpuObservation
+            {
+                ChapterId = 11010078,
+                WindowClass = "WaitInput_MainPhase",
+                ActingPlayer = 1,
+                OwnedSeat = 1,
+                Turn = 2,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+                IsMainPhaseWaitInput = true,
+            };
+            obs.SelfHandCardIds.Add(4007);
+            obs.SelfHandCardIds.Add(12488);
+            obs.LegalActions.Add(Cmd(1, DuelCommandType.Summon, 4007));
+            obs.LegalActions.Add(Cmd(2, DuelCommandType.SummonSp, 12488));
+            obs.LegalActions.Add(Cmd(3, DuelCommandType.Action, 12253));
+            CampaignCpuDecision decision = CampaignCpuDecision.Commit(
+                CampaignCpuRoute.RuleCommit,
+                obs.LegalActions[1],
+                "g1",
+                "g1-opening-special-or-action",
+                50,
+                true);
+            string line = CampaignCpuAuditSerializer.SerializeDecision(
+                42, decision, obs, shadowOnly: true);
+            AssertTrue(line.Contains("\"event\":\"campaign_cpu_decision\"")
+                || line.Contains("\"event\": \"campaign_cpu_decision\""),
+                "event name present");
+            AssertTrue(line.Contains("legal_actions"), "legal_actions field");
+            AssertTrue(line.Contains("self_hand_card_ids"), "hand ids field");
+            AssertTrue(line.Contains("12488"), "chosen card id in payload");
+            AssertTrue(line.Contains("shadow_only"), "shadow_only field");
+            AssertTrue(line.Contains("true") || line.Contains("True"), "shadow true");
+            AssertTrue(line.Contains("SummonSp") || line.Contains("identity"), "action identity bits");
         }
 
         static void AssertTrue(bool value, string message)

@@ -1,0 +1,61 @@
+{
+  "chapter_id": 11010078,
+  "deck_hash": "sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835",
+  "product_pack": "chapters/11010078.json",
+  "capture": {
+    "mode": "pr3_capture_shadow",
+    "ts": "2026-07-21T23:50:38.0181710Z",
+    "decisions_captured": 1,
+    "note": "Only one Main1 campaign_cpu_decision was extracted this duel (after log_only_shadow lease, native held through dialogs). G1 is live; G2/G3 ablate that menu; G4/G5 policy/gate; G6 determinism."
+  },
+  "card_names_md": {
+    "8344": "Solidarity",
+    "12485": "Kaiser Vorse Raider",
+    "12292": "Sage with Eyes of Blue",
+    "3868": "Obelisk the Tormentor",
+    "12493": "Counter Gate",
+    "7557": "Red-Eyes Darkness Metal Dragon",
+    "12522": "Crimson Nova the Dark Cubic Lord"
+  },
+  "cases": [
+    {
+      "id": "G1",
+      "fixture": "g1_opening_a_main1.json",
+      "expect_action_identity": "Command|SummonSp|12485|13|1|",
+      "expect_rule_id": "g1-opening-special-or-action",
+      "expect_route": "RuleCommit"
+    },
+    {
+      "id": "G2",
+      "fixture": "g2_opening_a_without_top_summon_sp.json",
+      "expect_action_identity": "Command|Summon|12292|13|2|",
+      "expect_rule_id": "g1-opening-special-or-action",
+      "expect_route": "RuleCommit"
+    },
+    {
+      "id": "G3",
+      "fixture": "g3_move_only_no_match.json",
+      "expect_action_identity": null,
+      "expect_rule_id": "",
+      "expect_route": "FallbackNative",
+      "expect_reason": "no_match"
+    },
+    {
+      "id": "G4",
+      "fixture": "g4_non_main_run_dialog.json",
+      "expect_route": "NativeLease",
+      "expect_reason": "v1_non_main_phase"
+    },
+    {
+      "id": "G5",
+      "fixture": "g5_deck_fingerprint_mismatch.json",
+      "expect_gate_active": false
+    },
+    {
+      "id": "G6",
+      "fixture": "g6_identical_observation_twice.json",
+      "expect_action_identity": "Command|SummonSp|12485|13|1|",
+      "expect_rule_id": "g1-opening-special-or-action"
+    }
+  ]
+}

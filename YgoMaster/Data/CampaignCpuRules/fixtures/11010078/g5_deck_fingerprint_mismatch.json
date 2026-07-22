@@ -1,0 +1,15 @@
+{
+  "fixture_id": "g5_deck_fingerprint_mismatch",
+  "golden_case": "G5",
+  "source": {
+    "kind": "gate_case",
+    "notes": "Pack pin vs wrong opponent deck fingerprint \u2192 gate inactive, fully native. No scorer commits."
+  },
+  "pack_deck_hash": "sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835",
+  "live_deck_hash": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "expect": {
+    "gate_active": false,
+    "audit_event": "deck_fingerprint_mismatch",
+    "behavior": "fully_native"
+  }
+}

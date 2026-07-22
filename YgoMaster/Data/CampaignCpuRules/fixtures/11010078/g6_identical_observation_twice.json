@@ -1,0 +1,14 @@
+{
+  "fixture_id": "g6_identical_observation_twice",
+  "golden_case": "G6",
+  "source": {
+    "kind": "determinism_over_g1",
+    "parent_fixture": "g1_opening_a_main1",
+    "notes": "Identical captured observation evaluated twice \u2192 same identity and rule_id."
+  },
+  "observation_fixture": "g1_opening_a_main1",
+  "expect": {
+    "stable_rule_id": "g1-opening-special-or-action",
+    "stable_action_identity": "Command|SummonSp|12485|13|1|"
+  }
+}

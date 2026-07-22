@@ -1,0 +1,36 @@
+{
+  "fixture_id": "g4_non_main_run_dialog",
+  "golden_case": "G4",
+  "source": {
+    "kind": "policy_case",
+    "notes": "Non-Main RunDialog is not a scripted window. Offline gate: WindowClassifier + IsMainPhaseWaitInput false. Live: NativeLease."
+  },
+  "observation": {
+    "chapter_id": 11010078,
+    "view_type": "RunDialog",
+    "view_param1": 0,
+    "acting_player": 1,
+    "owned_seat": 1,
+    "turn": 1,
+    "turn_player": 1,
+    "phase": 2,
+    "is_main_phase_wait_input": false,
+    "window_class": "RunDialog",
+    "self_hand_card_ids": [
+      8344,
+      12485,
+      12292,
+      3868,
+      12493,
+      7557
+    ],
+    "legal_actions": []
+  },
+  "expect": {
+    "is_main_phase_wait_input": false,
+    "window_class": "RunDialog",
+    "scripted_window": false,
+    "route_policy": "NativeLease",
+    "reason": "v1_non_main_phase"
+  }
+}

@@ -179,12 +179,26 @@ namespace YgoMasterClient
             GateActiveForDuel = true;
             DuelGeneration++;
             StateMachine.ActivateHumanOwned();
-            // PR2b/PR4a default: always NativeLease for owned windows until PR4b enables commits.
-            ForceAlwaysNativeLease =
-                ClientSettings.CampaignCpuLogOnly
-                || !ClientSettings.CampaignCpuAllowScriptedCommits;
+            // PR4a safety: always NativeLease until AllowScriptedCommits is on.
+            // LogOnly must NOT force always-native — it is PR3 shadow capture
+            // (extract → score → audit → native, no commit) once AllowScriptedCommits is true.
+            ForceAlwaysNativeLease = !ClientSettings.CampaignCpuAllowScriptedCommits;
             AlwaysNativeMode = ForceAlwaysNativeLease;
             DecisionCount = 0;
+
+            string mode;
+            if (ForceAlwaysNativeLease)
+            {
+                mode = "pr4a_always_native";
+            }
+            else if (ClientSettings.CampaignCpuLogOnly)
+            {
+                mode = "pr3_capture_shadow";
+            }
+            else
+            {
+                mode = "pr4b_scripted";
+            }
 
             CampaignCpuAuditLog.Write("pack_loaded", new Dictionary<string, object>
             {
@@ -196,8 +210,9 @@ namespace YgoMasterClient
                 { "log_only", ClientSettings.CampaignCpuLogOnly },
                 { "allow_scripted_commits", ClientSettings.CampaignCpuAllowScriptedCommits },
                 { "always_native_lease", ForceAlwaysNativeLease },
-                { "mode", ForceAlwaysNativeLease ? "pr4a_always_native" : "pr4b_scripted" },
+                { "mode", mode },
                 { "seat_assert", "deferred_until_engine_work" },
+                { "capture_full_legals", true },
             });
 
             // Defer SetPlayerType / IsHuman / seat_owned until DLL_SetWorkMemory has run.
@@ -534,9 +549,7 @@ namespace YgoMasterClient
                 string reason;
                 if (ForceAlwaysNativeLease)
                 {
-                    reason = ClientSettings.CampaignCpuAllowScriptedCommits
-                        ? "log_only_or_always_native"
-                        : "always_native_lease";
+                    reason = "always_native_lease";
                 }
                 else if (StateMachine.ScriptingDisabledForDuel)
                 {
@@ -596,14 +609,20 @@ namespace YgoMasterClient
                     decision = CampaignCpuScorer.Decide(obs, ActivePack);
                 }
 
+                // Always audit the scored decision + full legal menu (PR3 capture / PR4b).
                 CampaignCpuAuditLog.WriteRaw(
-                    CampaignCpuAuditSerializer.SerializeDecision(ViewSeq, decision, obs));
+                    CampaignCpuAuditSerializer.SerializeDecision(
+                        ViewSeq,
+                        decision,
+                        obs,
+                        shadowOnly: ClientSettings.CampaignCpuLogOnly));
 
                 if (decision.Route == CampaignCpuRoute.RuleCommit
                     || decision.Route == CampaignCpuRoute.MechanicalAuto)
                 {
                     if (ClientSettings.CampaignCpuLogOnly)
                     {
+                        // Shadow: record would-be commit, then native plays this window.
                         return BeginFallback(
                             id, param1, param2, param3, progress, "log_only_shadow", originalRunEffect);
                     }
@@ -644,6 +663,7 @@ namespace YgoMasterClient
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
 
+                // FallbackNative (or other non-commit routes): already audited above.
                 return BeginFallback(
                     id, param1, param2, param3, progress, decision.Reason ?? "no_match", originalRunEffect);
             }
@@ -689,17 +709,40 @@ namespace YgoMasterClient
             }
             // Exact-once: this is the sole originalRunEffect call on the BeginFallback path.
             int ret = originalRunEffect(id, p1, p2, p3);
+            string windowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1);
             CampaignCpuAuditLog.Write("temporary_cpu_begin", new Dictionary<string, object>
             {
                 { "reason", reason },
                 { "view_seq", ViewSeq },
                 { "owned_seat", OwnedSeat },
-                { "window_class",
-                    CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1) },
+                { "window_class", windowClass },
                 { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
                 { "my_is_human_readback", TryReadIsHuman(MyId) },
                 { "exact_once_forward", true },
             });
+
+            // When scripted Main is enabled (PR3 shadow or PR4b), do not keep the rival as
+            // CPU for the rest of the turn after non-Main native windows (esp. DrawPhase).
+            // Long PR4a leases prevent rival Main WaitInput from surfacing for extract.
+            // One-shot: flip Human again after this forward so the next Main menu is HumanOwned.
+            // Main WaitInput entries keep the lease (Location/Selection continuations need CPU).
+            bool oneShotRestore = ClientSettings.CampaignCpuAllowScriptedCommits
+                && !CampaignCpuWindowClassifier.IsMainPhaseWaitInput((DuelViewType)id, p1);
+            if (oneShotRestore
+                && StateMachine.State == SoloTemporaryCpuState.NativeLease)
+            {
+                TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
+                StateMachine.RestoreHumanOwned();
+                CampaignCpuAuditLog.Write("temporary_cpu_oneshot_restore", new Dictionary<string, object>
+                {
+                    { "reason", reason },
+                    { "view_seq", ViewSeq },
+                    { "window_class", windowClass },
+                    { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                    { "my_is_human_readback", TryReadIsHuman(MyId) },
+                    { "note", "AllowScriptedCommits: restore Human after non-Main native window so Main menus can be extracted" },
+                });
+            }
             return ret;
         }
 
