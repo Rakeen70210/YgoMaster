@@ -41,6 +41,7 @@ namespace YgoMaster
             SoloTemporaryCpuMyIdBoundaryRestores();
             OneShotRestoreOnlyDrawPhaseUnderAllowScripted();
             OwnedResponseNativeWindowClassifier();
+            DualHumanMyIdResponseHoldA4();
             AuditSerializerDecisionIncludesFullLegalMenu();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
@@ -772,6 +773,65 @@ namespace YgoMaster
                 !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
                     DuelViewType.WaitInput, (int)DuelMenuActType.BattlePhase),
                 "Battle is non-main lease not response family");
+        }
+
+        /// <summary>
+        /// A4: HumanOwned + response-class re-leases even when acting is MyId
+        /// (live dual-Human misroute of opponent trap/chain dialogs).
+        /// </summary>
+        static void DualHumanMyIdResponseHoldA4()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.RunDialog,
+                    0),
+                "HumanOwned Confirm RunDialog re-leases");
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.CheckChain),
+                "HumanOwned CheckChain re-leases");
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.RunList,
+                    0),
+                "HumanOwned RunList re-leases");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.NativeLease,
+                    DuelViewType.RunDialog,
+                    0),
+                "NativeLease does not re-enter BeginFallback via A4");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase),
+                "Main never uses A4 response hold");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.RunDialog,
+                    1),
+                "Info RunDialog excluded");
+            AssertEqual(
+                "dual_human_myid_response_hold",
+                CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
+                    true, actingPlayer: 0, ownedSeat: 1, myId: 0),
+                "MyId misroute reason");
+            AssertEqual(
+                "owned_response_hold",
+                CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
+                    true, actingPlayer: 1, ownedSeat: 1, myId: 0),
+                "owned-seat resolve reason");
+            AssertEqual(
+                "dual_human_unknown_response_hold",
+                CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
+                    false, actingPlayer: -1, ownedSeat: 1, myId: 0),
+                "unresolved acting reason");
         }
 
         static void ProgressTokenFreshness()

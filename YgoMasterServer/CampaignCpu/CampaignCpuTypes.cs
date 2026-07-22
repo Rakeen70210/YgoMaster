@@ -282,6 +282,42 @@ namespace YgoMaster
             return false;
         }
 
+        /// <summary>
+        /// A4 dual-Human residual: while HumanOwned, re-lease OwnedSeat→CPU for every
+        /// response-class window before originalRunEffect — even when acting resolves as
+        /// MyId. Live audit shows MD sets run_dialog_user/do_command_user to the local
+        /// seat under dual-Human, so opponent trap/chain UI was pass_through_myid.
+        /// </summary>
+        public static bool ShouldReLeaseDualHumanResponseWindow(
+            SoloTemporaryCpuState state,
+            DuelViewType viewType,
+            int param1)
+        {
+            return state == SoloTemporaryCpuState.HumanOwned
+                && IsOwnedResponseNativeWindow(viewType, param1);
+        }
+
+        /// <summary>
+        /// Audit reason for A4 re-lease: distinguishes owned-seat resolve from MyId/unknown
+        /// misroute (both still re-lease; MyId/unknown is the live trap residual).
+        /// </summary>
+        public static string DualHumanResponseHoldReason(
+            bool actingResolved,
+            int actingPlayer,
+            int ownedSeat,
+            int myId)
+        {
+            if (actingResolved && actingPlayer == ownedSeat)
+            {
+                return "owned_response_hold";
+            }
+            if (actingResolved && actingPlayer == myId)
+            {
+                return "dual_human_myid_response_hold";
+            }
+            return "dual_human_unknown_response_hold";
+        }
+
         public static string ClassifyWindow(DuelViewType viewType, int param1)
         {
             if (IsMainPhaseWaitInput(viewType, param1))

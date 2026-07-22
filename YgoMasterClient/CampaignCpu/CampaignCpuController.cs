@@ -505,6 +505,22 @@ namespace YgoMasterClient
                 return originalRunEffect(id, param1, param2, param3);
             }
 
+            // A4 dual-Human residual (live 2026-07-22): under dual-Human, MD attributes
+            // opponent trap/chain RunDialog + CheckChain to MyId (run_dialog_user=0).
+            // Re-lease OwnedSeat→CPU for every response-class window while HumanOwned,
+            // before pass_through_myid — independent of acting resolution.
+            if (CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                StateMachine.State, viewType, param1))
+            {
+                string holdReason = CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
+                    actingResolved,
+                    actingPlayer,
+                    OwnedSeat,
+                    MyId);
+                return BeginFallback(
+                    id, param1, param2, param3, progress, holdReason, originalRunEffect);
+            }
+
             if (!actingResolved)
             {
                 CampaignCpuAuditLog.Write("acting_player_unknown", new Dictionary<string, object>
@@ -521,6 +537,7 @@ namespace YgoMasterClient
             if (actingPlayer == MyId)
             {
                 // Human seat: never CampaignCpu commit (PR2b pass criterion).
+                // Response-class windows already re-leased above (A4).
                 if (ClientSettings.CampaignCpuProbeLogging
                     && IsProbeInterestingView(viewType, param1))
                 {
@@ -555,14 +572,9 @@ namespace YgoMasterClient
                 {
                     reason = "scripting_disabled";
                 }
-                else if (CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(viewType, param1))
-                {
-                    // Dual-Human residual: re-lease CPU for trap/timing so MD does not
-                    // paint opponent activate UI on the local human screen after restore.
-                    reason = "owned_response_hold";
-                }
                 else
                 {
+                    // Response-class already handled in A4 HumanOwned gate above.
                     reason = "v1_non_main_phase";
                 }
                 return BeginFallback(
