@@ -34,6 +34,9 @@ namespace YgoMasterClient
         /// live 2026-07-21 after pack_loaded, before seat_owned.
         /// </summary>
         static bool PendingSeatOwnershipAssert;
+        /// <summary>True only after OwnedSeat and MyID both read back Human (positive IsHuman=1).</summary>
+        static bool SeatOwnershipConfirmed;
+        static int SeatAssertFailedAttempts;
         /// <summary>Last owned-seat field snapshot for probe play-delta logging.</summary>
         static List<CampaignCpuZoneCard> LastOwnedFieldSnapshot;
         static string LastOwnedFieldFingerprint;
@@ -73,7 +76,17 @@ namespace YgoMasterClient
             }
 
             MyId = DuelDll.MyID;
-            OwnedSeat = CampaignCpuControlPolicy.ResolveOwnedSeat(MyId);
+            if (!CampaignCpuControlPolicy.TryResolveOwnedSeat(MyId, out OwnedSeat))
+            {
+                CampaignCpuAuditLog.Write("gate_skipped", new Dictionary<string, object>
+                {
+                    { "reason", "invalid_my_id" },
+                    { "my_id", MyId },
+                    { "game_mode", (int)gameMode },
+                    { "game_mode_name", gameMode.ToString() },
+                });
+                return;
+            }
             ChapterId = 0;
             try
             {
@@ -148,6 +161,17 @@ namespace YgoMasterClient
                 return;
             }
 
+            if (ActivePack == null || ActivePack.ChapterId != ChapterId)
+            {
+                CampaignCpuAuditLog.Write("pack_chapter_mismatch", new Dictionary<string, object>
+                {
+                    { "chapter_id", ChapterId },
+                    { "pack_chapter_id", ActivePack != null ? ActivePack.ChapterId : 0 },
+                });
+                ActivePack = null;
+                return;
+            }
+
             // Deck fingerprint: prefer ClientWork deck if present; fail closed when enabled.
             if (entry.Enabled)
             {
@@ -210,17 +234,22 @@ namespace YgoMasterClient
                 { "deck_hash", ActivePack.DeckHash },
                 { "owned_seat", OwnedSeat },
                 { "my_id", MyId },
+                { "duel_generation", DuelGeneration },
                 { "log_only", ClientSettings.CampaignCpuLogOnly },
                 { "allow_scripted_commits", ClientSettings.CampaignCpuAllowScriptedCommits },
                 { "always_native_lease", ForceAlwaysNativeLease },
                 { "mode", mode },
                 { "seat_assert", "deferred_until_engine_work" },
+                { "max_decisions_per_duel", ActivePack.Policy != null
+                    ? ActivePack.Policy.MaxDecisionsPerDuel : 0 },
                 { "capture_full_legals", true },
             });
 
             // Defer SetPlayerType / IsHuman / seat_owned until DLL_SetWorkMemory has run.
             // OnDuelBegin is too early: duel.dll player APIs AV on null engine state.
             PendingSeatOwnershipAssert = true;
+            SeatOwnershipConfirmed = false;
+            SeatAssertFailedAttempts = 0;
         }
 
         public static void OnDuelEnd()
@@ -245,6 +274,8 @@ namespace YgoMasterClient
             AlwaysNativeMode = false;
             ForceAlwaysNativeLease = false;
             PendingSeatOwnershipAssert = false;
+            SeatOwnershipConfirmed = false;
+            SeatAssertFailedAttempts = 0;
             ChapterId = 0;
             OwnedSeat = 1;
             MyId = 0;
@@ -266,7 +297,9 @@ namespace YgoMasterClient
         }
 
         /// <summary>
-        /// Coerce OwnedSeat to Human and emit seat_owned once the engine is ready.
+        /// Coerce OwnedSeat to Human and confirm seat_owned once the engine is ready.
+        /// Does not clear pending until both OwnedSeat and MyID positively read back Human.
+        /// After MaxSeatAssertAttempts failures, disables scripting for the rest of the duel.
         /// Safe to call from RunEffect / SysAct; no-ops until work memory exists.
         /// </summary>
         static void TryCompleteSeatOwnershipAssert(string reason)
@@ -280,16 +313,29 @@ namespace YgoMasterClient
                 return;
             }
 
+            bool setThrew = false;
             try
             {
                 DuelDll.CampaignCpu_SetPlayerType(OwnedSeat, (int)DuelPlayerType.Human);
             }
-            catch
+            catch (Exception ex)
             {
+                setThrew = true;
+                CampaignCpuAuditLog.Write("seat_assert_set_failed", new Dictionary<string, object>
+                {
+                    { "owned_seat", OwnedSeat },
+                    { "my_id", MyId },
+                    { "duel_generation", DuelGeneration },
+                    { "error", ex.Message },
+                    { "assert_reason", reason },
+                });
             }
 
             int ownedIsHuman = TryReadIsHuman(OwnedSeat);
             int myIsHuman = TryReadIsHuman(MyId);
+            bool confirmed = !setThrew
+                && CampaignCpuControlPolicy.IsSeatOwnershipConfirmed(ownedIsHuman, myIsHuman);
+
             CampaignCpuAuditLog.Write("seat_owned", new Dictionary<string, object>
             {
                 { "owned_seat", OwnedSeat },
@@ -297,13 +343,44 @@ namespace YgoMasterClient
                 { "duel_generation", DuelGeneration },
                 { "owned_is_human_readback", ownedIsHuman },
                 { "my_is_human_readback", myIsHuman },
+                { "confirmed", confirmed },
+                { "set_threw", setThrew },
                 { "player_type_readback", "DLL_DuelIsHuman" },
                 { "player_type_readback_note",
                     "No DLL_DuelGetPlayerType export; IsHuman is the available native confirmation." },
                 { "assert_reason", reason },
                 { "engine_work_base_nonzero", true },
+                { "failed_attempts", SeatAssertFailedAttempts },
             });
-            PendingSeatOwnershipAssert = false;
+
+            if (confirmed)
+            {
+                SeatOwnershipConfirmed = true;
+                PendingSeatOwnershipAssert = false;
+                SeatAssertFailedAttempts = 0;
+                return;
+            }
+
+            // Keep pending so we retry on the next RunEffect/SysAct. Never permit
+            // scripted handling until confirmed (see SeatOwnershipConfirmed gate).
+            SeatAssertFailedAttempts++;
+            if (CampaignCpuControlPolicy.ShouldDisableScriptingAfterSeatAssertFailures(
+                SeatAssertFailedAttempts))
+            {
+                PendingSeatOwnershipAssert = false;
+                SeatOwnershipConfirmed = false;
+                StateMachine.DisableScripting("seat_assert_failed");
+                CampaignCpuAuditLog.Write("seat_assert_failed", new Dictionary<string, object>
+                {
+                    { "owned_seat", OwnedSeat },
+                    { "my_id", MyId },
+                    { "duel_generation", DuelGeneration },
+                    { "owned_is_human_readback", ownedIsHuman },
+                    { "my_is_human_readback", myIsHuman },
+                    { "failed_attempts", SeatAssertFailedAttempts },
+                    { "scripting_disabled", true },
+                });
+            }
         }
 
         /// <summary>
@@ -663,6 +740,7 @@ namespace YgoMasterClient
             if (StateMachine.ScriptingDisabledForDuel
                 || ForceAlwaysNativeLease
                 || ActivePack == null
+                || !SeatOwnershipConfirmed
                 || !CampaignCpuWindowClassifier.IsScriptedWindow(viewType, param1, ActivePack))
             {
                 string reason;
@@ -673,6 +751,12 @@ namespace YgoMasterClient
                 else if (StateMachine.ScriptingDisabledForDuel)
                 {
                     reason = "scripting_disabled";
+                }
+                else if (!SeatOwnershipConfirmed)
+                {
+                    reason = PendingSeatOwnershipAssert
+                        ? "seat_assert_pending"
+                        : "seat_assert_unconfirmed";
                 }
                 else
                 {
@@ -713,6 +797,19 @@ namespace YgoMasterClient
                     obs.Phase,
                     CampaignCpuObservation.FingerprintLegalActions(obs.LegalActions));
 
+                if (obs.PredicateQueryFailed)
+                {
+                    CampaignCpuAuditLog.Write("predicate_eval_failed", new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "duel_generation", DuelGeneration },
+                        { "chapter_id", ChapterId },
+                        { "owned_seat", OwnedSeat },
+                        { "acting_player", actingPlayer },
+                        { "window_class", obs.WindowClass },
+                    });
+                }
+
                 CampaignCpuDecision decision;
                 if (automatic != null)
                 {
@@ -726,7 +823,11 @@ namespace YgoMasterClient
                 }
                 else
                 {
-                    decision = CampaignCpuScorer.Decide(obs, ActivePack);
+                    decision = CampaignCpuScorer.Decide(
+                        obs,
+                        ActivePack,
+                        predicateEvalFailed: obs.PredicateQueryFailed,
+                        appliedDecisionCount: DecisionCount);
                 }
 
                 // Always audit the scored decision + full legal menu (PR3 capture / PR4b).
@@ -747,6 +848,13 @@ namespace YgoMasterClient
                             id, param1, param2, param3, progress, "log_only_shadow", originalRunEffect);
                     }
 
+                    if (CampaignCpuScorer.IsDecisionCapReached(ActivePack.Policy, DecisionCount))
+                    {
+                        return BeginFallback(
+                            id, param1, param2, param3, progress,
+                            "max_decisions_per_duel", originalRunEffect);
+                    }
+
                     CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(decision.Action);
                     if (outcome == CampaignCpuCommitOutcome.Applied)
                     {
@@ -761,6 +869,7 @@ namespace YgoMasterClient
                             { "view_seq", ViewSeq },
                             { "rule_id", decision.RuleId },
                             { "action", decision.Action != null ? decision.Action.CanonicalIdentity : null },
+                            { "decision_count", DecisionCount },
                         });
                         return CampaignCpuDefaults.ScriptedHandledReturnCode;
                     }

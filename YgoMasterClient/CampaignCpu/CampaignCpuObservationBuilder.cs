@@ -84,13 +84,15 @@ namespace YgoMasterClient
                 snap, chapterId, ownedSeat, actingPlayer, multiSelect);
 
             // Prefer explicit hand ids for owned seat via unique-id walk.
+            // Mid-walk throw must not leave a partial list usable by when-predicates.
             try
             {
                 FillSelfHandCardIds(query, ownedSeat, obs);
             }
             catch
             {
-                // leave projector hand ids; scorer fail-closed on predicates if needed
+                obs.SelfHandCardIds = new List<int>();
+                obs.PredicateQueryFailed = true;
             }
 
             try
@@ -108,7 +110,7 @@ namespace YgoMasterClient
 
         static void FillSelfHandCardIds(ILegalActionQuery query, int ownedSeat, CampaignCpuObservation obs)
         {
-            obs.SelfHandCardIds = new List<int>();
+            var hand = new List<int>();
             int n = query.GetCardNum(ownedSeat, CampaignCpuDefaults.PosHand);
             if (n < 0)
             {
@@ -124,9 +126,10 @@ namespace YgoMasterClient
                 int id = query.GetCardIdByUniqueId(uid);
                 if (id > 0)
                 {
-                    obs.SelfHandCardIds.Add(id);
+                    hand.Add(id);
                 }
             }
+            obs.SelfHandCardIds = hand;
         }
     }
 }

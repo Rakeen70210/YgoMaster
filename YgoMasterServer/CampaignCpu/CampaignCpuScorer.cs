@@ -12,13 +12,22 @@ namespace YgoMaster
             CampaignCpuObservation observation,
             CampaignCpuRulePack pack)
         {
-            return Decide(observation, pack, predicateEvalFailed: false);
+            return Decide(observation, pack, predicateEvalFailed: false, appliedDecisionCount: 0);
         }
 
         public static CampaignCpuDecision Decide(
             CampaignCpuObservation observation,
             CampaignCpuRulePack pack,
             bool predicateEvalFailed)
+        {
+            return Decide(observation, pack, predicateEvalFailed, appliedDecisionCount: 0);
+        }
+
+        public static CampaignCpuDecision Decide(
+            CampaignCpuObservation observation,
+            CampaignCpuRulePack pack,
+            bool predicateEvalFailed,
+            int appliedDecisionCount)
         {
             if (observation == null)
             {
@@ -27,6 +36,16 @@ namespace YgoMaster
             if (pack == null)
             {
                 return CampaignCpuDecision.Native("null_pack");
+            }
+
+            if (IsDecisionCapReached(pack.Policy, appliedDecisionCount))
+            {
+                return CampaignCpuDecision.Native("max_decisions_per_duel");
+            }
+
+            if (observation.PredicateQueryFailed)
+            {
+                predicateEvalFailed = true;
             }
 
             List<CampaignCpuLegalAction> legal = observation.LegalActions;
@@ -200,6 +219,19 @@ namespace YgoMaster
                 hitRules[bestIdx] ?? "fallback",
                 scores[bestIdx],
                 matched: anyNonZero);
+        }
+
+        /// <summary>
+        /// max_decisions_per_duel &lt;= 0 means unlimited. When positive and already applied
+        /// count is at/above the cap, scripted commits fail closed to native.
+        /// </summary>
+        public static bool IsDecisionCapReached(CampaignCpuPackPolicy policy, int appliedDecisionCount)
+        {
+            if (policy == null || policy.MaxDecisionsPerDuel <= 0)
+            {
+                return false;
+            }
+            return appliedDecisionCount >= policy.MaxDecisionsPerDuel;
         }
 
         static int ComparePriorityRules(CampaignCpuPriorityRule a, CampaignCpuPriorityRule b)

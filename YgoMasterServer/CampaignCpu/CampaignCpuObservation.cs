@@ -29,6 +29,11 @@ namespace YgoMaster
         public bool IsMainPhaseWaitInput;
         public bool IsMultiSelectList;
         public string WindowClass;
+        /// <summary>
+        /// True when hand/field card-id queries threw or produced an unusable partial list.
+        /// Scorer must treat card-id when-predicates as failed (never match).
+        /// </summary>
+        public bool PredicateQueryFailed;
 
         public CampaignCpuObservation()
         {
@@ -37,6 +42,7 @@ namespace YgoMaster
             OppFieldFaceUpCardIds = new List<int>();
             LegalActions = new List<CampaignCpuLegalAction>();
             WindowClass = "Unsupported";
+            PredicateQueryFailed = false;
         }
 
         public static CampaignCpuLegalAction FromLegalAction(LegalAction action)

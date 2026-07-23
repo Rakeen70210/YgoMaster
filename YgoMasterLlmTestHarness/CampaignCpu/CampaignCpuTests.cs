@@ -60,6 +60,17 @@ namespace YgoMaster
             OwnedMainCaptureBoundaryA5();
             FieldDiffDetectsSetTrapAndFaceChange();
             AuditSerializerDecisionIncludesFullLegalMenu();
+            // M5 fail-closed activation / pack / predicate hardening
+            InvalidMyIdDoesNotResolveOwnedSeat();
+            SeatOwnershipConfirmRequiresPositiveHumanReadback();
+            SeatAssertFailuresDisableScriptingPredicate();
+            PathContainmentRejectsSiblingPrefixEscape();
+            PackLoaderRejectsUnknownPhaseIn();
+            PackLoaderRejectsInvalidCardIdPredicate();
+            PackLoaderRejectsUnsupportedVersionAndPolicy();
+            ScorerDecisionCapReturnsNative();
+            ScorerPredicateQueryFailureFailsWhenCardPredicates();
+            ProductPackStillLoadsUnderStrictParse();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
 
@@ -1474,6 +1485,245 @@ namespace YgoMaster
             AssertTrue(
                 !CampaignCpuControlPolicy.IsOwnedOpponentSeat(1, ownedSeat: 0, myId: 1),
                 "when myId=1, seat1 is human not owned");
+        }
+
+        static void InvalidMyIdDoesNotResolveOwnedSeat()
+        {
+            AssertTrue(!CampaignCpuControlPolicy.IsValidMyId(-1), "invalid -1");
+            AssertTrue(!CampaignCpuControlPolicy.IsValidMyId(2), "invalid 2");
+            AssertTrue(CampaignCpuControlPolicy.IsValidMyId(0), "seat0 ok");
+            AssertTrue(CampaignCpuControlPolicy.IsValidMyId(1), "seat1 ok");
+            int owned;
+            AssertTrue(!CampaignCpuControlPolicy.TryResolveOwnedSeat(-1, out owned), "try -1");
+            AssertEqual(-1, owned, "owned unset on fail");
+            AssertEqual(-1, CampaignCpuControlPolicy.ResolveOwnedSeat(-1), "legacy resolve -1");
+            AssertTrue(CampaignCpuControlPolicy.TryResolveOwnedSeat(1, out owned), "try myId1");
+            AssertEqual(0, owned, "myId1 owns seat0");
+        }
+
+        static void SeatOwnershipConfirmRequiresPositiveHumanReadback()
+        {
+            AssertTrue(
+                CampaignCpuControlPolicy.IsSeatOwnershipConfirmed(1, 1),
+                "both human confirmed");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsSeatOwnershipConfirmed(0, 1),
+                "owned CPU not confirmed");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsSeatOwnershipConfirmed(1, 0),
+                "myId CPU not confirmed");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsSeatOwnershipConfirmed(-1, 1),
+                "unknown owned not confirmed");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsPositiveHumanReadback(0),
+                "0 is not positive human");
+        }
+
+        static void SeatAssertFailuresDisableScriptingPredicate()
+        {
+            AssertTrue(
+                !CampaignCpuControlPolicy.ShouldDisableScriptingAfterSeatAssertFailures(0),
+                "0 attempts keep retrying");
+            AssertTrue(
+                !CampaignCpuControlPolicy.ShouldDisableScriptingAfterSeatAssertFailures(
+                    CampaignCpuControlPolicy.MaxSeatAssertAttempts - 1),
+                "just under cap");
+            AssertTrue(
+                CampaignCpuControlPolicy.ShouldDisableScriptingAfterSeatAssertFailures(
+                    CampaignCpuControlPolicy.MaxSeatAssertAttempts),
+                "at cap disable");
+        }
+
+        static void PathContainmentRejectsSiblingPrefixEscape()
+        {
+            string root = Path.Combine(Path.GetTempPath(), "campaigncpu-rules-m5-root");
+            string sibling = root + "-evil";
+            string child = Path.Combine(root, "chapters", "pack.json");
+            AssertTrue(
+                CampaignCpuRulePackLoader.IsPathContainedUnderRoot(child, root),
+                "child under root ok");
+            AssertTrue(
+                CampaignCpuRulePackLoader.IsPathContainedUnderRoot(root, root),
+                "root is contained");
+            AssertTrue(
+                !CampaignCpuRulePackLoader.IsPathContainedUnderRoot(sibling, root),
+                "sibling prefix escape rejected");
+            AssertTrue(
+                !CampaignCpuRulePackLoader.IsPathContainedUnderRoot(
+                    Path.Combine(sibling, "pack.json"), root),
+                "file under sibling rejected");
+            // Absolute escape via .. must also fail once full-path normalized.
+            string escaped = Path.GetFullPath(Path.Combine(root, "..", Path.GetFileName(sibling), "x.json"));
+            AssertTrue(
+                !CampaignCpuRulePackLoader.IsPathContainedUnderRoot(escaped, root),
+                "normalized parent escape rejected");
+        }
+
+        static string MinimalPackJson(
+            string extraPriority = null,
+            string policy = null,
+            int version = 1,
+            int chapterId = 1)
+        {
+            string hash = "sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+            string pol = policy ?? @"{
+              ""on_no_match"": ""native_cpu"",
+              ""on_unsupported_window"": ""native_cpu"",
+              ""on_zero_legal"": ""native_cpu"",
+              ""mechanical_windows"": ""auto_or_native"",
+              ""scripted_views"": [""WaitInput_MainPhase""],
+              ""max_decisions_per_duel"": 0
+            }";
+            string pri = extraPriority ?? "[]";
+            return @"{
+              ""version"": " + version + @",
+              ""chapter_id"": " + chapterId + @",
+              ""deck_hash"": """ + hash + @""",
+              ""policy"": " + pol + @",
+              ""never"": [],
+              ""priority"": " + pri + @",
+              ""fallback_scoring"": []
+            }";
+        }
+
+        static void AssertPackLoadThrows(string json, string label)
+        {
+            bool threw = false;
+            try
+            {
+                CampaignCpuRulePackLoader.LoadPackFromText(json, "test-" + label, requireDeckHash: true);
+            }
+            catch (InvalidOperationException)
+            {
+                threw = true;
+            }
+            AssertTrue(threw, label + " must fail pack load");
+        }
+
+        static void PackLoaderRejectsUnknownPhaseIn()
+        {
+            string pri = @"[{
+              ""id"": ""bad-phase"",
+              ""priority"": 1,
+              ""when"": { ""phase_in"": [""NotAPhase""] },
+              ""prefer"": [ { ""command"": ""Summon"" } ]
+            }]";
+            AssertPackLoadThrows(MinimalPackJson(extraPriority: pri), "unknown phase_in");
+        }
+
+        static void PackLoaderRejectsInvalidCardIdPredicate()
+        {
+            string pri = @"[{
+              ""id"": ""bad-card"",
+              ""priority"": 1,
+              ""when"": { ""self_has_card_id"": [""not-an-id""] },
+              ""prefer"": [ { ""command"": ""Summon"" } ]
+            }]";
+            AssertPackLoadThrows(MinimalPackJson(extraPriority: pri), "invalid self_has_card_id");
+
+            string matchBad = @"[{
+              ""id"": ""bad-match-card"",
+              ""priority"": 1,
+              ""prefer"": [ { ""command"": ""Summon"", ""card_id"": ""nope"" } ]
+            }]";
+            AssertPackLoadThrows(MinimalPackJson(extraPriority: matchBad), "invalid match card_id");
+        }
+
+        static void PackLoaderRejectsUnsupportedVersionAndPolicy()
+        {
+            AssertPackLoadThrows(
+                MinimalPackJson(version: 99),
+                "unsupported pack version");
+            string badPolicy = @"{
+              ""on_no_match"": ""guess_best"",
+              ""on_unsupported_window"": ""native_cpu"",
+              ""on_zero_legal"": ""native_cpu"",
+              ""mechanical_windows"": ""auto_or_native"",
+              ""scripted_views"": [""WaitInput_MainPhase""]
+            }";
+            AssertPackLoadThrows(
+                MinimalPackJson(policy: badPolicy),
+                "unsupported on_no_match");
+            string badView = @"{
+              ""on_no_match"": ""native_cpu"",
+              ""on_unsupported_window"": ""native_cpu"",
+              ""on_zero_legal"": ""native_cpu"",
+              ""mechanical_windows"": ""auto_or_native"",
+              ""scripted_views"": [""WaitInput_DrawPhase""]
+            }";
+            AssertPackLoadThrows(
+                MinimalPackJson(policy: badView),
+                "unsupported scripted_views");
+        }
+
+        static void ScorerDecisionCapReturnsNative()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            pack.Policy.MaxDecisionsPerDuel = 2;
+            CampaignCpuObservation obs = LoadObservationFixture("g1_opening_a_main1.json");
+            CampaignCpuDecision under = CampaignCpuScorer.Decide(
+                obs, pack, predicateEvalFailed: false, appliedDecisionCount: 1);
+            AssertEqual(CampaignCpuRoute.RuleCommit, under.Route, "under cap still scores");
+            CampaignCpuDecision at = CampaignCpuScorer.Decide(
+                obs, pack, predicateEvalFailed: false, appliedDecisionCount: 2);
+            AssertEqual(CampaignCpuRoute.FallbackNative, at.Route, "at cap native");
+            AssertEqual("max_decisions_per_duel", at.Reason, "cap reason");
+            AssertTrue(
+                CampaignCpuScorer.IsDecisionCapReached(pack.Policy, 2),
+                "helper at cap");
+            AssertTrue(
+                !CampaignCpuScorer.IsDecisionCapReached(pack.Policy, 1),
+                "helper under cap");
+            pack.Policy.MaxDecisionsPerDuel = 0;
+            AssertTrue(
+                !CampaignCpuScorer.IsDecisionCapReached(pack.Policy, 999),
+                "0 means unlimited");
+        }
+
+        static void ScorerPredicateQueryFailureFailsWhenCardPredicates()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            CampaignCpuObservation obs = LoadObservationFixture("g1_opening_a_main1.json");
+            // G1 priority requires self_has_card_id; with predicate failure it must not match.
+            obs.PredicateQueryFailed = true;
+            CampaignCpuDecision d = CampaignCpuScorer.Decide(
+                obs, pack, predicateEvalFailed: true, appliedDecisionCount: 0);
+            // Fallback may still match non-when rules; priority g1 must not fire.
+            AssertTrue(
+                d.RuleId == null
+                || !string.Equals(d.RuleId, "g1-opening-special-or-action", StringComparison.Ordinal),
+                "g1 priority must not match when predicate query failed");
+            // Explicit when check
+            var when = new CampaignCpuWhenSpec
+            {
+                SelfHasCardId = new List<int> { 12485 },
+            };
+            AssertTrue(
+                !CampaignCpuMatchers.WhenHolds(when, obs, predicateEvalFailed: true),
+                "WhenHolds false on card predicate + eval failed");
+            AssertTrue(
+                !CampaignCpuMatchers.WhenHolds(when, obs, predicateEvalFailed: false),
+                "observation.PredicateQueryFailed alone is enough");
+        }
+
+        static void ProductPackStillLoadsUnderStrictParse()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            AssertEqual(11010078, pack.ChapterId, "product chapter");
+            AssertEqual(1, pack.Version, "product version");
+            AssertEqual("native_cpu", pack.Policy.OnNoMatch, "policy on_no_match");
+            AssertEqual(0, pack.Policy.MaxDecisionsPerDuel, "unlimited default");
+            AssertTrue(pack.Priority.Count >= 2, "priority rules present");
+            AssertTrue(
+                pack.Priority[0].When != null
+                && pack.Priority[0].When.PhaseIn != null
+                && pack.Priority[0].When.PhaseIn.Count > 0,
+                "phase_in parsed");
+            // Index load with real rules dir must succeed under strict version check.
+            CampaignCpuRuleIndex index = CampaignCpuRulePackLoader.LoadIndex(RulesDir());
+            AssertEqual(1, index.Version, "index version");
+            AssertTrue(index.Chapters.ContainsKey(11010078), "index has product chapter");
         }
 
         static void SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero()

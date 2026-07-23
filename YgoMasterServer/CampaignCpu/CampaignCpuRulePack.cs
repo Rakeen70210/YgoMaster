@@ -118,6 +118,39 @@ namespace YgoMaster
 
     static class CampaignCpuRulePackLoader
     {
+        public const int SupportedIndexVersion = 1;
+        public const int SupportedPackVersion = 1;
+
+        /// <summary>
+        /// True when fullPath is the root itself or a file/dir strictly under root.
+        /// Uses a separator boundary so sibling prefixes like "rules-evil" do not match root "rules".
+        /// </summary>
+        public static bool IsPathContainedUnderRoot(string fullPath, string root)
+        {
+            if (string.IsNullOrEmpty(fullPath) || string.IsNullOrEmpty(root))
+            {
+                return false;
+            }
+            string full = Path.GetFullPath(fullPath);
+            string rootFull = Path.GetFullPath(root);
+            string fullNorm = full.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+                .TrimEnd(Path.DirectorySeparatorChar);
+            string rootNorm = rootFull.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar)
+                .TrimEnd(Path.DirectorySeparatorChar);
+            if (string.Equals(fullNorm, rootNorm, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+            string rootPrefix = rootNorm + Path.DirectorySeparatorChar;
+            string fullWithSep = full.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            if (!fullWithSep.EndsWith(Path.DirectorySeparatorChar.ToString())
+                && Directory.Exists(fullWithSep))
+            {
+                // file path under root still compared as-is
+            }
+            return fullWithSep.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase);
+        }
+
         public static CampaignCpuRuleIndex LoadIndex(string rulesDir)
         {
             if (string.IsNullOrEmpty(rulesDir) || !Directory.Exists(rulesDir))
@@ -137,9 +170,17 @@ namespace YgoMaster
                 throw new InvalidOperationException("CampaignCpu index.json invalid JSON");
             }
 
+            int version = Utils.GetValue<int>(root, "version", 1);
+            if (version != SupportedIndexVersion)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu index unsupported version " + version
+                    + " (supported " + SupportedIndexVersion + ")");
+            }
+
             var index = new CampaignCpuRuleIndex
             {
-                Version = Utils.GetValue<int>(root, "version", 1),
+                Version = version,
                 DefaultEnabled = Utils.GetValue<bool>(root, "default_enabled", false),
                 SourceDir = Path.GetFullPath(rulesDir),
             };
@@ -159,7 +200,8 @@ namespace YgoMaster
                     Dictionary<string, object> entryDict = kv.Value as Dictionary<string, object>;
                     if (entryDict == null)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            "CampaignCpu index chapter entry not object: " + kv.Key);
                     }
                     string packRel = Utils.GetValue<string>(entryDict, "pack");
                     if (string.IsNullOrEmpty(packRel))
@@ -167,9 +209,8 @@ namespace YgoMaster
                         throw new InvalidOperationException(
                             "CampaignCpu index missing pack for chapter " + chapterId);
                     }
-                    // Path traversal guard
                     string fullPack = Path.GetFullPath(Path.Combine(index.SourceDir, packRel));
-                    if (!fullPack.StartsWith(index.SourceDir, StringComparison.OrdinalIgnoreCase))
+                    if (!IsPathContainedUnderRoot(fullPack, index.SourceDir))
                     {
                         throw new InvalidOperationException(
                             "CampaignCpu pack path escapes rules root: " + packRel);
@@ -196,7 +237,7 @@ namespace YgoMaster
             }
             string root = Path.GetFullPath(rulesDir);
             string fullPack = Path.GetFullPath(Path.Combine(root, entry.PackRelativePath));
-            if (!fullPack.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            if (!IsPathContainedUnderRoot(fullPack, root))
             {
                 throw new InvalidOperationException(
                     "CampaignCpu pack path escapes rules root: " + entry.PackRelativePath);
@@ -220,10 +261,25 @@ namespace YgoMaster
                 throw new InvalidOperationException("CampaignCpu pack invalid JSON: " + sourcePath);
             }
 
+            int version = Utils.GetValue<int>(root, "version", 1);
+            if (version != SupportedPackVersion)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu pack unsupported version " + version
+                    + " (supported " + SupportedPackVersion + ") in " + sourcePath);
+            }
+
+            int chapterId = Utils.GetValue<int>(root, "chapter_id");
+            if (chapterId <= 0)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu pack chapter_id must be positive: " + sourcePath);
+            }
+
             var pack = new CampaignCpuRulePack
             {
-                Version = Utils.GetValue<int>(root, "version", 1),
-                ChapterId = Utils.GetValue<int>(root, "chapter_id"),
+                Version = version,
+                ChapterId = chapterId,
                 DeckHash = Utils.GetValue<string>(root, "deck_hash") ?? string.Empty,
                 SourcePath = sourcePath ?? string.Empty,
             };
@@ -254,31 +310,7 @@ namespace YgoMaster
             Dictionary<string, object> policyDict = Utils.GetDictionary(root, "policy");
             if (policyDict != null)
             {
-                pack.Policy.OnNoMatch = Utils.GetValue<string>(policyDict, "on_no_match")
-                    ?? pack.Policy.OnNoMatch;
-                pack.Policy.OnUnsupportedWindow =
-                    Utils.GetValue<string>(policyDict, "on_unsupported_window")
-                    ?? pack.Policy.OnUnsupportedWindow;
-                pack.Policy.OnZeroLegal = Utils.GetValue<string>(policyDict, "on_zero_legal")
-                    ?? pack.Policy.OnZeroLegal;
-                pack.Policy.MechanicalWindows =
-                    Utils.GetValue<string>(policyDict, "mechanical_windows")
-                    ?? pack.Policy.MechanicalWindows;
-                pack.Policy.MaxDecisionsPerDuel =
-                    Utils.GetValue<int>(policyDict, "max_decisions_per_duel", 0);
-                List<object> scripted =
-                    Utils.GetValue(policyDict, "scripted_views", (List<object>)null);
-                if (scripted != null && scripted.Count > 0)
-                {
-                    pack.Policy.ScriptedViews = new List<string>();
-                    for (int i = 0; i < scripted.Count; i++)
-                    {
-                        if (scripted[i] != null)
-                        {
-                            pack.Policy.ScriptedViews.Add(scripted[i].ToString());
-                        }
-                    }
-                }
+                ParsePolicy(policyDict, pack.Policy, sourcePath);
             }
 
             List<object> neverList = Utils.GetValue(root, "never", (List<object>)null);
@@ -289,7 +321,8 @@ namespace YgoMaster
                     Dictionary<string, object> ruleDict = neverList[i] as Dictionary<string, object>;
                     if (ruleDict == null)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            "CampaignCpu never rule not object at index " + i + " in " + sourcePath);
                     }
                     pack.Never.Add(new CampaignCpuNeverRule
                     {
@@ -308,14 +341,15 @@ namespace YgoMaster
                     Dictionary<string, object> ruleDict = priorityList[i] as Dictionary<string, object>;
                     if (ruleDict == null)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            "CampaignCpu priority rule not object at index " + i + " in " + sourcePath);
                     }
                     var rule = new CampaignCpuPriorityRule
                     {
                         Id = Utils.GetValue<string>(ruleDict, "id") ?? ("priority_" + i),
                         Priority = Utils.GetValue<int>(ruleDict, "priority", 0),
                         ListIndex = i,
-                        When = ParseWhen(Utils.GetDictionary(ruleDict, "when")),
+                        When = ParseWhen(Utils.GetDictionary(ruleDict, "when"), sourcePath),
                         Prefer = new List<CampaignCpuMatchSpec>(),
                         ScoreBonus = Utils.GetValue<int>(ruleDict, "score_bonus", 0),
                         RequiredForSlice = Utils.GetValue<bool>(ruleDict, "required_for_slice", false),
@@ -327,10 +361,13 @@ namespace YgoMaster
                         {
                             Dictionary<string, object> pref =
                                 preferList[p] as Dictionary<string, object>;
-                            if (pref != null)
+                            if (pref == null)
                             {
-                                rule.Prefer.Add(ParseMatch(pref, sourcePath));
+                                throw new InvalidOperationException(
+                                    "CampaignCpu prefer entry not object in rule "
+                                    + rule.Id + " in " + sourcePath);
                             }
+                            rule.Prefer.Add(ParseMatch(pref, sourcePath));
                         }
                     }
                     pack.Priority.Add(rule);
@@ -345,7 +382,8 @@ namespace YgoMaster
                     Dictionary<string, object> ruleDict = fallbackList[i] as Dictionary<string, object>;
                     if (ruleDict == null)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            "CampaignCpu fallback rule not object at index " + i + " in " + sourcePath);
                     }
                     pack.FallbackScoring.Add(new CampaignCpuFallbackRule
                     {
@@ -358,6 +396,113 @@ namespace YgoMaster
             }
 
             return pack;
+        }
+
+        static void ParsePolicy(
+            Dictionary<string, object> policyDict,
+            CampaignCpuPackPolicy policy,
+            string sourcePath)
+        {
+            if (policyDict.ContainsKey("on_no_match"))
+            {
+                policy.OnNoMatch = RequirePolicyToken(
+                    Utils.GetValue<string>(policyDict, "on_no_match"),
+                    "on_no_match",
+                    sourcePath,
+                    "native_cpu");
+            }
+            if (policyDict.ContainsKey("on_unsupported_window"))
+            {
+                policy.OnUnsupportedWindow = RequirePolicyToken(
+                    Utils.GetValue<string>(policyDict, "on_unsupported_window"),
+                    "on_unsupported_window",
+                    sourcePath,
+                    "native_cpu");
+            }
+            if (policyDict.ContainsKey("on_zero_legal"))
+            {
+                policy.OnZeroLegal = RequirePolicyToken(
+                    Utils.GetValue<string>(policyDict, "on_zero_legal"),
+                    "on_zero_legal",
+                    sourcePath,
+                    "native_cpu");
+            }
+            if (policyDict.ContainsKey("mechanical_windows"))
+            {
+                policy.MechanicalWindows = RequirePolicyToken(
+                    Utils.GetValue<string>(policyDict, "mechanical_windows"),
+                    "mechanical_windows",
+                    sourcePath,
+                    "auto_or_native");
+            }
+            if (policyDict.ContainsKey("max_decisions_per_duel"))
+            {
+                int max;
+                if (!TryParseStrictInt(policyDict["max_decisions_per_duel"], out max) || max < 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy max_decisions_per_duel must be int >= 0 in "
+                        + sourcePath);
+                }
+                policy.MaxDecisionsPerDuel = max;
+            }
+            List<object> scripted =
+                Utils.GetValue(policyDict, "scripted_views", (List<object>)null);
+            if (scripted != null)
+            {
+                if (scripted.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy scripted_views must not be empty when present in "
+                        + sourcePath);
+                }
+                policy.ScriptedViews = new List<string>();
+                for (int i = 0; i < scripted.Count; i++)
+                {
+                    if (scripted[i] == null || string.IsNullOrEmpty(scripted[i].ToString()))
+                    {
+                        throw new InvalidOperationException(
+                            "CampaignCpu policy scripted_views entry null/empty in " + sourcePath);
+                    }
+                    string view = scripted[i].ToString().Trim();
+                    if (!IsKnownScriptedView(view))
+                    {
+                        throw new InvalidOperationException(
+                            "CampaignCpu policy unknown scripted_views entry '"
+                            + view + "' in " + sourcePath);
+                    }
+                    policy.ScriptedViews.Add(view);
+                }
+            }
+        }
+
+        static string RequirePolicyToken(
+            string raw,
+            string field,
+            string sourcePath,
+            params string[] allowed)
+        {
+            if (string.IsNullOrEmpty(raw))
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu policy " + field + " empty in " + sourcePath);
+            }
+            string token = raw.Trim();
+            for (int i = 0; i < allowed.Length; i++)
+            {
+                if (string.Equals(token, allowed[i], StringComparison.OrdinalIgnoreCase))
+                {
+                    return allowed[i];
+                }
+            }
+            throw new InvalidOperationException(
+                "CampaignCpu policy " + field + " unsupported value '"
+                + token + "' in " + sourcePath);
+        }
+
+        static bool IsKnownScriptedView(string view)
+        {
+            return string.Equals(view, "WaitInput_MainPhase", StringComparison.OrdinalIgnoreCase);
         }
 
         static CampaignCpuMatchSpec ParseMatch(Dictionary<string, object> dict, string sourcePath)
@@ -414,8 +559,14 @@ namespace YgoMaster
 
             if (dict.ContainsKey("card_id"))
             {
+                int cardId;
+                if (!TryParseStrictInt(dict["card_id"], out cardId) || cardId <= 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu match card_id must be positive int in " + sourcePath);
+                }
                 spec.HasCardId = true;
-                spec.CardId = Utils.GetValue<int>(dict, "card_id");
+                spec.CardId = cardId;
             }
 
             string zoneOrPos = null;
@@ -464,7 +615,7 @@ namespace YgoMaster
             return spec;
         }
 
-        static CampaignCpuWhenSpec ParseWhen(Dictionary<string, object> dict)
+        static CampaignCpuWhenSpec ParseWhen(Dictionary<string, object> dict, string sourcePath)
         {
             var when = new CampaignCpuWhenSpec();
             if (dict == null)
@@ -472,66 +623,131 @@ namespace YgoMaster
                 return when;
             }
             List<object> phaseIn = Utils.GetValue(dict, "phase_in", (List<object>)null);
-            if (phaseIn != null && phaseIn.Count > 0)
+            if (phaseIn != null)
             {
+                if (phaseIn.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu when.phase_in must not be empty when present in " + sourcePath);
+                }
                 when.PhaseIn = new List<DuelPhase>();
                 for (int i = 0; i < phaseIn.Count; i++)
                 {
                     if (phaseIn[i] == null)
                     {
-                        continue;
+                        throw new InvalidOperationException(
+                            "CampaignCpu when.phase_in entry null in " + sourcePath);
                     }
                     DuelPhase phase;
-                    if (CampaignCpuCommandAliases.TryResolvePhase(phaseIn[i].ToString(), out phase))
+                    if (!CampaignCpuCommandAliases.TryResolvePhase(phaseIn[i].ToString(), out phase))
                     {
-                        when.PhaseIn.Add(phase);
+                        throw new InvalidOperationException(
+                            "CampaignCpu when.phase_in unknown phase '"
+                            + phaseIn[i] + "' in " + sourcePath);
                     }
+                    when.PhaseIn.Add(phase);
                 }
             }
             if (dict.ContainsKey("turn_lte"))
             {
-                when.TurnLte = Utils.GetValue<int>(dict, "turn_lte");
+                int turn;
+                if (!TryParseStrictInt(dict["turn_lte"], out turn))
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu when.turn_lte must be int in " + sourcePath);
+                }
+                when.TurnLte = turn;
             }
             if (dict.ContainsKey("turn_gte"))
             {
-                when.TurnGte = Utils.GetValue<int>(dict, "turn_gte");
-            }
-            List<object> selfCards = Utils.GetValue(dict, "self_has_card_id", (List<object>)null);
-            if (selfCards != null)
-            {
-                when.SelfHasCardId = new List<int>();
-                for (int i = 0; i < selfCards.Count; i++)
+                int turn;
+                if (!TryParseStrictInt(dict["turn_gte"], out turn))
                 {
-                    if (selfCards[i] == null)
-                    {
-                        continue;
-                    }
-                    int id;
-                    if (int.TryParse(selfCards[i].ToString(), out id))
-                    {
-                        when.SelfHasCardId.Add(id);
-                    }
+                    throw new InvalidOperationException(
+                        "CampaignCpu when.turn_gte must be int in " + sourcePath);
                 }
+                when.TurnGte = turn;
             }
-            List<object> fieldCards = Utils.GetValue(dict, "self_has_field_card_id", (List<object>)null);
-            if (fieldCards != null)
+            if (dict.ContainsKey("self_has_card_id"))
             {
-                when.SelfHasFieldCardId = new List<int>();
-                for (int i = 0; i < fieldCards.Count; i++)
-                {
-                    if (fieldCards[i] == null)
-                    {
-                        continue;
-                    }
-                    int id;
-                    if (int.TryParse(fieldCards[i].ToString(), out id))
-                    {
-                        when.SelfHasFieldCardId.Add(id);
-                    }
-                }
+                when.SelfHasCardId = ParsePositiveIntList(
+                    dict["self_has_card_id"], "self_has_card_id", sourcePath);
+            }
+            if (dict.ContainsKey("self_has_field_card_id"))
+            {
+                when.SelfHasFieldCardId = ParsePositiveIntList(
+                    dict["self_has_field_card_id"], "self_has_field_card_id", sourcePath);
             }
             when.WindowClass = Utils.GetValue<string>(dict, "window_class");
             return when;
+        }
+
+        static List<int> ParsePositiveIntList(object raw, string field, string sourcePath)
+        {
+            List<object> items = raw as List<object>;
+            if (items == null)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu when." + field + " must be array in " + sourcePath);
+            }
+            if (items.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu when." + field + " must not be empty when present in " + sourcePath);
+            }
+            var result = new List<int>(items.Count);
+            for (int i = 0; i < items.Count; i++)
+            {
+                if (items[i] == null)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu when." + field + " entry null in " + sourcePath);
+                }
+                int id;
+                if (!TryParseStrictInt(items[i], out id) || id <= 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu when." + field + " entry must be positive int (got '"
+                        + items[i] + "') in " + sourcePath);
+                }
+                result.Add(id);
+            }
+            return result;
+        }
+
+        static bool TryParseStrictInt(object raw, out int value)
+        {
+            value = 0;
+            if (raw == null)
+            {
+                return false;
+            }
+            if (raw is int)
+            {
+                value = (int)raw;
+                return true;
+            }
+            if (raw is long)
+            {
+                long asLong = (long)raw;
+                if (asLong < int.MinValue || asLong > int.MaxValue)
+                {
+                    return false;
+                }
+                value = (int)asLong;
+                return true;
+            }
+            if (raw is double)
+            {
+                double d = (double)raw;
+                if (d != Math.Floor(d) || d < int.MinValue || d > int.MaxValue)
+                {
+                    return false;
+                }
+                value = (int)d;
+                return true;
+            }
+            return int.TryParse(raw.ToString(), out value);
         }
     }
 }

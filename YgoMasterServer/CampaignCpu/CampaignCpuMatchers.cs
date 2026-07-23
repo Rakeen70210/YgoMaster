@@ -56,8 +56,9 @@ namespace YgoMaster
         }
 
         /// <summary>
-        /// Fail-closed: if self_has_card_id cannot be evaluated, treat when as false.
-        /// Caller should set predicateEvalFailed when observation hand list is unusable.
+        /// Fail-closed: if card-id when-predicates cannot be evaluated, treat when as false.
+        /// Caller should set predicateEvalFailed (or observation.PredicateQueryFailed) when
+        /// hand/field lists are unusable.
         /// </summary>
         public static bool WhenHolds(
             CampaignCpuWhenSpec when,
@@ -68,9 +69,14 @@ namespace YgoMaster
             {
                 return true;
             }
-            if (predicateEvalFailed
-                && when.SelfHasCardId != null
-                && when.SelfHasCardId.Count > 0)
+            if (observation != null && observation.PredicateQueryFailed)
+            {
+                predicateEvalFailed = true;
+            }
+            bool needsCardIds =
+                (when.SelfHasCardId != null && when.SelfHasCardId.Count > 0)
+                || (when.SelfHasFieldCardId != null && when.SelfHasFieldCardId.Count > 0);
+            if (predicateEvalFailed && needsCardIds)
             {
                 return false;
             }
