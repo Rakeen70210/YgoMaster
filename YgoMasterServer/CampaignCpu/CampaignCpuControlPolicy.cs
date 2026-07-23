@@ -1,6 +1,17 @@
 namespace YgoMaster
 {
     /// <summary>
+    /// Result of a Human↔CPU player-type transition after SetPlayerType + IsHuman readback.
+    /// Production must not advance the state machine as if the flip succeeded unless Confirmed.
+    /// </summary>
+    enum CampaignCpuPlayerTypeTransitionResult
+    {
+        Confirmed = 0,
+        Failed = 1,
+        Unknown = 2,
+    }
+
+    /// <summary>
     /// Solo control polarity: own opponent seat only; never MyID.
     /// Inverse of LLM (which requires player == myId == controlPlayer).
     /// </summary>
@@ -10,6 +21,40 @@ namespace YgoMaster
         public static bool IsValidMyId(int myId)
         {
             return myId == 0 || myId == 1;
+        }
+
+        /// <summary>
+        /// Evaluate IsHuman readback for a desired player type.
+        /// Human desired → Confirmed only when readback==1; CPU desired → Confirmed only when readback==0.
+        /// Any other readback (including negative/unavailable) is Unknown.
+        /// </summary>
+        public static CampaignCpuPlayerTypeTransitionResult EvaluatePlayerTypeTransition(
+            int desiredPlayerType,
+            int isHumanReadback)
+        {
+            if (isHumanReadback != 0 && isHumanReadback != 1)
+            {
+                return CampaignCpuPlayerTypeTransitionResult.Unknown;
+            }
+            // DuelPlayerType.Human == 0, CPU == 1 (YgoMasterServer/Enums/Duel.cs).
+            if (desiredPlayerType == 0)
+            {
+                return isHumanReadback == 1
+                    ? CampaignCpuPlayerTypeTransitionResult.Confirmed
+                    : CampaignCpuPlayerTypeTransitionResult.Failed;
+            }
+            if (desiredPlayerType == 1)
+            {
+                return isHumanReadback == 0
+                    ? CampaignCpuPlayerTypeTransitionResult.Confirmed
+                    : CampaignCpuPlayerTypeTransitionResult.Failed;
+            }
+            return CampaignCpuPlayerTypeTransitionResult.Unknown;
+        }
+
+        public static bool IsTransitionConfirmed(CampaignCpuPlayerTypeTransitionResult result)
+        {
+            return result == CampaignCpuPlayerTypeTransitionResult.Confirmed;
         }
 
         /// <summary>

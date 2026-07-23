@@ -4,7 +4,7 @@
   "source": {
     "kind": "derived_from_g1_ablation",
     "parent_fixture": "g1_opening_a_main1",
-    "notes": "Same captured opening with top prefer (SummonSp 12485) removed from legal menu; g1 prefer[1] Summon 12292 Sage with Eyes of Blue."
+    "notes": "Opening without Kaiser Vorse Raider (12485) in hand/field so G1 self_has cannot fire; G2 self_lacks[12485] + self_has[12292,8344] owns Summon 12292 Sage with Eyes of Blue. SummonSp 12485 also absent from legal menu."
   },
   "observation": {
     "chapter_id": 11010078,
@@ -22,7 +22,6 @@
     "window_class": "WaitInput_MainPhase",
     "self_hand_card_ids": [
       8344,
-      12485,
       12292,
       3868,
       12493,
@@ -151,7 +150,7 @@
   "expect": {
     "route": "RuleCommit",
     "reason": "priority",
-    "rule_id": "g1-opening-special-or-action",
+    "rule_id": "g2-next-preferred-without-top",
     "action_identity": "Command|Summon|12292|13|2|",
     "command": "Summon",
     "card_id": 12292,

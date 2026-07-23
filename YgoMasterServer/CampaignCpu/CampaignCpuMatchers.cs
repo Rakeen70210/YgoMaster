@@ -75,6 +75,7 @@ namespace YgoMaster
             }
             bool needsCardIds =
                 (when.SelfHasCardId != null && when.SelfHasCardId.Count > 0)
+                || (when.SelfLacksCardId != null && when.SelfLacksCardId.Count > 0)
                 || (when.SelfHasFieldCardId != null && when.SelfHasFieldCardId.Count > 0);
             if (predicateEvalFailed && needsCardIds)
             {
@@ -120,6 +121,15 @@ namespace YgoMaster
             {
                 if (!ContainsAny(observation.SelfHandCardIds, when.SelfHasCardId)
                     && !ContainsAny(observation.SelfFieldFaceUpCardIds, when.SelfHasCardId))
+                {
+                    return false;
+                }
+            }
+            if (when.SelfLacksCardId != null && when.SelfLacksCardId.Count > 0)
+            {
+                // Fail-closed: any listed card present in hand or face-up field blocks the rule.
+                if (ContainsAny(observation.SelfHandCardIds, when.SelfLacksCardId)
+                    || ContainsAny(observation.SelfFieldFaceUpCardIds, when.SelfLacksCardId))
                 {
                     return false;
                 }

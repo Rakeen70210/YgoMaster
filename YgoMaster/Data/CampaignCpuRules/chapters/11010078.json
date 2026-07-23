@@ -6,7 +6,7 @@
     "name": "LE 11010078 DSOD Pt. 2 slice",
     "archetype": "seto-kaiba-dsod",
     "pr3_contract": "fixtures/11010078/CONTRACT.json",
-    "notes": "Priority prefer list mined from live pr3_capture_shadow Main1 menu (2026-07-21). Top: SummonSp Kaiser Vorse Raider 12485; next: Summon Sage with Eyes of Blue 12292; then Action Solidarity 8344."
+    "notes": "Priority prefer list mined from live pr3_capture_shadow Main1 menu (2026-07-21). G1: has Kaiser 12485. G2: lacks Kaiser, prefers Sage 12292 / Solidarity 8344. Disjoint via self_lacks_card_id."
   },
   "policy": {
     "on_no_match": "native_cpu",
@@ -31,7 +31,7 @@
       "when": {
         "phase_in": ["Main1"],
         "turn_lte": 5,
-        "self_has_card_id": [12485, 12292, 8344]
+        "self_has_card_id": [12485]
       },
       "prefer": [
         { "command": "SummonSp", "card_id": 12485 },
@@ -47,7 +47,8 @@
       "when": {
         "phase_in": ["Main1"],
         "turn_lte": 5,
-        "self_has_card_id": [12292, 8344]
+        "self_has_card_id": [12292, 8344],
+        "self_lacks_card_id": [12485]
       },
       "prefer": [
         { "command": "Summon", "card_id": 12292 },

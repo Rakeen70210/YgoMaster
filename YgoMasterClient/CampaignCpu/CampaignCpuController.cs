@@ -385,6 +385,7 @@ namespace YgoMasterClient
 
         /// <summary>
         /// Apply SetPlayerType only when engine work memory is present (native-safe).
+        /// Prefer <see cref="TryTransitionPlayerType"/> when the state machine depends on success.
         /// </summary>
         static void TrySetPlayerTypeSafe(int player, int type)
         {
@@ -399,6 +400,116 @@ namespace YgoMasterClient
             catch
             {
             }
+        }
+
+        /// <summary>
+        /// Set player type and confirm via IsHuman readback. Does not advance the state machine.
+        /// Human desired → Confirmed only when IsHuman==1; CPU desired → Confirmed only when IsHuman==0.
+        /// </summary>
+        static CampaignCpuPlayerTypeTransitionResult TryTransitionPlayerType(
+            int player,
+            int desiredType,
+            out int isHumanReadback)
+        {
+            isHumanReadback = -1;
+            if (!IsEngineWorkReady())
+            {
+                return CampaignCpuPlayerTypeTransitionResult.Unknown;
+            }
+            try
+            {
+                DuelDll.CampaignCpu_SetPlayerType(player, desiredType);
+            }
+            catch
+            {
+                return CampaignCpuPlayerTypeTransitionResult.Unknown;
+            }
+            isHumanReadback = TryReadIsHuman(player);
+            return CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(
+                desiredType, isHumanReadback);
+        }
+
+        /// <summary>
+        /// Build the production progress-check token. Always populates base fields from the same
+        /// sources as arming. When the callback is a Main WaitInput and extract is safe, re-extracts
+        /// a known legal fingerprint so same-view menu changes can prove progress.
+        /// </summary>
+        static CampaignCpuProgressToken BuildProgressCheckToken(
+            DuelViewType viewType,
+            int param1,
+            int param2,
+            int param3,
+            int actingSeat,
+            bool actingResolved,
+            int turn,
+            int phase)
+        {
+            int seat = actingResolved ? actingSeat : -1;
+            bool known = false;
+            string fingerprint = null;
+            if (actingResolved
+                && CampaignCpuProgressCheck.IsSafeLegalFingerprintExtractView(viewType, param1)
+                && IsEngineWorkReady())
+            {
+                try
+                {
+                    var query = new LiveDllLegalActionQuery();
+                    LegalAction automatic;
+                    bool multiSelect;
+                    CampaignCpuObservation obs = CampaignCpuObservationBuilder.Build(
+                        query,
+                        ViewSeq,
+                        viewType,
+                        param1,
+                        param2,
+                        param3,
+                        actingSeat,
+                        OwnedSeat,
+                        ChapterId,
+                        out automatic,
+                        out multiSelect);
+                    fingerprint = CampaignCpuObservation.FingerprintLegalActions(obs.LegalActions);
+                    known = true;
+                }
+                catch
+                {
+                    known = false;
+                    fingerprint = null;
+                }
+            }
+            return CampaignCpuProgressCheck.BuildCheckToken(
+                DuelGeneration,
+                viewType,
+                param1,
+                param2,
+                param3,
+                seat,
+                turn,
+                phase,
+                known,
+                fingerprint);
+        }
+
+        static void AuditPlayerTypeTransitionFailure(
+            string path,
+            int desiredType,
+            CampaignCpuPlayerTypeTransitionResult result,
+            int isHumanReadback,
+            string windowClass)
+        {
+            CampaignCpuAuditLog.Write("player_type_transition_failed", new Dictionary<string, object>
+            {
+                { "path", path },
+                { "desired_type", desiredType },
+                { "desired_type_name", desiredType == (int)DuelPlayerType.Human ? "Human" : "CPU" },
+                { "result", result.ToString() },
+                { "owned_seat", OwnedSeat },
+                { "owned_is_human_readback", isHumanReadback },
+                { "my_is_human_readback", TryReadIsHuman(MyId) },
+                { "view_seq", ViewSeq },
+                { "window_class", windowClass },
+                { "state", StateMachine.State.ToString() },
+            });
         }
 
         /// <summary>
@@ -525,14 +636,15 @@ namespace YgoMasterClient
                     phase);
             }
 
-            // Check path: same base fields as arming; legal fingerprint unavailable until extract.
-            var progress = CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
-                DuelGeneration,
+            // Check path: same base fields as arming; re-extract legal fingerprint when safe
+            // (Main WaitInput) so same-view menu changes can prove progress (M1).
+            var progress = BuildProgressCheckToken(
                 viewType,
                 param1,
                 param2,
                 param3,
-                actingResolved ? actingPlayer : -1,
+                actingPlayer,
+                actingResolved,
                 turn,
                 phase);
 
@@ -544,7 +656,9 @@ namespace YgoMasterClient
                     StateMachine.QuarantineWatch != null
                         ? StateMachine.QuarantineWatch.CommittedToken
                         : null);
-                if (qCheck == CampaignCpuProgressCheckResult.SuppressSameView)
+                CampaignCpuEffectKind qEffect = CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.CommitQuarantine, qCheck);
+                if (qEffect == CampaignCpuEffectKind.SuppressSameView)
                 {
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
@@ -561,7 +675,9 @@ namespace YgoMasterClient
                     StateMachine.ProgressWatch != null
                         ? StateMachine.ProgressWatch.CommittedToken
                         : null);
-                if (pCheck == CampaignCpuProgressCheckResult.SuppressSameView)
+                CampaignCpuEffectKind pEffect = CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.AwaitingProgress, pCheck);
+                if (pEffect == CampaignCpuEffectKind.SuppressSameView)
                 {
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
@@ -596,7 +712,21 @@ namespace YgoMasterClient
                     OwnedSeat,
                     out deny))
                 {
-                    TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
+                    int humanRb;
+                    CampaignCpuPlayerTypeTransitionResult tr = TryTransitionPlayerType(
+                        OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
+                    string windowClassA5 = CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1);
+                    if (!CampaignCpuControlPolicy.IsTransitionConfirmed(tr))
+                    {
+                        // Remain NativeLease; do not claim HumanOwned without positive readback.
+                        AuditPlayerTypeTransitionFailure(
+                            "owned_main_capture_boundary",
+                            (int)DuelPlayerType.Human,
+                            tr,
+                            humanRb,
+                            windowClassA5);
+                        return originalRunEffect(id, param1, param2, param3);
+                    }
                     var lease = StateMachine.ActiveLease;
                     StateMachine.RestoreHumanOwned();
                     CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
@@ -605,16 +735,16 @@ namespace YgoMasterClient
                         { "entry_view_seq", lease != null ? lease.EntryViewSeq : 0UL },
                         { "entry_reason", lease != null ? lease.Reason : null },
                         { "exit_view_seq", ViewSeq },
-                        { "window_class",
-                            CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                        { "window_class", windowClassA5 },
                         { "turn", turn },
                         { "turn_player", turnPlayer },
                         { "phase_current", phase },
                         { "phase_new", param2 },
                         { "phase_change_seat", param1 },
                         { "acting", actingResolved ? actingPlayer : -1 },
-                        { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                        { "owned_is_human_readback", humanRb },
                         { "my_is_human_readback", TryReadIsHuman(MyId) },
+                        { "transition_confirmed", true },
                         { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
                         { "deny_was", deny },
                     });
@@ -633,7 +763,20 @@ namespace YgoMasterClient
                     param1,
                     out deny))
                 {
-                    TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
+                    int humanRb;
+                    CampaignCpuPlayerTypeTransitionResult tr = TryTransitionPlayerType(
+                        OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
+                    string windowClassHs = CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1);
+                    if (!CampaignCpuControlPolicy.IsTransitionConfirmed(tr))
+                    {
+                        AuditPlayerTypeTransitionFailure(
+                            "handshake_boundary",
+                            (int)DuelPlayerType.Human,
+                            tr,
+                            humanRb,
+                            windowClassHs);
+                        return originalRunEffect(id, param1, param2, param3);
+                    }
                     var lease = StateMachine.ActiveLease;
                     StateMachine.RestoreHumanOwned();
                     CampaignCpuAuditLog.Write("temporary_cpu_restore", new Dictionary<string, object>
@@ -643,9 +786,10 @@ namespace YgoMasterClient
                         { "entry_reason", lease != null ? lease.Reason : null },
                         { "exit_view_seq", ViewSeq },
                         { "acting", actingResolved ? actingPlayer : -1 },
-                        { "window_class", CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
-                        { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                        { "window_class", windowClassHs },
+                        { "owned_is_human_readback", humanRb },
                         { "my_is_human_readback", TryReadIsHuman(MyId) },
+                        { "transition_confirmed", true },
                         { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
                         { "deny_was", deny },
                     });
@@ -917,6 +1061,26 @@ namespace YgoMasterClient
             string reason,
             OriginalRunEffectDelegate originalRunEffect)
         {
+            string windowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1);
+
+            // Confirm CPU ownership before claiming NativeLease. A failed/unknown flip must
+            // never proceed as if native CPU owns the window (M5).
+            int cpuRb;
+            CampaignCpuPlayerTypeTransitionResult cpuTr = TryTransitionPlayerType(
+                OwnedSeat, (int)DuelPlayerType.CPU, out cpuRb);
+            if (!CampaignCpuControlPolicy.IsTransitionConfirmed(cpuTr))
+            {
+                AuditPlayerTypeTransitionFailure(
+                    "begin_fallback:" + reason,
+                    (int)DuelPlayerType.CPU,
+                    cpuTr,
+                    cpuRb,
+                    windowClass);
+                // Fail closed: do not enter NativeLease; forward once under current HumanOwned.
+                StateMachine.DisableScripting("player_type_transition_failed_cpu");
+                return originalRunEffect(id, p1, p2, p3);
+            }
+
             StateMachine.BeginNativeLease(
                 reason,
                 DuelGeneration,
@@ -924,7 +1088,6 @@ namespace YgoMasterClient
                 progress,
                 OwnedSeat,
                 DateTime.UtcNow);
-            TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.CPU);
             // Ensure cpu param remains applied (typical solo 100).
             if (IsEngineWorkReady())
             {
@@ -938,15 +1101,15 @@ namespace YgoMasterClient
             }
             // Exact-once: this is the sole originalRunEffect call on the BeginFallback path.
             int ret = originalRunEffect(id, p1, p2, p3);
-            string windowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1);
             CampaignCpuAuditLog.Write("temporary_cpu_begin", new Dictionary<string, object>
             {
                 { "reason", reason },
                 { "view_seq", ViewSeq },
                 { "owned_seat", OwnedSeat },
                 { "window_class", windowClass },
-                { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                { "owned_is_human_readback", cpuRb },
                 { "my_is_human_readback", TryReadIsHuman(MyId) },
+                { "transition_confirmed", true },
                 { "exact_once_forward", true },
             });
 
@@ -961,7 +1124,20 @@ namespace YgoMasterClient
             if (oneShotRestore
                 && StateMachine.State == SoloTemporaryCpuState.NativeLease)
             {
-                TrySetPlayerTypeSafe(OwnedSeat, (int)DuelPlayerType.Human);
+                int humanRb;
+                CampaignCpuPlayerTypeTransitionResult humanTr = TryTransitionPlayerType(
+                    OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
+                if (!CampaignCpuControlPolicy.IsTransitionConfirmed(humanTr))
+                {
+                    // Stay NativeLease rather than claiming HumanOwned without proof.
+                    AuditPlayerTypeTransitionFailure(
+                        "oneshot_restore",
+                        (int)DuelPlayerType.Human,
+                        humanTr,
+                        humanRb,
+                        windowClass);
+                    return ret;
+                }
                 StateMachine.RestoreHumanOwned();
                 CampaignCpuAuditLog.Write("temporary_cpu_oneshot_restore", new Dictionary<string, object>
                 {
@@ -969,8 +1145,9 @@ namespace YgoMasterClient
                     { "view_seq", ViewSeq },
                     { "window_class", windowClass },
                     { "oneshot_policy", "draw_phase_only" },
-                    { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                    { "owned_is_human_readback", humanRb },
                     { "my_is_human_readback", TryReadIsHuman(MyId) },
+                    { "transition_confirmed", true },
                     { "note", "AllowScriptedCommits: restore Human after DrawPhase so Main menus can be extracted" },
                 });
             }

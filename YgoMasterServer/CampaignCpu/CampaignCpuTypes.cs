@@ -377,6 +377,57 @@ namespace YgoMaster
                 ? CampaignCpuProgressCheckResult.FreshAfterQuarantine
                 : CampaignCpuProgressCheckResult.SuppressSameView;
         }
+
+        /// <summary>
+        /// Production check-path token builder. Base fields always populated from the same
+        /// sources as arming. When <paramref name="legalFingerprintKnown"/> is true, a
+        /// read-only extract supplied the fingerprint (empty menu → "empty"). When false,
+        /// fingerprint is unavailable and must not prove freshness.
+        /// </summary>
+        public static CampaignCpuProgressToken BuildCheckToken(
+            int duelGeneration,
+            DuelViewType viewType,
+            int p1,
+            int p2,
+            int p3,
+            int actingSeat,
+            int turn,
+            int phase,
+            bool legalFingerprintKnown,
+            string legalActionFingerprint)
+        {
+            if (legalFingerprintKnown)
+            {
+                return CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                    duelGeneration,
+                    viewType,
+                    p1,
+                    p2,
+                    p3,
+                    actingSeat,
+                    turn,
+                    phase,
+                    legalActionFingerprint);
+            }
+            return CampaignCpuProgressToken.CreateWithoutLegalFingerprint(
+                duelGeneration,
+                viewType,
+                p1,
+                p2,
+                p3,
+                actingSeat,
+                turn,
+                phase);
+        }
+
+        /// <summary>
+        /// Whether a check-path re-extract of the legal menu is considered safe for the view.
+        /// Main WaitInput is the only production extract surface in v1 (same as scripted windows).
+        /// </summary>
+        public static bool IsSafeLegalFingerprintExtractView(DuelViewType viewType, int param1)
+        {
+            return CampaignCpuWindowClassifier.IsMainPhaseWaitInput(viewType, param1);
+        }
     }
 
     static class CampaignCpuWindowClassifier

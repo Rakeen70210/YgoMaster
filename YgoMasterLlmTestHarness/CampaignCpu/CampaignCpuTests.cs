@@ -44,12 +44,18 @@ namespace YgoMaster
             ProgressTokenKnownLegalChangeIsFresh();
             ProgressTokenKnownToUnknownNotFresh();
             ProgressTokenEmptyLegalKnownVsUnknown();
+            ProgressCheckBuildTokenSameViewChangedMenuIsFresh();
+            ProgressCheckBuildTokenKnownToUnknownNotFresh();
+            ProgressCheckSafeExtractViewIsMainOnly();
             PostCommitIndeterminateSameViewSuppressesOriginal();
             PostCommitTimeoutQuarantinesWithoutOriginal();
             PostCommitFreshAfterQuarantineForwardsOnce();
             ExactOnceOriginalContract();
             AlwaysNativeOwnedWindowUsesBeginFallback();
+            RunEffectRouterMapsProgressGateAndCountsOriginals();
+            RunEffectRouterMapsTransitionAndCommitOutcomes();
             ControlPolicyNeverOwnsMyId();
+            PlayerTypeTransitionRequiresPositiveReadback();
             SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero();
             SoloTemporaryCpuNativeContinuationBlocksRestore();
             SoloTemporaryCpuMyIdBoundaryRestores();
@@ -68,8 +74,10 @@ namespace YgoMaster
             PackLoaderRejectsUnknownPhaseIn();
             PackLoaderRejectsInvalidCardIdPredicate();
             PackLoaderRejectsUnsupportedVersionAndPolicy();
+            PackIndexRejectsDefaultEnabledTrue();
             ScorerDecisionCapReturnsNative();
             ScorerPredicateQueryFailureFailsWhenCardPredicates();
+            ScorerG2OwnsRuleWhenKaiserAbsent();
             ProductPackStillLoadsUnderStrictParse();
             Console.WriteLine("PASS CampaignCpuTests.RunAll");
         }
@@ -492,17 +500,52 @@ namespace YgoMaster
 
         static void ScorerG2WhenTopAbsent()
         {
-            // G2: captured opening with top SummonSp 12485 removed → Summon 12292 via g1 prefer[1]
+            // G2: hand lacks Kaiser 12485 → g2-next-preferred-without-top owns Summon 12292.
             CampaignCpuRulePack pack = LoadProductPack();
             CampaignCpuObservation obs = LoadObservationFixture("g2_opening_a_without_top_summon_sp.json");
             Dictionary<string, object> exp = LoadExpect("g2_opening_a_without_top_summon_sp.json");
             CampaignCpuDecision d = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(CampaignCpuRoute.RuleCommit, d.Route, "G2 route");
             AssertEqual(Utils.GetValue<string>(exp, "rule_id"), d.RuleId, "G2 rule id");
+            AssertEqual("g2-next-preferred-without-top", d.RuleId, "G2 owns its rule id");
             AssertTrue(d.Action != null, "G2 action");
             AssertEqual(Utils.GetValue<string>(exp, "action_identity"), d.Action.CanonicalIdentity, "G2 identity");
             AssertEqual(Utils.GetValue<int>(exp, "card_id"), d.Action.CardId, "G2 card");
             AssertEqual(DuelCommandType.Summon, d.Action.Command, "G2 command");
+        }
+
+        static void ScorerG2OwnsRuleWhenKaiserAbsent()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            // Product G1 requires 12485; G2 requires lacks 12485 + has 12292/8344.
+            CampaignCpuPriorityRule g1 = null;
+            CampaignCpuPriorityRule g2 = null;
+            for (int i = 0; i < pack.Priority.Count; i++)
+            {
+                if (pack.Priority[i].Id == "g1-opening-special-or-action")
+                {
+                    g1 = pack.Priority[i];
+                }
+                if (pack.Priority[i].Id == "g2-next-preferred-without-top")
+                {
+                    g2 = pack.Priority[i];
+                }
+            }
+            AssertTrue(g1 != null && g1.RequiredForSlice, "G1 required");
+            AssertTrue(g2 != null && g2.RequiredForSlice, "G2 required");
+            AssertTrue(
+                g2.When != null
+                && g2.When.SelfLacksCardId != null
+                && g2.When.SelfLacksCardId.Contains(12485),
+                "G2 self_lacks 12485");
+            CampaignCpuObservation g2Obs = LoadObservationFixture(
+                "g2_opening_a_without_top_summon_sp.json");
+            AssertTrue(
+                !CampaignCpuMatchers.WhenHolds(g1.When, g2Obs, false),
+                "G1 when must not hold on G2 observation");
+            AssertTrue(
+                CampaignCpuMatchers.WhenHolds(g2.When, g2Obs, false),
+                "G2 when holds on G2 observation");
         }
 
         static void ScorerNoMatchAllZeroFallback()
@@ -1382,6 +1425,86 @@ namespace YgoMaster
                 "phase change is fresh with unknown legal");
         }
 
+        /// <summary>
+        /// M1 production seam: check path re-extract supplies a known fingerprint so
+        /// same view/turn/phase with a changed legal menu is ProgressObserved.
+        /// </summary>
+        static void ProgressCheckBuildTokenSameViewChangedMenuIsFresh()
+        {
+            var armed = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "Command|Summon|4007|13|0|");
+            // Production check builder with re-extracted known fingerprint (changed menu).
+            var check = CampaignCpuProgressCheck.BuildCheckToken(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1,
+                legalFingerprintKnown: true,
+                legalActionFingerprint: "Command|Set|8344|13|0|");
+            AssertTrue(check.LegalFingerprintKnown, "check path known");
+            AssertTrue(
+                CampaignCpuProgressToken.IsFreshSemanticProgress(check, armed),
+                "same base + changed known legal is fresh");
+            AssertEqual(
+                CampaignCpuProgressCheckResult.ProgressObserved,
+                CampaignCpuProgressCheck.EvaluateAwaitingProgress(check, armed),
+                "awaiting observes progress");
+            AssertEqual(
+                CampaignCpuEffectKind.CompleteAwaitingProgress,
+                CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.AwaitingProgress,
+                    CampaignCpuProgressCheckResult.ProgressObserved),
+                "router maps to complete awaiting");
+            // Same menu → suppress.
+            var same = CampaignCpuProgressCheck.BuildCheckToken(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1,
+                legalFingerprintKnown: true,
+                legalActionFingerprint: "Command|Summon|4007|13|0|");
+            AssertEqual(
+                CampaignCpuProgressCheckResult.SuppressSameView,
+                CampaignCpuProgressCheck.EvaluateAwaitingProgress(same, armed),
+                "identical known menu suppresses");
+        }
+
+        static void ProgressCheckBuildTokenKnownToUnknownNotFresh()
+        {
+            var armed = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1, "Command|Summon|4007|13|0|");
+            var unknown = CampaignCpuProgressCheck.BuildCheckToken(
+                1, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                (int)DuelPhase.Main1,
+                legalFingerprintKnown: false,
+                legalActionFingerprint: null);
+            AssertTrue(!unknown.LegalFingerprintKnown, "unknown");
+            AssertEqual(
+                CampaignCpuProgressCheckResult.SuppressSameView,
+                CampaignCpuProgressCheck.EvaluateAwaitingProgress(unknown, armed),
+                "known→unknown not fresh");
+            AssertEqual(
+                CampaignCpuEffectKind.SuppressSameView,
+                CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.AwaitingProgress,
+                    CampaignCpuProgressCheckResult.SuppressSameView),
+                "router suppresses");
+        }
+
+        static void ProgressCheckSafeExtractViewIsMainOnly()
+        {
+            AssertTrue(
+                CampaignCpuProgressCheck.IsSafeLegalFingerprintExtractView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "Main WaitInput safe");
+            AssertTrue(
+                !CampaignCpuProgressCheck.IsSafeLegalFingerprintExtractView(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.DrawPhase),
+                "Draw not safe extract");
+            AssertTrue(
+                !CampaignCpuProgressCheck.IsSafeLegalFingerprintExtractView(
+                    DuelViewType.PhaseChange, 0),
+                "PhaseChange not safe extract");
+        }
+
         static void PostCommitIndeterminateSameViewSuppressesOriginal()
         {
             var sm = new SoloTemporaryCpuStateMachine();
@@ -1470,6 +1593,167 @@ namespace YgoMaster
                 CampaignCpuRunEffectContract.OuterAction.ForwardOriginalOnce,
                 CampaignCpuRunEffectContract.DecidePassThrough(),
                 "pass-through forwards once");
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.MapOwnedWindowForcedNative(),
+                "router always-native");
+            AssertEqual(
+                CampaignCpuEffectKind.ForwardOriginal,
+                CampaignCpuRunEffectRouter.MapPassThrough(),
+                "router pass-through");
+        }
+
+        static void RunEffectRouterMapsProgressGateAndCountsOriginals()
+        {
+            AssertEqual(
+                CampaignCpuEffectKind.SuppressSameView,
+                CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.CommitQuarantine,
+                    CampaignCpuProgressCheckResult.SuppressSameView),
+                "quarantine suppress");
+            AssertEqual(
+                CampaignCpuEffectKind.DisableAndBeginNativeLease,
+                CampaignCpuRunEffectRouter.MapProgressGate(
+                    SoloTemporaryCpuState.CommitQuarantine,
+                    CampaignCpuProgressCheckResult.FreshAfterQuarantine),
+                "quarantine fresh");
+            AssertEqual(0, CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                CampaignCpuEffectKind.SuppressSameView), "suppress 0");
+            AssertEqual(1, CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                CampaignCpuEffectKind.DisableAndBeginNativeLease), "disable+lease 1");
+            AssertEqual(0, CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                CampaignCpuEffectKind.CommitApplied), "commit applied 0");
+            AssertEqual(1, CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward), "begin fallback 1");
+            AssertEqual(
+                1,
+                CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                    CampaignCpuEffectKind.ForwardOriginal, () => 7),
+                "counting forward");
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.MapDualHumanResponseHold(),
+                "A4 response hold");
+        }
+
+        static void RunEffectRouterMapsTransitionAndCommitOutcomes()
+        {
+            AssertEqual(
+                CampaignCpuEffectKind.RestoreHumanThenContinue,
+                CampaignCpuRunEffectRouter.MapTransitionResult(
+                    CampaignCpuPlayerTypeTransitionResult.Confirmed, restoreHumanPath: true),
+                "A5 confirmed restore");
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.MapTransitionResult(
+                    CampaignCpuPlayerTypeTransitionResult.Confirmed, restoreHumanPath: false),
+                "CPU confirmed lease");
+            AssertEqual(
+                CampaignCpuEffectKind.TransitionFailedForwardOriginal,
+                CampaignCpuRunEffectRouter.MapTransitionResult(
+                    CampaignCpuPlayerTypeTransitionResult.Failed, restoreHumanPath: true),
+                "failed human restore");
+            AssertEqual(
+                CampaignCpuEffectKind.TransitionFailedForwardOriginal,
+                CampaignCpuRunEffectRouter.MapTransitionResult(
+                    CampaignCpuPlayerTypeTransitionResult.Unknown, restoreHumanPath: false),
+                "unknown CPU");
+            AssertEqual(
+                CampaignCpuEffectKind.CommitApplied,
+                CampaignCpuRunEffectRouter.MapCommitOutcome(CampaignCpuCommitOutcome.Applied),
+                "applied");
+            AssertEqual(
+                CampaignCpuEffectKind.CommitIndeterminate,
+                CampaignCpuRunEffectRouter.MapCommitOutcome(CampaignCpuCommitOutcome.Indeterminate),
+                "indeterminate");
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.MapCommitOutcome(CampaignCpuCommitOutcome.NotStarted),
+                "not started → fallback");
+        }
+
+        static void PlayerTypeTransitionRequiresPositiveReadback()
+        {
+            // Human=0 desired → Confirmed only on IsHuman==1
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Confirmed,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(0, 1),
+                "Human confirmed");
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Failed,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(0, 0),
+                "Human failed when still CPU");
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Unknown,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(0, -1),
+                "Human unknown");
+            // CPU=1 desired → Confirmed only on IsHuman==0
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Confirmed,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(1, 0),
+                "CPU confirmed");
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Failed,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(1, 1),
+                "CPU failed when still Human");
+            AssertEqual(
+                CampaignCpuPlayerTypeTransitionResult.Unknown,
+                CampaignCpuControlPolicy.EvaluatePlayerTypeTransition(1, 99),
+                "CPU unknown readback");
+            AssertTrue(
+                CampaignCpuControlPolicy.IsTransitionConfirmed(
+                    CampaignCpuPlayerTypeTransitionResult.Confirmed),
+                "helper confirmed");
+            AssertTrue(
+                !CampaignCpuControlPolicy.IsTransitionConfirmed(
+                    CampaignCpuPlayerTypeTransitionResult.Failed),
+                "helper failed");
+        }
+
+        static void PackIndexRejectsDefaultEnabledTrue()
+        {
+            string dir = Path.Combine(Path.GetTempPath(), "campaigncpu-index-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(dir);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(dir, "index.json"),
+                    @"{
+  ""version"": 1,
+  ""default_enabled"": true,
+  ""chapters"": {
+    ""11010078"": { ""pack"": ""chapters/x.json"", ""enabled"": false }
+  }
+}");
+                bool threw = false;
+                try
+                {
+                    CampaignCpuRulePackLoader.LoadIndex(dir);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    threw = true;
+                    AssertTrue(
+                        ex.Message.IndexOf("default_enabled", StringComparison.OrdinalIgnoreCase) >= 0,
+                        "message mentions default_enabled");
+                }
+                AssertTrue(threw, "default_enabled=true must throw");
+
+                // false is accepted
+                File.WriteAllText(
+                    Path.Combine(dir, "index.json"),
+                    @"{
+  ""version"": 1,
+  ""default_enabled"": false,
+  ""chapters"": {}
+}");
+                CampaignCpuRuleIndex idx = CampaignCpuRulePackLoader.LoadIndex(dir);
+                AssertEqual(false, idx.DefaultEnabled, "DefaultEnabled forced false");
+            }
+            finally
+            {
+                try { Directory.Delete(dir, true); } catch { }
+            }
         }
 
         static void ControlPolicyNeverOwnsMyId()

@@ -29,6 +29,11 @@ namespace YgoMaster
         public int? TurnLte;
         public int? TurnGte;
         public List<int> SelfHasCardId;
+        /// <summary>
+        /// Fail when any listed card id is present in self hand or face-up field.
+        /// Used to make lower-priority rules (e.g. G2) disjoint from higher ones (G1).
+        /// </summary>
+        public List<int> SelfLacksCardId;
         public List<int> SelfHasFieldCardId;
         public string WindowClass;
     }
@@ -178,10 +183,20 @@ namespace YgoMaster
                     + " (supported " + SupportedIndexVersion + ")");
             }
 
+            // v1: default_enabled must not silently enable chapters. false is allowed (and
+            // is the product default); true is rejected so authors use per-chapter enabled.
+            bool defaultEnabled = Utils.GetValue<bool>(root, "default_enabled", false);
+            if (defaultEnabled)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu index default_enabled=true is unsupported in v1; "
+                    + "set per-chapter enabled explicitly (default_enabled must be false or omitted)");
+            }
+
             var index = new CampaignCpuRuleIndex
             {
                 Version = version,
-                DefaultEnabled = Utils.GetValue<bool>(root, "default_enabled", false),
+                DefaultEnabled = false,
                 SourceDir = Path.GetFullPath(rulesDir),
             };
 
@@ -672,6 +687,11 @@ namespace YgoMaster
             {
                 when.SelfHasCardId = ParsePositiveIntList(
                     dict["self_has_card_id"], "self_has_card_id", sourcePath);
+            }
+            if (dict.ContainsKey("self_lacks_card_id"))
+            {
+                when.SelfLacksCardId = ParsePositiveIntList(
+                    dict["self_lacks_card_id"], "self_lacks_card_id", sourcePath);
             }
             if (dict.ContainsKey("self_has_field_card_id"))
             {

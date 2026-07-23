@@ -29,8 +29,9 @@
       "id": "G2",
       "fixture": "g2_opening_a_without_top_summon_sp.json",
       "expect_action_identity": "Command|Summon|12292|13|2|",
-      "expect_rule_id": "g1-opening-special-or-action",
-      "expect_route": "RuleCommit"
+      "expect_rule_id": "g2-next-preferred-without-top",
+      "expect_route": "RuleCommit",
+      "notes": "Hand lacks 12485 so G1 cannot match; G2 is fixture-owned and reachable under scorer ordering."
     },
     {
       "id": "G3",
