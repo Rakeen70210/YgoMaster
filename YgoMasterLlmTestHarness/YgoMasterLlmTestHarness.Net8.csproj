@@ -28,6 +28,8 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs" Link="CampaignCpu\CampaignCpuAuditSerializer.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs" Link="CampaignCpu\CampaignCpuRunEffectContract.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeCommit.cs" Link="CampaignCpu\CampaignCpuNativeCommit.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuSelStand.cs" Link="CampaignCpu\CampaignCpuSelStand.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuLocation.cs" Link="CampaignCpu\CampaignCpuLocation.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuFieldDiff.cs" Link="CampaignCpu\CampaignCpuFieldDiff.cs" />
     <Compile Include="Llm004\Llm004Slice0Tests.cs" />
     <Compile Include="Llm004\Llm004Slice2Tests.cs" />

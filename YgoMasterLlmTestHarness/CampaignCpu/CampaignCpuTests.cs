@@ -62,6 +62,12 @@ namespace YgoMaster
             OneShotRestoreOnlyDrawPhaseUnderAllowScripted();
             OwnedResponseNativeWindowClassifier();
             DualHumanMyIdResponseHoldA4();
+            OwnedTurnSelStandClassifier();
+            SelStandMaskPickerAndMechanicalAction();
+            SelStandInterceptPolicyGates();
+            OwnedTurnLocationClassifier();
+            LocationZonePickerAndMechanicalAction();
+            LocationInterceptPolicyGates();
             NativeLeaseBoundaryProbeViewsM3();
             OwnedMainCaptureBoundaryA5();
             FieldDiffDetectsSetTrapAndFaceChange();
@@ -1053,6 +1059,470 @@ namespace YgoMaster
                 CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
                     false, actingPlayer: -1, ownedSeat: 1, myId: 0),
                 "unresolved acting reason");
+            // SelStand remains response-class for A4 when intercept does not apply.
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.RunDialog, (int)DuelDialogType.SelStand),
+                "SelStand still response-class for A4 fallback");
+            AssertTrue(
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    SoloTemporaryCpuState.HumanOwned,
+                    DuelViewType.RunDialog,
+                    (int)DuelDialogType.SelStand),
+                "A4 still classifies SelStand when intercept skipped");
+        }
+
+        /// <summary>
+        /// Owned-turn SelStand classifier: turn_player owns seat, not MyId.
+        /// </summary>
+        static void OwnedTurnSelStandClassifier()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsSelStandRunDialog(
+                    DuelViewType.RunDialog, (int)DuelDialogType.SelStand),
+                "SelStand dialog type");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsSelStandRunDialog(
+                    DuelViewType.RunDialog, 1),
+                "Info is not SelStand");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsSelStandRunDialog(
+                    DuelViewType.WaitInput, (int)DuelDialogType.SelStand),
+                "WaitInput is not SelStand RunDialog");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedTurnSelStand(
+                    DuelViewType.RunDialog,
+                    (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "owned turn SelStand");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedTurnSelStand(
+                    DuelViewType.RunDialog,
+                    (int)DuelDialogType.SelStand,
+                    turnPlayer: 0,
+                    ownedSeat: 1,
+                    myId: 0),
+                "human turn never owned SelStand");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedTurnSelStand(
+                    DuelViewType.RunDialog,
+                    (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 1),
+                "owned==myId rejected");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedTurnSelStand(
+                    DuelViewType.RunDialog,
+                    0,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "non-SelStand RunDialog");
+        }
+
+        static void SelStandMaskPickerAndMechanicalAction()
+        {
+            int stand;
+            AssertTrue(
+                CampaignCpuSelStand.TryPickStandFromMask(
+                    CampaignCpuSelStand.StandFaceUpAttack | CampaignCpuSelStand.StandFaceUpDefense,
+                    out stand),
+                "ATK+DEF mask ok");
+            AssertEqual(CampaignCpuSelStand.StandFaceUpAttack, stand, "prefer face-up ATK");
+            AssertTrue(
+                CampaignCpuSelStand.TryPickStandFromMask(
+                    CampaignCpuSelStand.StandFaceUpDefense,
+                    out stand),
+                "DEF-only ok");
+            AssertEqual(CampaignCpuSelStand.StandFaceUpDefense, stand, "DEF when only option");
+            AssertTrue(
+                CampaignCpuSelStand.TryPickStandFromMask(
+                    CampaignCpuSelStand.StandFaceDownDefense,
+                    out stand),
+                "face-down DEF via lowest bit");
+            AssertEqual(CampaignCpuSelStand.StandFaceDownDefense, stand, "lowest set bit");
+            AssertTrue(
+                !CampaignCpuSelStand.TryPickStandFromMask(0, out stand),
+                "mask 0 fail closed");
+
+            CampaignCpuLegalAction action;
+            AssertTrue(
+                CampaignCpuSelStand.TryBuildMechanicalAction(
+                    CampaignCpuSelStand.StandFaceUpAttack | CampaignCpuSelStand.StandFaceUpDefense,
+                    out action),
+                "build action");
+            AssertEqual(LegalActionKind.DialogResult, action.Kind, "DialogResult kind");
+            AssertEqual(CampaignCpuSelStand.StandFaceUpAttack, action.DialogResult, "dialog result");
+            AssertTrue(action.IsMechanical, "mechanical");
+            AssertEqual(CampaignCpuSelStand.TargetScope, action.TargetScope, "scope");
+            AssertTrue(
+                !CampaignCpuSelStand.TryBuildMechanicalAction(0, out action),
+                "no action on empty mask");
+
+            // Commit transport still DlgSetResult once.
+            uint seen = 0;
+            int calls = 0;
+            CampaignCpuLegalAction commitAction;
+            CampaignCpuSelStand.TryBuildMechanicalAction(
+                CampaignCpuSelStand.StandFaceUpAttack, out commitAction);
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                commitAction,
+                phase => { },
+                (p, pos, idx, cmd) => { calls += 100; },
+                r => { calls++; seen = r; },
+                i => { },
+                d => { });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "sel stand applied");
+            AssertEqual(1, calls, "only dlgSetResult");
+            AssertEqual((uint)CampaignCpuSelStand.StandFaceUpAttack, seen, "stand value");
+        }
+
+        static void SelStandInterceptPolicyGates()
+        {
+            AssertTrue(
+                CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "commit-on owned SelStand intercepts");
+            AssertTrue(
+                !CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: true,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "LogOnly disables intercept");
+            AssertTrue(
+                !CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: false,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "AllowScripted false disables");
+            AssertTrue(
+                !CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.NativeLease,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "NativeLease not intercept");
+            AssertTrue(
+                !CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 0,
+                    ownedSeat: 1,
+                    myId: 0),
+                "human turn no intercept");
+            AssertTrue(
+                !CampaignCpuSelStand.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: false,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.RunDialog,
+                    param1: (int)DuelDialogType.SelStand,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "unconfirmed seat no intercept");
+        }
+
+        /// <summary>
+        /// Owned-turn WaitInput/Location classifier: turn_player owns seat, not MyId.
+        /// Human-turn Location (own card place) must never match.
+        /// </summary>
+        static void OwnedTurnLocationClassifier()
+        {
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsLocationWaitInput(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.Location),
+                "Location menu type");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsLocationWaitInput(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase),
+                "MainPhase is not Location");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsLocationWaitInput(
+                    DuelViewType.RunDialog, (int)DuelMenuActType.Location),
+                "RunDialog is not Location WaitInput");
+            AssertTrue(
+                CampaignCpuWindowClassifier.IsOwnedTurnLocation(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "owned turn Location");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedTurnLocation(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.Location,
+                    turnPlayer: 0,
+                    ownedSeat: 1,
+                    myId: 0),
+                "human turn never owned Location");
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedTurnLocation(
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 1),
+                "owned==myId rejected");
+            // Location is not A4 response-class (mechanical answer required).
+            AssertTrue(
+                !CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    DuelViewType.WaitInput, (int)DuelMenuActType.Location),
+                "Location not response-class for A4");
+        }
+
+        static void LocationZonePickerAndMechanicalAction()
+        {
+            int zone;
+            // Bits 2 and 5 set → prefer lowest (2).
+            AssertTrue(
+                CampaignCpuLocation.TryPickZoneFromMask((1 << 2) | (1 << 5), out zone),
+                "multi-zone mask ok");
+            AssertEqual(2, zone, "prefer lowest zone index");
+            AssertTrue(
+                CampaignCpuLocation.TryPickZoneFromMask(1 << 0, out zone),
+                "zone 0 ok");
+            AssertEqual(0, zone, "zone 0");
+            AssertTrue(
+                CampaignCpuLocation.TryPickZoneFromMask(1 << CampaignCpuLocation.PosField, out zone),
+                "PosField bit ok");
+            AssertEqual(CampaignCpuLocation.PosField, zone, "PosField zone");
+            AssertTrue(
+                !CampaignCpuLocation.TryPickZoneFromMask(0, out zone),
+                "mask 0 fail closed");
+            // Bit above PosField only → fail closed (not walked).
+            AssertTrue(
+                !CampaignCpuLocation.TryPickZoneFromMask(1 << (CampaignCpuLocation.PosField + 1), out zone),
+                "bit above PosField fail closed");
+
+            AssertEqual(55, CampaignCpuLocation.ResolveCardUniqueId(0, 55), "param2 UID");
+            AssertEqual(9, CampaignCpuLocation.ResolveCardUniqueId(9, 55), "dlg UID preferred");
+            AssertEqual(0, CampaignCpuLocation.ResolveCardUniqueId(0, 0), "no UID");
+
+            CampaignCpuLegalAction action;
+            AssertTrue(
+                CampaignCpuLocation.TryBuildMechanicalAction(
+                    (1 << 3) | (1 << 7),
+                    ownedSeat: 1,
+                    cardId: 6782,
+                    out action),
+                "build action");
+            AssertEqual(LegalActionKind.Command, action.Kind, "Command kind");
+            AssertEqual(DuelCommandType.Decide, action.Command, "Decide");
+            AssertEqual(3, action.Position, "lowest zone in Position");
+            AssertEqual(1, action.Player, "OwnedSeat player");
+            AssertEqual(6782, action.CardId, "card id");
+            AssertTrue(action.IsMechanical, "mechanical");
+            AssertEqual(CampaignCpuLocation.TargetScope, action.TargetScope, "scope");
+            AssertTrue(
+                !CampaignCpuLocation.TryBuildMechanicalAction(0, 1, 6782, out action),
+                "no action on empty mask");
+            AssertTrue(
+                !CampaignCpuLocation.TryBuildMechanicalAction(1 << 1, -1, 0, out action),
+                "invalid seat no action");
+
+            // Commit transport: DoCommand(player, PosSelect, zone, Decide) once.
+            int calls = 0;
+            int seenPlayer = -1, seenPos = -1, seenIdx = -1, seenCmd = -1;
+            CampaignCpuLegalAction commitAction;
+            CampaignCpuLocation.TryBuildMechanicalAction(1 << 4, 1, 6782, out commitAction);
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                commitAction,
+                phase => { calls += 1000; },
+                (p, pos, idx, cmd) =>
+                {
+                    calls++;
+                    seenPlayer = p;
+                    seenPos = pos;
+                    seenIdx = idx;
+                    seenCmd = cmd;
+                },
+                r => { calls += 100; },
+                i => { calls += 10; },
+                d => { calls += 10; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "location applied");
+            AssertEqual(1, calls, "only doCommand");
+            AssertEqual(1, seenPlayer, "player OwnedSeat");
+            AssertEqual(CampaignCpuNativeCommit.PosSelect, seenPos, "PosSelect rewrite");
+            AssertEqual(4, seenIdx, "zone as Index");
+            AssertEqual((int)DuelCommandType.Decide, seenCmd, "Decide cmd");
+
+            // Live resolve always prefers DefaultLocation (Decide@mask stalled Main).
+            string ruleId;
+            string reason;
+            AssertTrue(
+                CampaignCpuLocation.TryResolveMechanicalPlacement(
+                    0, 1, 7850, out action, out ruleId, out reason),
+                "resolve with empty mask uses default");
+            AssertEqual(CampaignCpuLocation.RuleIdDefault, ruleId, "default rule id");
+            AssertEqual(CampaignCpuLocation.ReasonDefault, reason, "default reason");
+            AssertTrue(CampaignCpuLocation.IsDefaultLocationAction(action), "default scope");
+            AssertEqual(CampaignCpuLocation.DefaultLocationScope, action.TargetScope, "scope");
+
+            int defaultCalls = 0;
+            int doCmdCalls = 0;
+            CampaignCpuCommitOutcome defOutcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) => { doCmdCalls++; },
+                r => { },
+                i => { },
+                d => { },
+                () => { defaultCalls++; });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, defOutcome, "default location applied");
+            AssertEqual(1, defaultCalls, "DefaultLocation once");
+            AssertEqual(0, doCmdCalls, "no DoCommand for default");
+
+            // Without defaultLocation delegate → NotStarted.
+            AssertEqual(
+                CampaignCpuCommitOutcome.NotStarted,
+                CampaignCpuNativeCommit.TryApply(
+                    action,
+                    phase => { },
+                    (p, pos, idx, cmd) => { },
+                    r => { },
+                    i => { },
+                    d => { }),
+                "default without delegate NotStarted");
+
+            // Non-empty mask still resolves DefaultLocation (not Decide@PosSelect).
+            AssertTrue(
+                CampaignCpuLocation.TryResolveMechanicalPlacement(
+                    1 << 2, 1, 7850, out action, out ruleId, out reason),
+                "non-empty mask still resolves");
+            AssertEqual(CampaignCpuLocation.RuleIdDefault, ruleId, "default preferred over mask");
+            AssertTrue(CampaignCpuLocation.IsDefaultLocationAction(action), "default action");
+            AssertEqual(CampaignCpuLocation.DefaultLocationScope, action.TargetScope, "default scope");
+
+            // High-bit S/T-style mask (live Future Fusion residual 0x1F0000) also defaults.
+            AssertTrue(
+                CampaignCpuLocation.TryResolveMechanicalPlacement(
+                    0x1F0000, 1, 12491, out action, out ruleId, out reason),
+                "high-bit mask resolves default");
+            AssertEqual(CampaignCpuLocation.RuleIdDefault, ruleId, "high-bit default rule");
+            AssertTrue(CampaignCpuLocation.IsDefaultLocationAction(action), "high-bit default");
+        }
+
+        static void LocationInterceptPolicyGates()
+        {
+            AssertTrue(
+                CampaignCpuLocation.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "commit-on owned Location intercepts");
+            AssertTrue(
+                !CampaignCpuLocation.ShouldIntercept(
+                    logOnly: true,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "LogOnly disables intercept");
+            AssertTrue(
+                !CampaignCpuLocation.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: false,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "AllowScripted false disables");
+            AssertTrue(
+                !CampaignCpuLocation.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.NativeLease,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "NativeLease not intercept");
+            AssertTrue(
+                !CampaignCpuLocation.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: true,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 0,
+                    ownedSeat: 1,
+                    myId: 0),
+                "human turn no intercept");
+            AssertTrue(
+                !CampaignCpuLocation.ShouldIntercept(
+                    logOnly: false,
+                    allowScriptedCommits: true,
+                    seatOwnershipConfirmed: false,
+                    scriptingDisabledForDuel: false,
+                    state: SoloTemporaryCpuState.HumanOwned,
+                    viewType: DuelViewType.WaitInput,
+                    param1: (int)DuelMenuActType.Location,
+                    turnPlayer: 1,
+                    ownedSeat: 1,
+                    myId: 0),
+                "unconfirmed seat no intercept");
         }
 
         static void ProgressTokenFreshness()

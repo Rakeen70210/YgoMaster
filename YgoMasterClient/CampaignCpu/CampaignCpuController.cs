@@ -670,18 +670,48 @@ namespace YgoMasterClient
             // AwaitingProgress
             if (StateMachine.State == SoloTemporaryCpuState.AwaitingProgress)
             {
-                CampaignCpuProgressCheckResult pCheck = CampaignCpuProgressCheck.EvaluateAwaitingProgress(
-                    progress,
-                    StateMachine.ProgressWatch != null
-                        ? StateMachine.ProgressWatch.CommittedToken
-                        : null);
-                CampaignCpuEffectKind pEffect = CampaignCpuRunEffectRouter.MapProgressGate(
-                    SoloTemporaryCpuState.AwaitingProgress, pCheck);
-                if (pEffect == CampaignCpuEffectKind.SuppressSameView)
+                // Live M7 (2026-07-24): after Activate → Location Decide that does not
+                // advance, the engine re-issues the same WaitInput_Location. Suppressing
+                // that as same-view freezes Main until post_commit_stall. Allow one
+                // re-entry so DefaultLocation can replace a no-op Decide; if the armed
+                // commit was already default_location, keep suppress/timeout (no spin).
+                bool ownedTurnLocation = CampaignCpuWindowClassifier.IsOwnedTurnLocation(
+                    viewType, param1, turnPlayer, OwnedSeat, MyId);
+                string armedIdentity = StateMachine.ProgressWatch != null
+                    ? StateMachine.ProgressWatch.ActionIdentity
+                    : null;
+                bool armedWasDefaultLocation = !string.IsNullOrEmpty(armedIdentity)
+                    && armedIdentity.IndexOf(
+                        CampaignCpuLocation.DefaultLocationScope,
+                        StringComparison.Ordinal) >= 0;
+                if (ownedTurnLocation && !armedWasDefaultLocation)
                 {
-                    return CampaignCpuDefaults.ScriptedHandledReturnCode;
+                    StateMachine.CompleteAwaitingProgress();
+                    CampaignCpuAuditLog.Write("awaiting_progress_location_reentry", new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "turn_player", turnPlayer },
+                        { "owned_seat", OwnedSeat },
+                        { "my_id", MyId },
+                        { "param2", param2 },
+                        { "armed_identity", armedIdentity },
+                    });
                 }
-                StateMachine.CompleteAwaitingProgress();
+                else
+                {
+                    CampaignCpuProgressCheckResult pCheck = CampaignCpuProgressCheck.EvaluateAwaitingProgress(
+                        progress,
+                        StateMachine.ProgressWatch != null
+                            ? StateMachine.ProgressWatch.CommittedToken
+                            : null);
+                    CampaignCpuEffectKind pEffect = CampaignCpuRunEffectRouter.MapProgressGate(
+                        SoloTemporaryCpuState.AwaitingProgress, pCheck);
+                    if (pEffect == CampaignCpuEffectKind.SuppressSameView)
+                    {
+                        return CampaignCpuDefaults.ScriptedHandledReturnCode;
+                    }
+                    StateMachine.CompleteAwaitingProgress();
+                }
             }
 
             // NativeLease restore handshake
@@ -817,11 +847,53 @@ namespace YgoMasterClient
                 return originalRunEffect(id, param1, param2, param3);
             }
 
+            // Commit-on multi-step: owned-turn SelStand after scripted summon. Dual-Human
+            // attributes RunDialog/SelStand to MyId; A4 TemporaryCpu cannot answer and
+            // originalRunEffect paints ATK/DEF on the human. Auto DlgSetResult before A4.
+            // LogOnly keeps A4/native (no intercept). Fail closed → A4 BeginFallback.
+            if (CampaignCpuSelStand.ShouldIntercept(
+                ClientSettings.CampaignCpuLogOnly,
+                ClientSettings.CampaignCpuAllowScriptedCommits,
+                SeatOwnershipConfirmed,
+                StateMachine.ScriptingDisabledForDuel,
+                StateMachine.State,
+                viewType,
+                param1,
+                turnPlayer,
+                OwnedSeat,
+                MyId))
+            {
+                return HandleOwnedTurnSelStand(
+                    id, param1, param2, param3, progress, actingPlayer, originalRunEffect);
+            }
+
+            // Commit-on multi-step: owned-turn WaitInput/Location after scripted
+            // Activate/Set/Summon. Dual-Human attributes zone select to MyId; A4 cannot
+            // answer and originalRunEffect paints "Select position for …" on the human
+            // (live Future Fusion 2026-07-23). Auto Decide@PosSelect before A4/pass_through.
+            // LogOnly keeps native (no intercept). Fail closed → BeginFallback.
+            if (CampaignCpuLocation.ShouldIntercept(
+                ClientSettings.CampaignCpuLogOnly,
+                ClientSettings.CampaignCpuAllowScriptedCommits,
+                SeatOwnershipConfirmed,
+                StateMachine.ScriptingDisabledForDuel,
+                StateMachine.State,
+                viewType,
+                param1,
+                turnPlayer,
+                OwnedSeat,
+                MyId))
+            {
+                return HandleOwnedTurnLocation(
+                    id, param1, param2, param3, progress, actingPlayer, originalRunEffect);
+            }
+
             // A4 dual-Human residual (live 2026-07-22): under dual-Human, MD attributes
             // opponent trap/chain RunDialog + CheckChain to MyId (run_dialog_user=0).
             // Re-lease OwnedSeat→CPU for every response-class window while HumanOwned,
             // before pass_through_myid — independent of acting resolution.
             // Response leases never one-shot restore (A5 does not weaken this).
+            // Location is not response-class — mechanical path above answers it.
             if (CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
                 StateMachine.State, viewType, param1))
             {
@@ -1050,6 +1122,297 @@ namespace YgoMasterClient
                 return BeginFallback(
                     id, param1, param2, param3, progress, "precommit_error", originalRunEffect);
             }
+        }
+
+        /// <summary>
+        /// Mechanical SelStand (ATK/DEF) for owned-turn dual-Human residual under commit-on.
+        /// Never originalRunEffect on success (that paints the position UI on MyId).
+        /// Does not count toward pack max_decisions_per_duel.
+        /// </summary>
+        static int HandleOwnedTurnSelStand(
+            int id,
+            int param1,
+            int param2,
+            int param3,
+            CampaignCpuProgressToken progress,
+            int actingPlayer,
+            OriginalRunEffectDelegate originalRunEffect)
+        {
+            int mask = 0;
+            try
+            {
+                mask = DuelDll.CampaignCpu_GetSummonPositionMask();
+            }
+            catch
+            {
+                mask = 0;
+            }
+
+            CampaignCpuLegalAction action;
+            if (!CampaignCpuSelStand.TryBuildMechanicalAction(mask, out action) || action == null)
+            {
+                CampaignCpuAuditLog.Write("sel_stand_mask_empty", new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "mask", mask },
+                    { "owned_seat", OwnedSeat },
+                    { "my_id", MyId },
+                    { "acting_player", actingPlayer },
+                });
+                return BeginFallback(
+                    id, param1, param2, param3, progress, "sel_stand_mask_empty", originalRunEffect);
+            }
+
+            // Refresh progress fingerprint so AwaitingProgress treats this commit distinctly.
+            string fp = CampaignCpuObservation.FingerprintLegalActions(
+                new List<CampaignCpuLegalAction> { action });
+            CampaignCpuProgressToken armProgress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                DuelGeneration,
+                (DuelViewType)id,
+                param1,
+                param2,
+                param3,
+                actingPlayer,
+                progress != null ? progress.Turn : 0,
+                progress != null ? progress.Phase : 0,
+                fp);
+
+            var decision = CampaignCpuDecision.Commit(
+                CampaignCpuRoute.MechanicalAuto,
+                action,
+                CampaignCpuSelStand.Reason,
+                CampaignCpuSelStand.RuleId,
+                0,
+                true);
+
+            // Minimal observation for decision audit (full Main menu not available here).
+            var obs = new CampaignCpuObservation
+            {
+                ChapterId = ChapterId,
+                CampaignCpuViewSeq = ViewSeq,
+                ViewType = (DuelViewType)id,
+                ViewParam1 = param1,
+                ViewParam2 = param2,
+                ViewParam3 = param3,
+                ActingPlayer = actingPlayer,
+                OwnedSeat = OwnedSeat,
+                WindowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, param1),
+                LegalActions = new List<CampaignCpuLegalAction> { action },
+            };
+            CampaignCpuAuditLog.WriteRaw(
+                CampaignCpuAuditSerializer.SerializeDecision(
+                    ViewSeq, decision, obs, shadowOnly: false));
+
+            CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(action);
+            if (outcome == CampaignCpuCommitOutcome.Applied)
+            {
+                // Do not increment DecisionCount — not a pack-scored Main decision.
+                StateMachine.ArmAwaitingProgress(
+                    ViewSeq,
+                    armProgress,
+                    action.CanonicalIdentity,
+                    DateTime.UtcNow);
+                CampaignCpuAuditLog.Write("commit_applied", new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "rule_id", CampaignCpuSelStand.RuleId },
+                    { "action", action.CanonicalIdentity },
+                    { "dialog_result", action.DialogResult },
+                    { "summon_position_mask", mask },
+                    { "decision_count", DecisionCount },
+                    { "mechanical", true },
+                });
+                return CampaignCpuDefaults.ScriptedHandledReturnCode;
+            }
+            if (outcome == CampaignCpuCommitOutcome.NotStarted)
+            {
+                return BeginFallback(
+                    id, param1, param2, param3, progress, "sel_stand_commit_not_started", originalRunEffect);
+            }
+            StateMachine.EnterCommitQuarantine(
+                ViewSeq,
+                armProgress,
+                action.CanonicalIdentity,
+                DateTime.UtcNow,
+                "sel_stand_commit_indeterminate");
+            CampaignCpuAuditLog.Write("commit_indeterminate", new Dictionary<string, object>
+            {
+                { "view_seq", ViewSeq },
+                { "action", action.CanonicalIdentity },
+                { "rule_id", CampaignCpuSelStand.RuleId },
+                { "dialog_result", action.DialogResult },
+            });
+            return CampaignCpuDefaults.ScriptedHandledReturnCode;
+        }
+
+        /// <summary>
+        /// Mechanical WaitInput/Location (zone place) for owned-turn dual-Human residual
+        /// under commit-on. Never originalRunEffect on success (that paints zone UI on MyId).
+        /// Always DLL_DuelComDefaultLocation (live: Decide@PosSelect can no-op and re-prompt
+        /// Location → AwaitingProgress suppress → Main stall). Does not count toward pack
+        /// max_decisions_per_duel.
+        /// </summary>
+        static int HandleOwnedTurnLocation(
+            int id,
+            int param1,
+            int param2,
+            int param3,
+            CampaignCpuProgressToken progress,
+            int actingPlayer,
+            OriginalRunEffectDelegate originalRunEffect)
+        {
+            int mask = 0;
+            int dlgUniqueId = 0;
+            int cardUniqueId = 0;
+            int cardId = 0;
+            try
+            {
+                mask = DuelDll.CampaignCpu_GetSummonPositionMask();
+                dlgUniqueId = DuelDll.CampaignCpu_GetSummoningMonsterUniqueId();
+            }
+            catch
+            {
+                mask = 0;
+                dlgUniqueId = 0;
+            }
+
+            // param2 is WaitInput Location unique-id (same as LLM view_param2).
+            cardUniqueId = CampaignCpuLocation.ResolveCardUniqueId(dlgUniqueId, param2);
+            if (cardUniqueId > 0)
+            {
+                try
+                {
+                    cardId = DuelDll.CampaignCpu_GetCardIdByUniqueId(cardUniqueId);
+                }
+                catch
+                {
+                    cardId = 0;
+                }
+            }
+
+            CampaignCpuLegalAction action;
+            string ruleId;
+            string reason;
+            if (!CampaignCpuLocation.TryResolveMechanicalPlacement(
+                    mask, OwnedSeat, cardId, out action, out ruleId, out reason)
+                || action == null)
+            {
+                CampaignCpuAuditLog.Write("location_mask_empty", new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "mask", mask },
+                    { "dlg_unique_id", dlgUniqueId },
+                    { "view_param2", param2 },
+                    { "card_unique_id", cardUniqueId },
+                    { "card_id", cardId },
+                    { "owned_seat", OwnedSeat },
+                    { "my_id", MyId },
+                    { "acting_player", actingPlayer },
+                });
+                return BeginFallback(
+                    id, param1, param2, param3, progress, "location_mask_empty", originalRunEffect);
+            }
+
+            bool usedDefault = CampaignCpuLocation.IsDefaultLocationAction(action);
+            if (usedDefault)
+            {
+                // Probe residual: engine mask empty at intercept; DefaultLocation path.
+                CampaignCpuAuditLog.Write("location_default_location", new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "mask", mask },
+                    { "dlg_unique_id", dlgUniqueId },
+                    { "view_param2", param2 },
+                    { "card_unique_id", cardUniqueId },
+                    { "card_id", cardId },
+                    { "owned_seat", OwnedSeat },
+                });
+            }
+
+            string fp = CampaignCpuObservation.FingerprintLegalActions(
+                new List<CampaignCpuLegalAction> { action });
+            CampaignCpuProgressToken armProgress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                DuelGeneration,
+                (DuelViewType)id,
+                param1,
+                param2,
+                param3,
+                actingPlayer,
+                progress != null ? progress.Turn : 0,
+                progress != null ? progress.Phase : 0,
+                fp);
+
+            var decision = CampaignCpuDecision.Commit(
+                CampaignCpuRoute.MechanicalAuto,
+                action,
+                reason,
+                ruleId,
+                0,
+                true);
+
+            var obs = new CampaignCpuObservation
+            {
+                ChapterId = ChapterId,
+                CampaignCpuViewSeq = ViewSeq,
+                ViewType = (DuelViewType)id,
+                ViewParam1 = param1,
+                ViewParam2 = param2,
+                ViewParam3 = param3,
+                ActingPlayer = actingPlayer,
+                OwnedSeat = OwnedSeat,
+                WindowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, param1),
+                LegalActions = new List<CampaignCpuLegalAction> { action },
+            };
+            CampaignCpuAuditLog.WriteRaw(
+                CampaignCpuAuditSerializer.SerializeDecision(
+                    ViewSeq, decision, obs, shadowOnly: false));
+
+            CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(action);
+            if (outcome == CampaignCpuCommitOutcome.Applied)
+            {
+                StateMachine.ArmAwaitingProgress(
+                    ViewSeq,
+                    armProgress,
+                    action.CanonicalIdentity,
+                    DateTime.UtcNow);
+                CampaignCpuAuditLog.Write("commit_applied", new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "rule_id", ruleId },
+                    { "action", action.CanonicalIdentity },
+                    { "zone", usedDefault ? null : (object)action.Position },
+                    { "player", action.Player },
+                    { "placement_mask", mask },
+                    { "card_unique_id", cardUniqueId },
+                    { "card_id", cardId },
+                    { "default_location", usedDefault },
+                    { "decision_count", DecisionCount },
+                    { "mechanical", true },
+                });
+                return CampaignCpuDefaults.ScriptedHandledReturnCode;
+            }
+            if (outcome == CampaignCpuCommitOutcome.NotStarted)
+            {
+                return BeginFallback(
+                    id, param1, param2, param3, progress,
+                    usedDefault ? "location_default_not_started" : "location_commit_not_started",
+                    originalRunEffect);
+            }
+            StateMachine.EnterCommitQuarantine(
+                ViewSeq,
+                armProgress,
+                action.CanonicalIdentity,
+                DateTime.UtcNow,
+                usedDefault ? "location_default_indeterminate" : "location_commit_indeterminate");
+            CampaignCpuAuditLog.Write("commit_indeterminate", new Dictionary<string, object>
+            {
+                { "view_seq", ViewSeq },
+                { "action", action.CanonicalIdentity },
+                { "rule_id", ruleId },
+                { "zone", usedDefault ? null : (object)action.Position },
+                { "default_location", usedDefault },
+            });
+            return CampaignCpuDefaults.ScriptedHandledReturnCode;
         }
 
         static int BeginFallback(

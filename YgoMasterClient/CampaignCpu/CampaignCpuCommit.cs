@@ -23,11 +23,31 @@ namespace YgoMasterClient
                 doCommand,
                 dlgSetResult,
                 listSetIndex,
-                cancelCommand2);
+                cancelCommand2,
+                defaultLocation: null);
+        }
+
+        public static CampaignCpuCommitOutcome TryApply(
+            CampaignCpuLegalAction action,
+            Action<int> movePhase,
+            Action<int, int, int, int> doCommand,
+            Action<uint> dlgSetResult,
+            Action<int> listSetIndex,
+            Action<bool> cancelCommand2,
+            Action defaultLocation)
+        {
+            return CampaignCpuNativeCommit.TryApply(
+                action,
+                movePhase,
+                doCommand,
+                dlgSetResult,
+                listSetIndex,
+                cancelCommand2,
+                defaultLocation);
         }
 
         /// <summary>
-        /// Live path: invoke DuelDll public wrappers.
+        /// Live path: invoke DuelDll public wrappers (incl. DefaultLocation).
         /// </summary>
         public static CampaignCpuCommitOutcome TryApplyLive(CampaignCpuLegalAction action)
         {
@@ -38,7 +58,8 @@ namespace YgoMasterClient
                     DuelDll.CampaignCpu_DoCommand(player, position, index, commandId),
                 result => DuelDll.CampaignCpu_DlgSetResult(result),
                 index => DuelDll.CampaignCpu_ListSetIndex(index),
-                decide => DuelDll.CampaignCpu_CancelCommand2(decide));
+                decide => DuelDll.CampaignCpu_CancelCommand2(decide),
+                () => DuelDll.CampaignCpu_DefaultLocation());
         }
     }
 }

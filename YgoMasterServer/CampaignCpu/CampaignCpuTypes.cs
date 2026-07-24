@@ -486,10 +486,78 @@ namespace YgoMaster
         }
 
         /// <summary>
+        /// RunDialog SelStand (battle position ATK/DEF). param1 == DuelDialogType.SelStand (10).
+        /// </summary>
+        public static bool IsSelStandRunDialog(DuelViewType viewType, int param1)
+        {
+            return viewType == DuelViewType.RunDialog
+                && param1 == (int)DuelDialogType.SelStand;
+        }
+
+        /// <summary>
+        /// Owned-turn SelStand under dual-Human: turn is OwnedSeat, seats are distinct.
+        /// Acting often misroutes to MyId — turn_player is the ownership signal (A5 family).
+        /// Human-turn SelStand must never match (PR2b: no CampaignCpu on MyId).
+        /// </summary>
+        public static bool IsOwnedTurnSelStand(
+            DuelViewType viewType,
+            int param1,
+            int turnPlayer,
+            int ownedSeat,
+            int myId)
+        {
+            if (!IsSelStandRunDialog(viewType, param1))
+            {
+                return false;
+            }
+            if (ownedSeat < 0 || myId < 0 || ownedSeat == myId)
+            {
+                return false;
+            }
+            return turnPlayer == ownedSeat;
+        }
+
+        /// <summary>
+        /// WaitInput Location (field zone placement). param1 == DuelMenuActType.Location (7).
+        /// </summary>
+        public static bool IsLocationWaitInput(DuelViewType viewType, int param1)
+        {
+            return viewType == DuelViewType.WaitInput
+                && param1 == (int)DuelMenuActType.Location;
+        }
+
+        /// <summary>
+        /// Owned-turn Location under dual-Human: turn is OwnedSeat, seats are distinct.
+        /// Acting often misroutes to MyId (do_command_user) — turn_player is the ownership
+        /// signal (same family as SelStand / stale MyId Main). Human-turn Location must
+        /// never match (PR2b: human places their own cards via pass_through_myid).
+        /// </summary>
+        public static bool IsOwnedTurnLocation(
+            DuelViewType viewType,
+            int param1,
+            int turnPlayer,
+            int ownedSeat,
+            int myId)
+        {
+            if (!IsLocationWaitInput(viewType, param1))
+            {
+                return false;
+            }
+            if (ownedSeat < 0 || myId < 0 || ownedSeat == myId)
+            {
+                return false;
+            }
+            return turnPlayer == ownedSeat;
+        }
+
+        /// <summary>
         /// A4 dual-Human residual: while HumanOwned, re-lease OwnedSeat→CPU for every
         /// response-class window before originalRunEffect — even when acting resolves as
         /// MyId. Live audit shows MD sets run_dialog_user/do_command_user to the local
         /// seat under dual-Human, so opponent trap/chain UI was pass_through_myid.
+        /// Commit-on owned-turn SelStand and Location are handled before this gate
+        /// (CampaignCpuSelStand / CampaignCpuLocation). Location is NOT response-class —
+        /// mechanical answer is required; TemporaryCpu alone still paints MyId UI.
         /// </summary>
         public static bool ShouldReLeaseDualHumanResponseWindow(
             SoloTemporaryCpuState state,

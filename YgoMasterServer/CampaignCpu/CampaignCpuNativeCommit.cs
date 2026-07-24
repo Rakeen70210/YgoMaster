@@ -49,6 +49,30 @@ namespace YgoMaster
             Action<int> listSetIndex,
             Action<bool> cancelCommand2)
         {
+            return TryApply(
+                action,
+                movePhase,
+                doCommand,
+                dlgSetResult,
+                listSetIndex,
+                cancelCommand2,
+                defaultLocation: null);
+        }
+
+        /// <summary>
+        /// Same as <see cref="TryApply(CampaignCpuLegalAction, Action{int}, Action{int,int,int,int}, Action{uint}, Action{int}, Action{bool})"/>
+        /// plus optional <paramref name="defaultLocation"/> for TargetScope default_location
+        /// (DLL_DuelComDefaultLocation) when the placement mask is empty at intercept.
+        /// </summary>
+        public static CampaignCpuCommitOutcome TryApply(
+            CampaignCpuLegalAction action,
+            Action<int> movePhase,
+            Action<int, int, int, int> doCommand,
+            Action<uint> dlgSetResult,
+            Action<int> listSetIndex,
+            Action<bool> cancelCommand2,
+            Action defaultLocation)
+        {
             if (action == null
                 || movePhase == null
                 || doCommand == null
@@ -57,6 +81,24 @@ namespace YgoMaster
                 || cancelCommand2 == null)
             {
                 return CampaignCpuCommitOutcome.NotStarted;
+            }
+
+            // Engine DefaultLocation: no DoCommand plan; needs live delegate.
+            if (CampaignCpuLocation.IsDefaultLocationAction(action))
+            {
+                if (defaultLocation == null)
+                {
+                    return CampaignCpuCommitOutcome.NotStarted;
+                }
+                try
+                {
+                    defaultLocation();
+                    return CampaignCpuCommitOutcome.Applied;
+                }
+                catch
+                {
+                    return CampaignCpuCommitOutcome.Indeterminate;
+                }
             }
 
             CampaignCpuNativePlan plan;
@@ -130,6 +172,12 @@ namespace YgoMaster
                 };
             }
             if (action.Kind != LegalActionKind.Command)
+            {
+                return null;
+            }
+
+            // default_location is handled in TryApply before BuildPlan.
+            if (string.Equals(action.TargetScope, CampaignCpuLocation.DefaultLocationScope, StringComparison.Ordinal))
             {
                 return null;
             }

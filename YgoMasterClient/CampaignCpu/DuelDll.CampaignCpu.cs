@@ -154,6 +154,20 @@ namespace YgoMasterClient
             return DLL_DuelDlgGetPosMaskOfThisSummon();
         }
 
+        /// <summary>
+        /// Engine default WaitInput/Location placement. Used when the summon pos mask is
+        /// empty at RunEffect intercept (live residual) so CampaignCpu can finish placement
+        /// without painting human UI or leasing TemporaryCpu for the rest of Main.
+        /// </summary>
+        public static void CampaignCpu_DefaultLocation()
+        {
+            if (DLL_DuelComDefaultLocation == null)
+            {
+                throw new InvalidOperationException("DLL_DuelComDefaultLocation not loaded");
+            }
+            DLL_DuelComDefaultLocation();
+        }
+
         public static void CampaignCpu_MovePhase(int phase)
         {
             DLL_DuelComMovePhase(phase);

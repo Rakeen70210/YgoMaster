@@ -145,6 +145,10 @@ namespace YgoMasterClient
         public delegate void Del_DLL_DuelComDebugCommand();
         public static Del_DLL_DuelComDebugCommand DLL_DuelComDebugCommand;
 
+        /// <summary>Engine default field placement (WaitInput/Location with no explicit zone).</summary>
+        public delegate void Del_DLL_DuelComDefaultLocation();
+        public static Del_DLL_DuelComDefaultLocation DLL_DuelComDefaultLocation;
+
         delegate int Del_DLL_DuelSysAct();
         static Hook<Del_DLL_DuelSysAct> hookDLL_DuelSysAct;
 
@@ -192,6 +196,8 @@ namespace YgoMasterClient
             DLL_DuelComCheatCard = Utils.GetFunc<Del_DLL_DuelComCheatCard>(PInvoke.GetProcAddress(lib, "DLL_DuelComCheatCard"));
             DLL_DuelComDoDebugCommand = Utils.GetFunc<Del_DLL_DuelComDoDebugCommand>(PInvoke.GetProcAddress(lib, "DLL_DuelComDoDebugCommand"));
             DLL_DuelComDebugCommand = Utils.GetFunc<Del_DLL_DuelComDebugCommand>(PInvoke.GetProcAddress(lib, "DLL_DuelComDebugCommand"));
+            DLL_DuelComDefaultLocation = Utils.GetFunc<Del_DLL_DuelComDefaultLocation>(
+                PInvoke.GetProcAddress(lib, "DLL_DuelComDefaultLocation"));
 
             DLL_SetAddRecordDelegate = Utils.GetFunc<Del_DLL_SetAddRecordDelegate>(PInvoke.GetProcAddress(lib, "DLL_SetAddRecordDelegate"));
         }
