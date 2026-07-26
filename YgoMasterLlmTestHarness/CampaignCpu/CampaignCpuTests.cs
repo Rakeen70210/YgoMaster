@@ -64,6 +64,7 @@ namespace YgoMaster
             DualHumanMyIdResponseHoldA4();
             OwnedTurnSelStandClassifier();
             SelStandMaskPickerAndMechanicalAction();
+            SelStandLiveHighBitMaskSemantics();
             SelStandInterceptPolicyGates();
             OwnedTurnLocationClassifier();
             LocationZonePickerAndMechanicalAction();
@@ -72,6 +73,7 @@ namespace YgoMaster
             OwnedMainCaptureBoundaryA5();
             FieldDiffDetectsSetTrapAndFaceChange();
             AuditSerializerDecisionIncludesFullLegalMenu();
+            AuditSerializerDecisionEmitsMyIdAndGeneration();
             // M5 fail-closed activation / pack / predicate hardening
             InvalidMyIdDoesNotResolveOwnedSeat();
             SeatOwnershipConfirmRequiresPositiveHumanReadback();
@@ -1178,6 +1180,72 @@ namespace YgoMaster
             AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "sel stand applied");
             AssertEqual(1, calls, "only dlgSetResult");
             AssertEqual((uint)CampaignCpuSelStand.StandFaceUpAttack, seen, "stand value");
+        }
+
+        /// <summary>
+        /// Live M7 mechanical_sel_stand: mask 0x1F0000 → dialog 0x10000 (not classic 0x1/0x4).
+        /// Production-shaped picker + mechanical action + native dialog dispatch.
+        /// </summary>
+        static void SelStandLiveHighBitMaskSemantics()
+        {
+            AssertEqual(0x1F0000, CampaignCpuSelStand.LiveRecordedStandMask, "live mask const");
+            AssertEqual(0x10000, CampaignCpuSelStand.LiveRecordedStandResult, "live result const");
+            AssertEqual(
+                CampaignCpuSelStand.LiveRecordedStandResult,
+                CampaignCpuSelStand.StandMdFaceUpAttackBit,
+                "MD face-up ATK bit aliases live result");
+
+            int stand;
+            AssertTrue(
+                CampaignCpuSelStand.TryPickStandFromMask(
+                    CampaignCpuSelStand.LiveRecordedStandMask, out stand),
+                "live mask pickable");
+            AssertEqual(
+                CampaignCpuSelStand.LiveRecordedStandResult,
+                stand,
+                "live mask → 0x10000 (MD face-up ATK bit / lowest set)");
+
+            // Classic low bits still win when both encodings are present.
+            AssertTrue(
+                CampaignCpuSelStand.TryPickStandFromMask(
+                    CampaignCpuSelStand.LiveRecordedStandMask
+                        | CampaignCpuSelStand.StandFaceUpAttack,
+                    out stand),
+                "mixed classic+MD");
+            AssertEqual(
+                CampaignCpuSelStand.StandFaceUpAttack,
+                stand,
+                "classic ATK preferred over high-bit when both legal");
+
+            CampaignCpuLegalAction action;
+            AssertTrue(
+                CampaignCpuSelStand.TryBuildMechanicalAction(
+                    CampaignCpuSelStand.LiveRecordedStandMask, out action)
+                && action != null,
+                "live mechanical action");
+            AssertEqual(
+                CampaignCpuSelStand.LiveRecordedStandResult,
+                action.DialogResult,
+                "dialog_result live");
+            AssertEqual(
+                CampaignCpuSelStand.LiveRecordedStandResult,
+                action.Position,
+                "position carries stand");
+            AssertEqual(CampaignCpuSelStand.RuleId, "mechanical_sel_stand", "rule id pin");
+            AssertTrue(action.IsMechanical, "mechanical flag");
+
+            uint seen = 0;
+            int calls = 0;
+            CampaignCpuCommitOutcome outcome = CampaignCpuNativeCommit.TryApply(
+                action,
+                phase => { },
+                (p, pos, idx, cmd) => { calls += 100; },
+                r => { calls++; seen = r; },
+                i => { },
+                d => { });
+            AssertEqual(CampaignCpuCommitOutcome.Applied, outcome, "live dialog applied");
+            AssertEqual(1, calls, "live dialog once");
+            AssertEqual((uint)CampaignCpuSelStand.LiveRecordedStandResult, seen, "native 0x10000");
         }
 
         static void SelStandInterceptPolicyGates()
@@ -2585,6 +2653,92 @@ namespace YgoMaster
             AssertTrue(line.Contains("shadow_only"), "shadow_only field");
             AssertTrue(line.Contains("true") || line.Contains("True"), "shadow true");
             AssertTrue(line.Contains("SummonSp") || line.Contains("identity"), "action identity bits");
+        }
+
+        /// <summary>
+        /// Production decision schema must emit my_id + duel_generation for analyzer S10 gates.
+        /// </summary>
+        static void AuditSerializerDecisionEmitsMyIdAndGeneration()
+        {
+            var obs = new CampaignCpuObservation
+            {
+                ChapterId = 11010078,
+                WindowClass = "WaitInput_MainPhase",
+                ActingPlayer = 1,
+                OwnedSeat = 1,
+                MyId = 0,
+                DuelGeneration = 7,
+                Turn = 4,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+                IsMainPhaseWaitInput = true,
+            };
+            obs.LegalActions.Add(Cmd(1, DuelCommandType.Summon, 7850));
+            CampaignCpuDecision decision = CampaignCpuDecision.Commit(
+                CampaignCpuRoute.RuleCommit,
+                obs.LegalActions[0],
+                "prefer",
+                "prefer-summon",
+                10,
+                true);
+            string line = CampaignCpuAuditSerializer.SerializeDecision(
+                99, decision, obs, shadowOnly: false);
+            AssertTrue(
+                line.Contains("\"my_id\":0") || line.Contains("\"my_id\": 0"),
+                "my_id emitted");
+            AssertTrue(
+                line.Contains("\"duel_generation\":7") || line.Contains("\"duel_generation\": 7"),
+                "duel_generation emitted");
+            AssertTrue(
+                line.Contains("\"owned_seat\":1") || line.Contains("\"owned_seat\": 1"),
+                "owned_seat emitted");
+            AssertTrue(
+                line.Contains("\"turn_player\":1") || line.Contains("\"turn_player\": 1"),
+                "turn_player emitted");
+            AssertTrue(
+                line.Contains("\"acting_player\":1") || line.Contains("\"acting_player\": 1"),
+                "acting_player emitted");
+
+            // Mechanical SelStand-shaped observation with live mask result context.
+            var mech = new CampaignCpuObservation
+            {
+                ChapterId = 11010078,
+                WindowClass = "RunDialog_SelStand",
+                ActingPlayer = 0,
+                OwnedSeat = 1,
+                MyId = 0,
+                DuelGeneration = 7,
+                Turn = 1,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+            };
+            CampaignCpuLegalAction standAction;
+            AssertTrue(
+                CampaignCpuSelStand.TryBuildMechanicalAction(
+                    CampaignCpuSelStand.LiveRecordedStandMask, out standAction),
+                "live stand action");
+            mech.LegalActions.Add(standAction);
+            CampaignCpuDecision mechDec = CampaignCpuDecision.Commit(
+                CampaignCpuRoute.MechanicalAuto,
+                standAction,
+                CampaignCpuSelStand.Reason,
+                CampaignCpuSelStand.RuleId,
+                0,
+                true);
+            string mechLine = CampaignCpuAuditSerializer.SerializeDecision(
+                100, mechDec, mech, shadowOnly: false);
+            AssertTrue(
+                mechLine.Contains("\"my_id\":0") || mechLine.Contains("\"my_id\": 0"),
+                "mech my_id");
+            AssertTrue(
+                mechLine.Contains("\"duel_generation\":7") || mechLine.Contains("\"duel_generation\": 7"),
+                "mech generation");
+            AssertTrue(
+                mechLine.Contains("\"turn_player\":1") || mechLine.Contains("\"turn_player\": 1"),
+                "mech real turn_player not synthetic zero-only");
+            AssertTrue(
+                mechLine.Contains("\"turn\":1") || mechLine.Contains("\"turn\": 1"),
+                "mech turn");
         }
 
         static void AssertTrue(bool value, string message)

@@ -80,6 +80,9 @@ namespace YgoMaster
                 fields["window_class"] = observation.WindowClass;
                 fields["acting_player"] = observation.ActingPlayer;
                 fields["owned_seat"] = observation.OwnedSeat;
+                // Production S10 ownership + multi-duel segmentation (PR4b handoff).
+                fields["my_id"] = observation.MyId;
+                fields["duel_generation"] = observation.DuelGeneration;
                 fields["turn"] = observation.Turn;
                 fields["turn_player"] = observation.TurnPlayer;
                 fields["phase"] = observation.Phase;

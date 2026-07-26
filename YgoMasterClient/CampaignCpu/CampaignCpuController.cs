@@ -263,6 +263,9 @@ namespace YgoMasterClient
                     { "state", StateMachine.State.ToString() },
                     { "scripting_disabled", StateMachine.ScriptingDisabledForDuel },
                     { "scripting_disabled_reason", StateMachine.ScriptingDisabledReason },
+                    { "my_id", MyId },
+                    { "owned_seat", OwnedSeat },
+                    { "duel_generation", DuelGeneration },
                 });
             }
             ResetDuelLocal();
@@ -746,7 +749,9 @@ namespace YgoMasterClient
                     CampaignCpuPlayerTypeTransitionResult tr = TryTransitionPlayerType(
                         OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
                     string windowClassA5 = CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1);
-                    if (!CampaignCpuControlPolicy.IsTransitionConfirmed(tr))
+                    CampaignCpuEffectKind a5Effect = CampaignCpuRunEffectRouter.MapTransitionResult(
+                        tr, restoreHumanPath: true);
+                    if (a5Effect == CampaignCpuEffectKind.TransitionFailedForwardOriginal)
                     {
                         // Remain NativeLease; do not claim HumanOwned without positive readback.
                         AuditPlayerTypeTransitionFailure(
@@ -772,6 +777,9 @@ namespace YgoMasterClient
                         { "phase_new", param2 },
                         { "phase_change_seat", param1 },
                         { "acting", actingResolved ? actingPlayer : -1 },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
                         { "owned_is_human_readback", humanRb },
                         { "my_is_human_readback", TryReadIsHuman(MyId) },
                         { "transition_confirmed", true },
@@ -797,7 +805,9 @@ namespace YgoMasterClient
                     CampaignCpuPlayerTypeTransitionResult tr = TryTransitionPlayerType(
                         OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
                     string windowClassHs = CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1);
-                    if (!CampaignCpuControlPolicy.IsTransitionConfirmed(tr))
+                    CampaignCpuEffectKind hsEffect = CampaignCpuRunEffectRouter.MapTransitionResult(
+                        tr, restoreHumanPath: true);
+                    if (hsEffect == CampaignCpuEffectKind.TransitionFailedForwardOriginal)
                     {
                         AuditPlayerTypeTransitionFailure(
                             "handshake_boundary",
@@ -817,6 +827,9 @@ namespace YgoMasterClient
                         { "exit_view_seq", ViewSeq },
                         { "acting", actingResolved ? actingPlayer : -1 },
                         { "window_class", windowClassHs },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
                         { "owned_is_human_readback", humanRb },
                         { "my_is_human_readback", TryReadIsHuman(MyId) },
                         { "transition_confirmed", true },
@@ -864,7 +877,8 @@ namespace YgoMasterClient
                 MyId))
             {
                 return HandleOwnedTurnSelStand(
-                    id, param1, param2, param3, progress, actingPlayer, originalRunEffect);
+                    id, param1, param2, param3, progress, actingPlayer,
+                    turn, turnPlayer, phase, originalRunEffect);
             }
 
             // Commit-on multi-step: owned-turn WaitInput/Location after scripted
@@ -885,7 +899,8 @@ namespace YgoMasterClient
                 MyId))
             {
                 return HandleOwnedTurnLocation(
-                    id, param1, param2, param3, progress, actingPlayer, originalRunEffect);
+                    id, param1, param2, param3, progress, actingPlayer,
+                    turn, turnPlayer, phase, originalRunEffect);
             }
 
             // A4 dual-Human residual (live 2026-07-22): under dual-Human, MD attributes
@@ -897,6 +912,12 @@ namespace YgoMasterClient
             if (CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
                 StateMachine.State, viewType, param1))
             {
+                // Production-used A4 seam (MapDualHumanResponseHold → BeginNativeLeaseAndForward).
+                CampaignCpuEffectKind a4Effect = CampaignCpuRunEffectRouter.MapDualHumanResponseHold();
+                if (a4Effect != CampaignCpuEffectKind.BeginNativeLeaseAndForward)
+                {
+                    return originalRunEffect(id, param1, param2, param3);
+                }
                 string holdReason = CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
                     actingResolved,
                     actingPlayer,
@@ -933,6 +954,7 @@ namespace YgoMasterClient
 
                 // Human seat: never CampaignCpu commit (PR2b pass criterion).
                 // Response-class windows already re-leased above (A4).
+                CampaignCpuEffectKind passEffect = CampaignCpuRunEffectRouter.MapPassThrough();
                 if (ClientSettings.CampaignCpuProbeLogging
                     && IsProbeInterestingView(viewType, param1))
                 {
@@ -940,8 +962,10 @@ namespace YgoMasterClient
                     {
                         { "view_seq", ViewSeq },
                         { "my_id", MyId },
+                        { "duel_generation", DuelGeneration },
                         { "window_class",
                             CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
+                        { "effect", passEffect.ToString() },
                     });
                 }
                 return originalRunEffect(id, param1, param2, param3);
@@ -979,6 +1003,12 @@ namespace YgoMasterClient
                     // Response-class already handled in A4 HumanOwned gate above.
                     reason = "v1_non_main_phase";
                 }
+                // Production-used forced-native seam (always-native / disabled / non-scripted).
+                CampaignCpuEffectKind forced = CampaignCpuRunEffectRouter.MapOwnedWindowForcedNative();
+                if (forced != CampaignCpuEffectKind.BeginNativeLeaseAndForward)
+                {
+                    return originalRunEffect(id, param1, param2, param3);
+                }
                 return BeginFallback(
                     id, param1, param2, param3, progress, reason, originalRunEffect);
             }
@@ -1001,6 +1031,9 @@ namespace YgoMasterClient
                     ChapterId,
                     out automatic,
                     out multiSelect);
+                // Production decision rows must carry ownership + generation for S10/analyzer.
+                obs.MyId = MyId;
+                obs.DuelGeneration = DuelGeneration;
 
                 progress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
                     DuelGeneration,
@@ -1072,7 +1105,8 @@ namespace YgoMasterClient
                     }
 
                     CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(decision.Action);
-                    if (outcome == CampaignCpuCommitOutcome.Applied)
+                    CampaignCpuEffectKind commitEffect = CampaignCpuRunEffectRouter.MapCommitOutcome(outcome);
+                    if (commitEffect == CampaignCpuEffectKind.CommitApplied)
                     {
                         DecisionCount++;
                         StateMachine.ArmAwaitingProgress(
@@ -1086,10 +1120,16 @@ namespace YgoMasterClient
                             { "rule_id", decision.RuleId },
                             { "action", decision.Action != null ? decision.Action.CanonicalIdentity : null },
                             { "decision_count", DecisionCount },
+                            { "my_id", MyId },
+                            { "owned_seat", OwnedSeat },
+                            { "duel_generation", DuelGeneration },
+                            { "turn", obs.Turn },
+                            { "turn_player", obs.TurnPlayer },
+                            { "phase", obs.Phase },
                         });
                         return CampaignCpuDefaults.ScriptedHandledReturnCode;
                     }
-                    if (outcome == CampaignCpuCommitOutcome.NotStarted)
+                    if (commitEffect == CampaignCpuEffectKind.BeginNativeLeaseAndForward)
                     {
                         return BeginFallback(
                             id, param1, param2, param3, progress, "commit_not_started", originalRunEffect);
@@ -1104,6 +1144,9 @@ namespace YgoMasterClient
                     {
                         { "view_seq", ViewSeq },
                         { "action", decision.Action != null ? decision.Action.CanonicalIdentity : null },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
                     });
                     return CampaignCpuDefaults.ScriptedHandledReturnCode;
                 }
@@ -1136,6 +1179,9 @@ namespace YgoMasterClient
             int param3,
             CampaignCpuProgressToken progress,
             int actingPlayer,
+            int turn,
+            int turnPlayer,
+            int phase,
             OriginalRunEffectDelegate originalRunEffect)
         {
             int mask = 0;
@@ -1158,10 +1204,17 @@ namespace YgoMasterClient
                     { "owned_seat", OwnedSeat },
                     { "my_id", MyId },
                     { "acting_player", actingPlayer },
+                    { "duel_generation", DuelGeneration },
+                    { "turn", turn },
+                    { "turn_player", turnPlayer },
+                    { "phase", phase },
                 });
                 return BeginFallback(
                     id, param1, param2, param3, progress, "sel_stand_mask_empty", originalRunEffect);
             }
+
+            int armTurn = turn >= 0 ? turn : (progress != null ? progress.Turn : 0);
+            int armPhase = phase >= 0 ? phase : (progress != null ? progress.Phase : 0);
 
             // Refresh progress fingerprint so AwaitingProgress treats this commit distinctly.
             string fp = CampaignCpuObservation.FingerprintLegalActions(
@@ -1173,8 +1226,8 @@ namespace YgoMasterClient
                 param2,
                 param3,
                 actingPlayer,
-                progress != null ? progress.Turn : 0,
-                progress != null ? progress.Phase : 0,
+                armTurn,
+                armPhase,
                 fp);
 
             var decision = CampaignCpuDecision.Commit(
@@ -1185,7 +1238,7 @@ namespace YgoMasterClient
                 0,
                 true);
 
-            // Minimal observation for decision audit (full Main menu not available here).
+            // Mechanical observation: real turn/phase from live reads (not synthetic zeros).
             var obs = new CampaignCpuObservation
             {
                 ChapterId = ChapterId,
@@ -1196,6 +1249,11 @@ namespace YgoMasterClient
                 ViewParam3 = param3,
                 ActingPlayer = actingPlayer,
                 OwnedSeat = OwnedSeat,
+                MyId = MyId,
+                DuelGeneration = DuelGeneration,
+                Turn = armTurn,
+                TurnPlayer = turnPlayer >= 0 ? turnPlayer : OwnedSeat,
+                Phase = armPhase,
                 WindowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, param1),
                 LegalActions = new List<CampaignCpuLegalAction> { action },
             };
@@ -1204,7 +1262,8 @@ namespace YgoMasterClient
                     ViewSeq, decision, obs, shadowOnly: false));
 
             CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(action);
-            if (outcome == CampaignCpuCommitOutcome.Applied)
+            CampaignCpuEffectKind commitEffect = CampaignCpuRunEffectRouter.MapCommitOutcome(outcome);
+            if (commitEffect == CampaignCpuEffectKind.CommitApplied)
             {
                 // Do not increment DecisionCount — not a pack-scored Main decision.
                 StateMachine.ArmAwaitingProgress(
@@ -1221,10 +1280,16 @@ namespace YgoMasterClient
                     { "summon_position_mask", mask },
                     { "decision_count", DecisionCount },
                     { "mechanical", true },
+                    { "my_id", MyId },
+                    { "owned_seat", OwnedSeat },
+                    { "duel_generation", DuelGeneration },
+                    { "turn", armTurn },
+                    { "turn_player", turnPlayer },
+                    { "phase", armPhase },
                 });
                 return CampaignCpuDefaults.ScriptedHandledReturnCode;
             }
-            if (outcome == CampaignCpuCommitOutcome.NotStarted)
+            if (commitEffect == CampaignCpuEffectKind.BeginNativeLeaseAndForward)
             {
                 return BeginFallback(
                     id, param1, param2, param3, progress, "sel_stand_commit_not_started", originalRunEffect);
@@ -1241,6 +1306,9 @@ namespace YgoMasterClient
                 { "action", action.CanonicalIdentity },
                 { "rule_id", CampaignCpuSelStand.RuleId },
                 { "dialog_result", action.DialogResult },
+                { "my_id", MyId },
+                { "owned_seat", OwnedSeat },
+                { "duel_generation", DuelGeneration },
             });
             return CampaignCpuDefaults.ScriptedHandledReturnCode;
         }
@@ -1259,6 +1327,9 @@ namespace YgoMasterClient
             int param3,
             CampaignCpuProgressToken progress,
             int actingPlayer,
+            int turn,
+            int turnPlayer,
+            int phase,
             OriginalRunEffectDelegate originalRunEffect)
         {
             int mask = 0;
@@ -1329,6 +1400,9 @@ namespace YgoMasterClient
                 });
             }
 
+            int armTurn = turn >= 0 ? turn : (progress != null ? progress.Turn : 0);
+            int armPhase = phase >= 0 ? phase : (progress != null ? progress.Phase : 0);
+
             string fp = CampaignCpuObservation.FingerprintLegalActions(
                 new List<CampaignCpuLegalAction> { action });
             CampaignCpuProgressToken armProgress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
@@ -1338,8 +1412,8 @@ namespace YgoMasterClient
                 param2,
                 param3,
                 actingPlayer,
-                progress != null ? progress.Turn : 0,
-                progress != null ? progress.Phase : 0,
+                armTurn,
+                armPhase,
                 fp);
 
             var decision = CampaignCpuDecision.Commit(
@@ -1360,6 +1434,11 @@ namespace YgoMasterClient
                 ViewParam3 = param3,
                 ActingPlayer = actingPlayer,
                 OwnedSeat = OwnedSeat,
+                MyId = MyId,
+                DuelGeneration = DuelGeneration,
+                Turn = armTurn,
+                TurnPlayer = turnPlayer >= 0 ? turnPlayer : OwnedSeat,
+                Phase = armPhase,
                 WindowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, param1),
                 LegalActions = new List<CampaignCpuLegalAction> { action },
             };
@@ -1368,7 +1447,8 @@ namespace YgoMasterClient
                     ViewSeq, decision, obs, shadowOnly: false));
 
             CampaignCpuCommitOutcome outcome = CampaignCpuCommit.TryApplyLive(action);
-            if (outcome == CampaignCpuCommitOutcome.Applied)
+            CampaignCpuEffectKind commitEffect = CampaignCpuRunEffectRouter.MapCommitOutcome(outcome);
+            if (commitEffect == CampaignCpuEffectKind.CommitApplied)
             {
                 StateMachine.ArmAwaitingProgress(
                     ViewSeq,
@@ -1388,10 +1468,16 @@ namespace YgoMasterClient
                     { "default_location", usedDefault },
                     { "decision_count", DecisionCount },
                     { "mechanical", true },
+                    { "my_id", MyId },
+                    { "owned_seat", OwnedSeat },
+                    { "duel_generation", DuelGeneration },
+                    { "turn", armTurn },
+                    { "turn_player", turnPlayer },
+                    { "phase", armPhase },
                 });
                 return CampaignCpuDefaults.ScriptedHandledReturnCode;
             }
-            if (outcome == CampaignCpuCommitOutcome.NotStarted)
+            if (commitEffect == CampaignCpuEffectKind.BeginNativeLeaseAndForward)
             {
                 return BeginFallback(
                     id, param1, param2, param3, progress,
@@ -1411,6 +1497,9 @@ namespace YgoMasterClient
                 { "rule_id", ruleId },
                 { "zone", usedDefault ? null : (object)action.Position },
                 { "default_location", usedDefault },
+                { "my_id", MyId },
+                { "owned_seat", OwnedSeat },
+                { "duel_generation", DuelGeneration },
             });
             return CampaignCpuDefaults.ScriptedHandledReturnCode;
         }
@@ -1431,7 +1520,10 @@ namespace YgoMasterClient
             int cpuRb;
             CampaignCpuPlayerTypeTransitionResult cpuTr = TryTransitionPlayerType(
                 OwnedSeat, (int)DuelPlayerType.CPU, out cpuRb);
-            if (!CampaignCpuControlPolicy.IsTransitionConfirmed(cpuTr))
+            // Production-used seam: same MapTransitionResult harness tests exercise.
+            CampaignCpuEffectKind cpuEffect = CampaignCpuRunEffectRouter.MapTransitionResult(
+                cpuTr, restoreHumanPath: false);
+            if (cpuEffect == CampaignCpuEffectKind.TransitionFailedForwardOriginal)
             {
                 AuditPlayerTypeTransitionFailure(
                     "begin_fallback:" + reason,
@@ -1469,6 +1561,8 @@ namespace YgoMasterClient
                 { "reason", reason },
                 { "view_seq", ViewSeq },
                 { "owned_seat", OwnedSeat },
+                { "my_id", MyId },
+                { "duel_generation", DuelGeneration },
                 { "window_class", windowClass },
                 { "owned_is_human_readback", cpuRb },
                 { "my_is_human_readback", TryReadIsHuman(MyId) },

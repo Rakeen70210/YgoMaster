@@ -7,11 +7,15 @@ namespace YgoMasterClient
 {
     /// <summary>
     /// Append-only JSONL audit under ClientData. Never throws into the duel path.
+    /// Cross-launch line accounting: WrittenLines is initialized from the existing file
+    /// so CampaignCpuAuditMaxLines caps the on-disk file, not merely the current process.
+    /// Rotation keeps the newest half (tail) so recent evidence is never discarded first.
     /// </summary>
     static class CampaignCpuAuditLog
     {
         static readonly object LockObj = new object();
-        static int WrittenLines;
+        /// <summary>-1 = not yet counted from disk for this process.</summary>
+        static int WrittenLines = -1;
 
         public static string ResolvePath()
         {
@@ -65,6 +69,17 @@ namespace YgoMasterClient
             }
         }
 
+        /// <summary>
+        /// Test/harness hook: force line accounting state. WrittenLines=-1 re-reads disk.
+        /// </summary>
+        internal static void ResetLineAccountingForTests()
+        {
+            lock (LockObj)
+            {
+                WrittenLines = -1;
+            }
+        }
+
         static void AppendLine(string line)
         {
             lock (LockObj)
@@ -77,17 +92,30 @@ namespace YgoMasterClient
                 int max = ClientSettings.CampaignCpuAuditMaxLines > 0
                     ? ClientSettings.CampaignCpuAuditMaxLines
                     : CampaignCpuDefaults.DefaultAuditMaxLines;
-                if (WrittenLines > max)
+
+                EnsureLineCountFromDisk(path);
+
+                // Cap is on-disk size: when at/over max, keep newest half then append.
+                // Never drop only the newest lines; tail retention preserves recent evidence.
+                if (WrittenLines >= max)
                 {
                     try
                     {
-                        // Drop oldest half by rewriting tail.
                         if (File.Exists(path))
                         {
                             string[] all = File.ReadAllLines(path);
-                            int keepFrom = all.Length / 2;
-                            File.WriteAllLines(path, Slice(all, keepFrom));
-                            WrittenLines = all.Length - keepFrom;
+                            // Keep newest half (rounded up when odd so we do not drop more
+                            // recent lines than older ones).
+                            int keepCount = (all.Length + 1) / 2;
+                            int keepFrom = all.Length - keepCount;
+                            if (keepFrom < 0)
+                            {
+                                keepFrom = 0;
+                            }
+                            string[] tail = Slice(all, keepFrom);
+                            // WriteAllLines is atomic enough for JSONL: full rewrite of valid lines.
+                            File.WriteAllLines(path, tail);
+                            WrittenLines = tail.Length;
                         }
                         else
                         {
@@ -96,12 +124,58 @@ namespace YgoMasterClient
                     }
                     catch
                     {
-                        // stop writing rather than throw
+                        // stop writing rather than throw / corrupt
                         return;
                     }
                 }
-                File.AppendAllText(path, line + Environment.NewLine);
-                WrittenLines++;
+
+                try
+                {
+                    string dir = Path.GetDirectoryName(path);
+                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                    {
+                        Directory.CreateDirectory(dir);
+                    }
+                    File.AppendAllText(path, line + Environment.NewLine);
+                    WrittenLines++;
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        static void EnsureLineCountFromDisk(string path)
+        {
+            if (WrittenLines >= 0)
+            {
+                return;
+            }
+            try
+            {
+                if (!File.Exists(path))
+                {
+                    WrittenLines = 0;
+                    return;
+                }
+                // Count non-empty lines only (matches analyzer skip of blanks).
+                int count = 0;
+                using (var reader = new StreamReader(path))
+                {
+                    string s;
+                    while ((s = reader.ReadLine()) != null)
+                    {
+                        if (s.Length > 0)
+                        {
+                            count++;
+                        }
+                    }
+                }
+                WrittenLines = count;
+            }
+            catch
+            {
+                WrittenLines = 0;
             }
         }
 

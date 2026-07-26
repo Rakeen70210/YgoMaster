@@ -105,6 +105,10 @@ def empty_duel(pack_event: Dict[str, Any], line: int) -> Dict[str, Any]:
         "log_only": pack_event.get("log_only"),
         "deck_hash": pack_event.get("deck_hash"),
         "allow_scripted_commits": pack_event.get("allow_scripted_commits"),
+        # Ownership / generation from pack_loaded (production emits these).
+        "my_id": pack_event.get("my_id"),
+        "owned_seat": pack_event.get("owned_seat"),
+        "duel_generation": pack_event.get("duel_generation"),
         "event_counts": Counter(),
         "decision_rule_ids": Counter(),
         "commit_rule_ids": Counter(),
@@ -122,6 +126,8 @@ def empty_duel(pack_event: Dict[str, Any], line: int) -> Dict[str, Any]:
         "g1_g2_hits": Counter(),
         "mechanical_hits": Counter(),
         "human_seat_rule_commits": 0,
+        # Live RuleCommit rows lacking resolvable ownership context (fail closed on gate).
+        "ownership_context_missing_rule_commits": 0,
         "deterministic_pairs": [],  # (identity, rule_id) multi-hit evidence for S9
     }
 
@@ -173,12 +179,51 @@ def analyze_events(
                 orphan_events[name] += 1
             continue
 
+        # Generation-aware segmentation: a mid-stream generation change without pack_loaded
+        # is rare, but when present start a synthetic segment so ownership context stays coherent.
+        event_gen = event.get("duel_generation")
+        if (
+            event_gen is not None
+            and current.get("duel_generation") is not None
+            and event_gen != current.get("duel_generation")
+            and name
+            not in (
+                "pack_loaded",  # handled above
+            )
+        ):
+            # Close prior segment; open a generation-only segment carrying prior ownership if any.
+            current["end_line"] = line - 1
+            duels.append(current)
+            synthetic = empty_duel(
+                {
+                    "chapter_id": current.get("chapter_id"),
+                    "mode": current.get("mode"),
+                    "log_only": current.get("log_only"),
+                    "deck_hash": current.get("deck_hash"),
+                    "allow_scripted_commits": current.get("allow_scripted_commits"),
+                    "my_id": current.get("my_id"),
+                    "owned_seat": current.get("owned_seat"),
+                    "duel_generation": event_gen,
+                    "ts": event.get("ts"),
+                },
+                line,
+            )
+            synthetic["synthetic_generation_segment"] = True
+            current = synthetic
+
         current["end_line"] = line
         if name:
             current["event_counts"][name] += 1
 
         if name == "seat_owned":
             current["seat_owned_confirmed"] = bool(event.get("confirmed"))
+            # Prefer seat_owned row fields when pack_loaded lacked them (legacy audits).
+            if event.get("my_id") is not None and current.get("my_id") is None:
+                current["my_id"] = event.get("my_id")
+            if event.get("owned_seat") is not None and current.get("owned_seat") is None:
+                current["owned_seat"] = event.get("owned_seat")
+            if event.get("duel_generation") is not None and current.get("duel_generation") is None:
+                current["duel_generation"] = event.get("duel_generation")
         elif name == "campaign_cpu_decision":
             rule_id = event.get("rule_id") or "unknown"
             identity = event.get("action_identity") or ""
@@ -199,19 +244,28 @@ def analyze_events(
                 current["g1_g2_hits"][rule_id] += 1
             # Human-seat RuleCommit is a S10 failure (PR2b). Mechanical auto may
             # report acting=0 under dual-Human while turn is owned — only flag
-            # non-mechanical RuleCommit with acting==my_id when my_id known.
+            # non-mechanical RuleCommit when acting is the human seat and not owned.
+            #
+            # Ownership resolution (production schema first, then pack segment):
+            # 1) row my_id / owned_seat when present
+            # 2) else enclosing pack_loaded (or seat_owned) segment values
+            # Fail closed: live RuleCommit with no resolvable my_id+owned_seat cannot
+            # prove human-seat safety — counted as ownership_context_missing.
             acting = event.get("acting_player")
             owned = event.get("owned_seat")
+            if owned is None:
+                owned = current.get("owned_seat")
             my_id = event.get("my_id")
+            if my_id is None:
+                my_id = current.get("my_id")
             if (
                 route == "RuleCommit"
                 and not event.get("shadow_only")
-                and my_id is not None
-                and acting == my_id
-                and owned is not None
-                and acting != owned
             ):
-                current["human_seat_rule_commits"] += 1
+                if my_id is None or owned is None or acting is None:
+                    current["ownership_context_missing_rule_commits"] += 1
+                elif acting == my_id and acting != owned:
+                    current["human_seat_rule_commits"] += 1
         elif name == "commit_applied":
             current["commits"] += 1
             rule_id = event.get("rule_id") or "unknown"
@@ -300,6 +354,7 @@ def aggregate_duels(duels: List[Dict[str, Any]]) -> Dict[str, Any]:
     shadow_decisions = 0
     commits = 0
     human_seat = 0
+    ownership_missing = 0
     stalls = 0
     indeterminate = 0
     completed = 0
@@ -321,6 +376,7 @@ def aggregate_duels(duels: List[Dict[str, Any]]) -> Dict[str, Any]:
         shadow_decisions += int(d.get("shadow_decisions") or 0)
         commits += int(d.get("commits") or 0)
         human_seat += int(d.get("human_seat_rule_commits") or 0)
+        ownership_missing += int(d.get("ownership_context_missing_rule_commits") or 0)
         stalls += int((d.get("safety") or {}).get("post_commit_stall") or 0)
         indeterminate += int((d.get("safety") or {}).get("commit_indeterminate") or 0)
         if d.get("duel_end_summary") is not None:
@@ -345,6 +401,7 @@ def aggregate_duels(duels: List[Dict[str, Any]]) -> Dict[str, Any]:
         "shadow_decisions": shadow_decisions,
         "commits": commits,
         "human_seat_rule_commits": human_seat,
+        "ownership_context_missing_rule_commits": ownership_missing,
         "post_commit_stall": stalls,
         "commit_indeterminate": indeterminate,
         "completed_duels": completed,
@@ -436,11 +493,21 @@ def validate_requirements(
             "commit_indeterminate count %d (require zero)"
             % int(agg.get("commit_indeterminate") or 0)
         )
-    if require_zero_human_seat_commits and int(agg.get("human_seat_rule_commits") or 0) != 0:
-        errors.append(
-            "human_seat_rule_commits %d (require zero)"
-            % int(agg.get("human_seat_rule_commits") or 0)
-        )
+    if require_zero_human_seat_commits:
+        missing = int(agg.get("ownership_context_missing_rule_commits") or 0)
+        if missing != 0:
+            # Fail closed: cannot prove S10 ownership without production context.
+            errors.append(
+                "ownership_context_missing_rule_commits %d "
+                "(require-zero-human-seat-commits needs my_id+owned_seat+acting on "
+                "live RuleCommit rows or enclosing pack_loaded segment)"
+                % missing
+            )
+        if int(agg.get("human_seat_rule_commits") or 0) != 0:
+            errors.append(
+                "human_seat_rule_commits %d (require zero)"
+                % int(agg.get("human_seat_rule_commits") or 0)
+            )
     mask_empty = int((agg.get("safety") or {}).get("location_mask_empty") or 0)
     if require_zero_location_mask_empty and mask_empty != 0:
         errors.append("location_mask_empty count %d (require zero)" % mask_empty)

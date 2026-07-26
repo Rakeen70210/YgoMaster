@@ -15,6 +15,10 @@ namespace YgoMaster
         public int ViewParam3;
         public int ActingPlayer;
         public int OwnedSeat;
+        /// <summary>Local human seat (MyID). Required on production decision rows for S10 ownership gates.</summary>
+        public int MyId;
+        /// <summary>Monotonic duel generation from controller (segments multi-duel audits).</summary>
+        public int DuelGeneration;
         public int Turn;
         public int TurnPlayer;
         public int Phase;

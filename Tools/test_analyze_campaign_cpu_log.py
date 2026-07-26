@@ -341,6 +341,9 @@ class CampaignCpuLogAnalyzerTests(unittest.TestCase):
                     "mode": "pr4b_scripted",
                     "log_only": False,
                     "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 3,
                 },
                 {
                     "event": "campaign_cpu_decision",
@@ -350,6 +353,7 @@ class CampaignCpuLogAnalyzerTests(unittest.TestCase):
                     "acting_player": 0,
                     "owned_seat": 1,
                     "my_id": 0,
+                    "duel_generation": 3,
                     "action_identity": "DialogResult|Attack|0|65536|65536|sel_stand",
                 },
             ]
@@ -362,6 +366,268 @@ class CampaignCpuLogAnalyzerTests(unittest.TestCase):
             require_zero_human_seat_commits=True,
         )
         self.assertEqual([], errors)
+
+    def production_decision_row(
+        self,
+        *,
+        rule_id="prefer-summon",
+        route="RuleCommit",
+        shadow_only=False,
+        acting_player=1,
+        owned_seat=1,
+        my_id=0,
+        duel_generation=2,
+        turn=3,
+        turn_player=1,
+        phase=4,
+        action_identity="Command|Summon|7850|13|3|",
+        include_my_id=True,
+        include_generation=True,
+    ):
+        """Fields matching CampaignCpuAuditSerializer.SerializeDecision production schema.
+
+        Intentionally excludes synthetic-only fields. my_id/duel_generation are part of
+        the fixed production contract (PR4b handoff).
+        """
+        row = {
+            "event": "campaign_cpu_decision",
+            "ts": "2026-07-24T17:04:00Z",
+            "view_seq": 29,
+            "route": route,
+            "reason": "rule",
+            "rule_id": rule_id,
+            "score": 10,
+            "matched": True,
+            "shadow_only": shadow_only,
+            "chapter_id": 11010078,
+            "window_class": "WaitInput_MainPhase",
+            "acting_player": acting_player,
+            "owned_seat": owned_seat,
+            "turn": turn,
+            "turn_player": turn_player,
+            "phase": phase,
+            "self_lp": 8000,
+            "opp_lp": 8000,
+            "is_main_phase_wait_input": True,
+            "is_multi_select": False,
+            "legal_count": 1,
+            "legal_fingerprint": action_identity,
+            "self_hand_card_ids": [7850],
+            "self_field_face_up_card_ids": [],
+            "opp_field_face_up_card_ids": [],
+            "legal_actions": [
+                {
+                    "action_id": 1,
+                    "identity": action_identity,
+                    "kind": "Command",
+                    "command": "Summon",
+                    "phase": "Main1",
+                    "card_id": 7850,
+                    "position": 13,
+                    "index": 3,
+                    "dialog_result": 0,
+                    "cancel_decide": 0,
+                    "label": "",
+                    "is_mechanical": False,
+                    "target_scope": "",
+                    "player": 1,
+                }
+            ],
+            "action_id": 1,
+            "action_identity": action_identity,
+            "command": "Summon",
+            "card_id": 7850,
+            "chosen": {
+                "action_id": 1,
+                "identity": action_identity,
+                "kind": "Command",
+                "command": "Summon",
+                "phase": "Main1",
+                "card_id": 7850,
+                "position": 13,
+                "index": 3,
+                "dialog_result": 0,
+                "cancel_decide": 0,
+                "label": "",
+                "is_mechanical": False,
+                "target_scope": "",
+                "player": 1,
+            },
+        }
+        if include_my_id:
+            row["my_id"] = my_id
+        if include_generation:
+            row["duel_generation"] = duel_generation
+        return row
+
+    def test_production_serializer_schema_detects_human_seat_rule_commit(self):
+        """S10 human-seat gate must fire on production-shaped rows (not synthetic supersets)."""
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+                self.production_decision_row(
+                    acting_player=0,
+                    owned_seat=1,
+                    my_id=0,
+                    duel_generation=2,
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(1, summary["aggregate"]["human_seat_rule_commits"])
+        errors = analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True
+        )
+        self.assertTrue(any("human_seat_rule_commits" in e for e in errors))
+
+    def test_production_serializer_owned_seat_rule_commit_is_clean(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+                self.production_decision_row(
+                    acting_player=1,
+                    owned_seat=1,
+                    my_id=0,
+                    duel_generation=2,
+                ),
+                {
+                    "event": "commit_applied",
+                    "rule_id": "prefer-summon",
+                    "action": "Command|Summon|7850|13|3|",
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(0, summary["aggregate"]["human_seat_rule_commits"])
+        self.assertEqual(
+            0, summary["aggregate"]["ownership_context_missing_rule_commits"]
+        )
+        self.assertEqual([], analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True, min_commits=1
+        ))
+
+    def test_inherit_my_id_from_pack_loaded_when_decision_omits_it(self):
+        """Legacy decision rows without my_id still evaluate via pack_loaded segment."""
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 5,
+                },
+                self.production_decision_row(
+                    acting_player=0,
+                    owned_seat=1,
+                    include_my_id=False,
+                    include_generation=False,
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(1, summary["aggregate"]["human_seat_rule_commits"])
+        self.assertEqual(5, summary["duels"][0]["duel_generation"])
+        self.assertEqual(0, summary["duels"][0]["my_id"])
+
+    def test_fail_closed_when_require_human_seat_but_no_ownership_context(self):
+        """Production-shaped RuleCommit without my_id/owned_seat must not green-wash S10."""
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    # deliberately no my_id / owned_seat
+                },
+                self.production_decision_row(
+                    acting_player=1,
+                    include_my_id=False,
+                    include_generation=False,
+                ),
+            ]
+        )
+        # production_decision_row still sets owned_seat on the row; strip it to simulate
+        # pre-fix production decision without ownership fields.
+        # rewrite last line without owned_seat
+        events = []
+        with path.open(encoding="utf-8") as reader:
+            for line in reader:
+                events.append(json.loads(line))
+        del events[1]["owned_seat"]
+        with path.open("w", encoding="utf-8") as writer:
+            for event in events:
+                writer.write(json.dumps(event, separators=(",", ":")) + "\n")
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(
+            1, summary["aggregate"]["ownership_context_missing_rule_commits"]
+        )
+        errors = analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True
+        )
+        self.assertTrue(
+            any("ownership_context_missing_rule_commits" in e for e in errors)
+        )
+
+    def test_generation_change_opens_new_segment(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 1,
+                },
+                self.production_decision_row(duel_generation=1, acting_player=1),
+                self.production_decision_row(
+                    duel_generation=2,
+                    acting_player=1,
+                    rule_id="prefer-action",
+                    action_identity="Command|Action|6782|13|0|",
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertGreaterEqual(summary["duel_count"], 2)
+        gens = [d.get("duel_generation") for d in summary["duels"]]
+        self.assertIn(1, gens)
+        self.assertIn(2, gens)
 
 
 if __name__ == "__main__":
