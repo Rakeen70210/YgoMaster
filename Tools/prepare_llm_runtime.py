@@ -31,6 +31,7 @@ STATUS_SETTINGS_KEYS = (
     "LlmSearchBeamWidth",
     "LlmSearchMaxWallMs",
     "LlmSearchMaxSerializedBytes",
+    "CampaignCpuNativeTraceEnabled",
 )
 # Known optional keys that may be absent from older deployed ClientSettings.json.
 # update_settings_text may insert these (once) when a write explicitly targets them.
@@ -43,6 +44,7 @@ MIGRATABLE_OPTIONAL_SETTINGS = frozenset(
         "LlmSearchBeamWidth",
         "LlmSearchMaxWallMs",
         "LlmSearchMaxSerializedBytes",
+        "CampaignCpuNativeTraceEnabled",
     }
 )
 # Plan defaults (YGOMASTER-LLM-005 Slice 2A). Broker enable never implies these.
@@ -544,6 +546,12 @@ def main(argv=None):
     parser.add_argument("--broker-url", default="http://127.0.0.1:4991/decide")
     parser.add_argument("--timeout-ms", type=int, default=DEFAULT_BROKER_TIMEOUT_MS)
     parser.add_argument(
+        "--campaign-cpu-native-trace",
+        choices=("on", "off"),
+        default=None,
+        help="explicitly enable/disable CampaignCpuNativeTraceEnabled",
+    )
+    parser.add_argument(
         "--self-resources-audit",
         choices=("on", "off"),
         default=None,
@@ -614,6 +622,7 @@ def main(argv=None):
         or args.write
         or args.self_resources_audit is not None
         or args.planning_search_audit is not None
+        or args.campaign_cpu_native_trace is not None
         or search_limit_args_set
     ):
         parser.error("--status cannot be combined with mutating options")
@@ -621,6 +630,8 @@ def main(argv=None):
         parser.error("--self-resources-audit requires --settings")
     if args.planning_search_audit is not None and not args.settings:
         parser.error("--planning-search-audit requires --settings")
+    if args.campaign_cpu_native_trace is not None and not args.settings:
+        parser.error("--campaign-cpu-native-trace requires --settings")
     if search_limit_args_set and not args.settings:
         parser.error("search limit options require --settings")
 
@@ -648,6 +659,10 @@ def main(argv=None):
             settings["LlmPlanningSearchAuditEnabled"] = args.planning_search_audit == "on"
         elif args.disable:
             settings["LlmPlanningSearchAuditEnabled"] = False
+        if args.campaign_cpu_native_trace is not None:
+            settings["CampaignCpuNativeTraceEnabled"] = (
+                args.campaign_cpu_native_trace == "on"
+            )
 
         # Search limits: explicit only. Broker enable must not imply planning audit or limits.
         if args.ensure_search_limit_defaults:

@@ -10,6 +10,23 @@ namespace YgoMaster
     /// </summary>
     static class CampaignCpuAuditSerializer
     {
+        /// <summary>
+        /// Common ownership/generation contract for lifecycle rows.
+        /// Event-specific fields may be added by the controller before serialization.
+        /// </summary>
+        public static Dictionary<string, object> CreateLifecycleContext(
+            int myId,
+            int ownedSeat,
+            long duelGeneration)
+        {
+            return new Dictionary<string, object>
+            {
+                { "my_id", myId },
+                { "owned_seat", ownedSeat },
+                { "duel_generation", duelGeneration },
+            };
+        }
+
         public static string Serialize(string eventName, Dictionary<string, object> fields)
         {
             var map = new Dictionary<string, object>();
@@ -99,6 +116,8 @@ namespace YgoMaster
                 fields["self_field_face_up_card_ids"] = CopyIntList(observation.SelfFieldFaceUpCardIds);
                 fields["opp_field_face_up_card_ids"] = CopyIntList(observation.OppFieldFaceUpCardIds);
                 fields["legal_actions"] = SerializeLegalActions(observation.LegalActions);
+                fields["tactical_monsters"] =
+                    SerializeTacticalMonsters(observation.TacticalMonsters);
             }
             if (decision != null && decision.Action != null)
             {
@@ -107,6 +126,17 @@ namespace YgoMaster
                 fields["command"] = decision.Action.Command.ToString();
                 fields["card_id"] = decision.Action.CardId;
                 fields["chosen"] = SerializeOneLegalAction(decision.Action);
+            }
+            if (decision != null)
+            {
+                fields["tactical_filter_reason"] =
+                    decision.TacticalFilterReason;
+                fields["tactical_filtered_action_identities"] =
+                    CopyStringList(decision.TacticalFilteredActionIdentities);
+                fields["legal_after_tactical_fingerprint"] =
+                    decision.LegalAfterTacticalFingerprint;
+                fields["replaced_action_identity"] =
+                    decision.ReplacedActionIdentity;
             }
             return Serialize("campaign_cpu_decision", fields);
         }
@@ -144,6 +174,55 @@ namespace YgoMaster
             return list;
         }
 
+        static List<object> CopyStringList(IList<string> source)
+        {
+            var list = new List<object>();
+            if (source == null)
+            {
+                return list;
+            }
+            for (int i = 0; i < source.Count; i++)
+            {
+                list.Add(source[i] ?? string.Empty);
+            }
+            return list;
+        }
+
+        static List<object> SerializeTacticalMonsters(
+            IList<CampaignCpuMonsterTacticalState> monsters)
+        {
+            var list = new List<object>();
+            if (monsters == null)
+            {
+                return list;
+            }
+            for (int i = 0; i < monsters.Count; i++)
+            {
+                CampaignCpuMonsterTacticalState m = monsters[i];
+                if (m == null)
+                {
+                    continue;
+                }
+                list.Add(new Dictionary<string, object>
+                {
+                    { "player", m.Player },
+                    { "position", m.Position },
+                    { "index", m.Index },
+                    { "unique_id", m.UniqueId },
+                    { "card_id", m.CardId },
+                    { "face_known", m.FaceKnown },
+                    { "face_up", m.FaceUp },
+                    { "turn_known", m.TurnKnown },
+                    { "turn_raw", m.TurnKnown ? (object)m.TurnRaw : null },
+                    { "is_attack", m.TurnKnown ? (object)m.IsAttack : null },
+                    { "is_defense", m.TurnKnown ? (object)m.IsDefense : null },
+                    { "atk", m.HasAtk ? (object)m.Atk : null },
+                    { "def", m.HasDef ? (object)m.Def : null },
+                });
+            }
+            return list;
+        }
+
         static Dictionary<string, object> SerializeOneLegalAction(CampaignCpuLegalAction a)
         {
             return new Dictionary<string, object>
@@ -162,6 +241,9 @@ namespace YgoMaster
                 { "is_mechanical", a.IsMechanical },
                 { "target_scope", a.TargetScope ?? string.Empty },
                 { "player", a.Player },
+                { "basic_level", a.BasicLevelKnown ? (object)a.BasicLevel : null },
+                { "basic_atk", a.BasicAtkKnown ? (object)a.BasicAtk : null },
+                { "basic_def", a.BasicDefKnown ? (object)a.BasicDef : null },
             };
         }
     }

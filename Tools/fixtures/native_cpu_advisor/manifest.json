@@ -1,0 +1,25 @@
+{
+  "schema": "ygomaster.native_cpu_advisor_fixture_manifest.v1",
+  "corpus_schema": "ygomaster.native_cpu_advisor_corpus.v1",
+  "min_synthetic_fixture_count": 11,
+  "production_capture": {
+    "file": "ns2_20260801_production.fixture.jsonl",
+    "raw_source_slice_sha256": "839ab5ea756ebc6da4cb0ea40268d4231608a10b5cd5f0417bba1cbc556fc07b",
+    "normalized_fixture_sha256": "f26422ce50c8891d30f0a0f789217601b714064d818f510ef51cab23a5065abb",
+    "expected_correlated_sessions": 1,
+    "expected_correlated_traces": 3
+  },
+  "synthetic_fixtures": [
+    {"fixture_id": "visible_direct_lethal_alternative", "file": "visible_direct_lethal_alternative.fixture.json"},
+    {"fixture_id": "visible_attack_position_lethal_alternative", "file": "visible_attack_position_lethal_alternative.fixture.json"},
+    {"fixture_id": "native_already_visible_lethal", "file": "native_already_visible_lethal.fixture.json"},
+    {"fixture_id": "no_visible_lethal", "file": "no_visible_lethal.fixture.json"},
+    {"fixture_id": "defense_target_no_piercing", "file": "defense_target_no_piercing.fixture.json"},
+    {"fixture_id": "missing_public_state", "file": "missing_public_state.fixture.json"},
+    {"fixture_id": "unknown_native_semantics", "file": "unknown_native_semantics.fixture.json"},
+    {"fixture_id": "lethal_tie_break", "file": "lethal_tie_break.fixture.json"},
+    {"fixture_id": "single_candidate", "file": "single_candidate.fixture.json"},
+    {"fixture_id": "card_identity_invariance_a", "file": "card_identity_invariance_a.fixture.json"},
+    {"fixture_id": "card_identity_invariance_b", "file": "card_identity_invariance_b.fixture.json"}
+  ]
+}

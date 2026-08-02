@@ -9,7 +9,8 @@ namespace YgoMasterClient
     /// Append-only JSONL audit under ClientData. Never throws into the duel path.
     /// Cross-launch line accounting: WrittenLines is initialized from the existing file
     /// so CampaignCpuAuditMaxLines caps the on-disk file, not merely the current process.
-    /// Rotation keeps the newest half (tail) so recent evidence is never discarded first.
+    /// Rotation keeps the newest valid tail while reserving one row for the append, so
+    /// every positive configured maximum is a strict on-disk cap.
     /// </summary>
     static class CampaignCpuAuditLog
     {
@@ -93,105 +94,12 @@ namespace YgoMasterClient
                     ? ClientSettings.CampaignCpuAuditMaxLines
                     : CampaignCpuDefaults.DefaultAuditMaxLines;
 
-                EnsureLineCountFromDisk(path);
-
-                // Cap is on-disk size: when at/over max, keep newest half then append.
-                // Never drop only the newest lines; tail retention preserves recent evidence.
-                if (WrittenLines >= max)
-                {
-                    try
-                    {
-                        if (File.Exists(path))
-                        {
-                            string[] all = File.ReadAllLines(path);
-                            // Keep newest half (rounded up when odd so we do not drop more
-                            // recent lines than older ones).
-                            int keepCount = (all.Length + 1) / 2;
-                            int keepFrom = all.Length - keepCount;
-                            if (keepFrom < 0)
-                            {
-                                keepFrom = 0;
-                            }
-                            string[] tail = Slice(all, keepFrom);
-                            // WriteAllLines is atomic enough for JSONL: full rewrite of valid lines.
-                            File.WriteAllLines(path, tail);
-                            WrittenLines = tail.Length;
-                        }
-                        else
-                        {
-                            WrittenLines = 0;
-                        }
-                    }
-                    catch
-                    {
-                        // stop writing rather than throw / corrupt
-                        return;
-                    }
-                }
-
-                try
-                {
-                    string dir = Path.GetDirectoryName(path);
-                    if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                    {
-                        Directory.CreateDirectory(dir);
-                    }
-                    File.AppendAllText(path, line + Environment.NewLine);
-                    WrittenLines++;
-                }
-                catch
-                {
-                }
+                CampaignCpuAuditFile.TryAppendLine(
+                    path,
+                    line,
+                    max,
+                    ref WrittenLines);
             }
-        }
-
-        static void EnsureLineCountFromDisk(string path)
-        {
-            if (WrittenLines >= 0)
-            {
-                return;
-            }
-            try
-            {
-                if (!File.Exists(path))
-                {
-                    WrittenLines = 0;
-                    return;
-                }
-                // Count non-empty lines only (matches analyzer skip of blanks).
-                int count = 0;
-                using (var reader = new StreamReader(path))
-                {
-                    string s;
-                    while ((s = reader.ReadLine()) != null)
-                    {
-                        if (s.Length > 0)
-                        {
-                            count++;
-                        }
-                    }
-                }
-                WrittenLines = count;
-            }
-            catch
-            {
-                WrittenLines = 0;
-            }
-        }
-
-        static string[] Slice(string[] all, int keepFrom)
-        {
-            if (keepFrom <= 0)
-            {
-                return all;
-            }
-            if (keepFrom >= all.Length)
-            {
-                return new string[0];
-            }
-            string[] tail = new string[all.Length - keepFrom];
-            Array.Copy(all, keepFrom, tail, 0, tail.Length);
-            return tail;
         }
     }
 }

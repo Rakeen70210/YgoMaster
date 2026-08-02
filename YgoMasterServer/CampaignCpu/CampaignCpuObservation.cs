@@ -38,6 +38,7 @@ namespace YgoMaster
         /// Scorer must treat card-id when-predicates as failed (never match).
         /// </summary>
         public bool PredicateQueryFailed;
+        public List<CampaignCpuMonsterTacticalState> TacticalMonsters;
 
         public CampaignCpuObservation()
         {
@@ -47,6 +48,7 @@ namespace YgoMaster
             LegalActions = new List<CampaignCpuLegalAction>();
             WindowClass = "Unsupported";
             PredicateQueryFailed = false;
+            TacticalMonsters = new List<CampaignCpuMonsterTacticalState>();
         }
 
         public static CampaignCpuLegalAction FromLegalAction(LegalAction action)
@@ -92,6 +94,46 @@ namespace YgoMaster
             parts.Sort(System.StringComparer.Ordinal);
             return string.Join(";", parts.ToArray());
         }
+    }
+
+    static class CampaignCpuObservationContext
+    {
+        public static void Stamp(
+            CampaignCpuObservation observation,
+            int myId,
+            int duelGeneration)
+        {
+            if (observation == null)
+            {
+                return;
+            }
+            observation.MyId = myId;
+            observation.DuelGeneration = duelGeneration;
+        }
+    }
+
+    /// <summary>
+    /// Compact tactical snapshot used for deterministic position safety.
+    /// Unknown values remain unknown; callers must not synthesize zeros as proof.
+    /// </summary>
+    sealed class CampaignCpuMonsterTacticalState
+    {
+        public int Player;
+        public int Position;
+        public int Index;
+        public int UniqueId;
+        public int CardId;
+        public bool FaceKnown;
+        public bool FaceUp;
+        public bool TurnKnown;
+        public int TurnRaw;
+        public bool IsAttack;
+        public bool IsDefense;
+        public bool HasAtk;
+        public int Atk;
+        public bool HasDef;
+        public int Def;
+
     }
 
     /// <summary>

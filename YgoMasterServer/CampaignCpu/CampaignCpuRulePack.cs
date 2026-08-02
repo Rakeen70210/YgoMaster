@@ -72,10 +72,26 @@ namespace YgoMaster
         public string MechanicalWindows = "auto_or_native";
         public List<string> ScriptedViews;
         public int MaxDecisionsPerDuel;
+        public bool SuccessiveMainRecapture;
+        public int MaxRecapturesPerChain =
+            CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerChain;
+        public int MaxRecapturesPerTurn =
+            CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerTurn;
+        public int RecaptureTimeoutMs =
+            CampaignCpuRecapturePolicy.DefaultTimeoutMs;
+        public bool PositionSafetyEnabled;
+        public string PhaseExitPolicy = "native_cpu";
+        public List<int> PositionSafetyExceptionCardIds;
+        public int? AttackTurnRaw;
+        public int? DefenseTurnRaw;
+        public bool OpeningSetSafetyEnabled;
+        public List<int> OpeningSetSafetyCardIds;
 
         public CampaignCpuPackPolicy()
         {
             ScriptedViews = new List<string> { "WaitInput_MainPhase" };
+            PositionSafetyExceptionCardIds = new List<int>();
+            OpeningSetSafetyCardIds = new List<int>();
         }
     }
 
@@ -461,6 +477,143 @@ namespace YgoMaster
                 }
                 policy.MaxDecisionsPerDuel = max;
             }
+            if (policyDict.ContainsKey("successive_main_recapture"))
+            {
+                object raw = policyDict["successive_main_recapture"];
+                if (!(raw is bool))
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy successive_main_recapture must be bool in "
+                        + sourcePath);
+                }
+                policy.SuccessiveMainRecapture = (bool)raw;
+            }
+            if (policyDict.ContainsKey("max_recaptures_per_chain"))
+            {
+                int value;
+                if (!TryParseStrictInt(policyDict["max_recaptures_per_chain"], out value)
+                    || value < 1)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy max_recaptures_per_chain must be int >= 1 in "
+                        + sourcePath);
+                }
+                policy.MaxRecapturesPerChain = value;
+            }
+            if (policyDict.ContainsKey("max_recaptures_per_turn"))
+            {
+                int value;
+                if (!TryParseStrictInt(policyDict["max_recaptures_per_turn"], out value)
+                    || value < 1)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy max_recaptures_per_turn must be int >= 1 in "
+                        + sourcePath);
+                }
+                policy.MaxRecapturesPerTurn = value;
+            }
+            if (policyDict.ContainsKey("recapture_timeout_ms"))
+            {
+                int value;
+                if (!TryParseStrictInt(policyDict["recapture_timeout_ms"], out value)
+                    || value < 1)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy recapture_timeout_ms must be int >= 1 in "
+                        + sourcePath);
+                }
+                policy.RecaptureTimeoutMs = value;
+            }
+            if (policyDict.ContainsKey("position_safety_enabled"))
+            {
+                object raw = policyDict["position_safety_enabled"];
+                if (!(raw is bool))
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy position_safety_enabled must be bool in "
+                        + sourcePath);
+                }
+                policy.PositionSafetyEnabled = (bool)raw;
+            }
+            if (policyDict.ContainsKey("opening_set_safety_enabled"))
+            {
+                object raw = policyDict["opening_set_safety_enabled"];
+                if (!(raw is bool))
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy opening_set_safety_enabled must be bool in "
+                        + sourcePath);
+                }
+                policy.OpeningSetSafetyEnabled = (bool)raw;
+            }
+            if (policyDict.ContainsKey("opening_set_safety_card_ids"))
+            {
+                List<object> openingSetCards =
+                    policyDict["opening_set_safety_card_ids"]
+                    as List<object>;
+                if (openingSetCards == null)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy opening_set_safety_card_ids must be an array in "
+                        + sourcePath);
+                }
+                if (openingSetCards.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        "CampaignCpu policy opening_set_safety_card_ids must not be empty in "
+                        + sourcePath);
+                }
+                policy.OpeningSetSafetyCardIds = new List<int>();
+                for (int i = 0; i < openingSetCards.Count; i++)
+                {
+                    int cardId;
+                    if (!TryParseStrictInt(openingSetCards[i], out cardId)
+                        || cardId <= 0)
+                    {
+                        throw new InvalidOperationException(
+                            "CampaignCpu policy opening_set_safety_card_ids entries must "
+                            + "be positive card ids in " + sourcePath);
+                    }
+                    policy.OpeningSetSafetyCardIds.Add(cardId);
+                }
+            }
+            if (policy.OpeningSetSafetyEnabled
+                && policy.OpeningSetSafetyCardIds.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu policy opening_set_safety_enabled requires a nonempty "
+                    + "opening_set_safety_card_ids list in " + sourcePath);
+            }
+            if (policyDict.ContainsKey("phase_exit_policy"))
+            {
+                policy.PhaseExitPolicy = RequirePolicyToken(
+                    Utils.GetValue<string>(policyDict, "phase_exit_policy"),
+                    "phase_exit_policy",
+                    sourcePath,
+                    "native_cpu",
+                    "battle_then_end");
+            }
+            List<object> exceptions =
+                Utils.GetValue(policyDict, "position_safety_exceptions", (List<object>)null);
+            if (exceptions != null)
+            {
+                policy.PositionSafetyExceptionCardIds = new List<int>();
+                for (int i = 0; i < exceptions.Count; i++)
+                {
+                    int cardId;
+                    if (!TryParseStrictInt(exceptions[i], out cardId) || cardId <= 0)
+                    {
+                        throw new InvalidOperationException(
+                            "CampaignCpu policy position_safety_exceptions entries must "
+                            + "be positive card ids in " + sourcePath);
+                    }
+                    policy.PositionSafetyExceptionCardIds.Add(cardId);
+                }
+            }
+            ParseOptionalTurnRaw(
+                policyDict, "attack_turn_raw", sourcePath, out policy.AttackTurnRaw);
+            ParseOptionalTurnRaw(
+                policyDict, "defense_turn_raw", sourcePath, out policy.DefenseTurnRaw);
             List<object> scripted =
                 Utils.GetValue(policyDict, "scripted_views", (List<object>)null);
             if (scripted != null)
@@ -489,6 +642,26 @@ namespace YgoMaster
                     policy.ScriptedViews.Add(view);
                 }
             }
+        }
+
+        static void ParseOptionalTurnRaw(
+            Dictionary<string, object> policyDict,
+            string field,
+            string sourcePath,
+            out int? value)
+        {
+            value = null;
+            if (!policyDict.ContainsKey(field))
+            {
+                return;
+            }
+            int parsed;
+            if (!TryParseStrictInt(policyDict[field], out parsed))
+            {
+                throw new InvalidOperationException(
+                    "CampaignCpu policy " + field + " must be int in " + sourcePath);
+            }
+            value = parsed;
         }
 
         static string RequirePolicyToken(

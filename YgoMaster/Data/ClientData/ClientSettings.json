@@ -62,6 +62,7 @@
     "CampaignCpuLogOnly": false,
     "CampaignCpuAllowScriptedCommits": false,
     "CampaignCpuProbeLogging": true,
+    "CampaignCpuNativeTraceEnabled": false,
     "CampaignCpuEngineWorkDoCommandUserOffset": 0,
     "CampaignCpuEngineWorkRunDialogUserOffset": 0,
     "LlmBrokerUrl": "http://127.0.0.1:4991/decide",

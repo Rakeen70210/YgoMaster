@@ -14,7 +14,18 @@
     "on_zero_legal": "native_cpu",
     "mechanical_windows": "auto_or_native",
     "scripted_views": ["WaitInput_MainPhase"],
-    "max_decisions_per_duel": 0
+    "max_decisions_per_duel": 0,
+    "successive_main_recapture": false,
+    "max_recaptures_per_chain": 2,
+    "max_recaptures_per_turn": 3,
+    "recapture_timeout_ms": 5000,
+    "position_safety_enabled": false,
+    "opening_set_safety_enabled": false,
+    "opening_set_safety_card_ids": [12293],
+    "phase_exit_policy": "battle_then_end",
+    "position_safety_exceptions": [],
+    "attack_turn_raw": 0,
+    "defense_turn_raw": 1
   },
   "never": [
     {

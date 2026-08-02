@@ -6,7 +6,10 @@ namespace YgoMasterClient
     /// Client-only ILegalActionQuery over public DuelDll.CampaignCpu_* wrappers.
     /// Harness must never reference this type; use fakes instead.
     /// </summary>
-    sealed class LiveDllLegalActionQuery : ILegalActionQuery
+    sealed class LiveDllLegalActionQuery :
+        ILegalActionQuery,
+        ICampaignCpuTacticalQuery,
+        ICampaignCpuCardBasicStatsQuery
     {
         public int GetCardNum(int player, int position)
         {
@@ -31,6 +34,48 @@ namespace YgoMasterClient
         public int GetCardUniqueId(int player, int position, int index)
         {
             return DuelDll.CampaignCpu_GetCardUniqueId(player, position, index);
+        }
+
+        public int GetMonsterCount(int player, int position)
+        {
+            return DuelDll.CampaignCpu_GetCardNum(player, position);
+        }
+
+        public bool TryReadMonster(
+            int player,
+            int position,
+            int index,
+            out int uniqueId,
+            out int cardId,
+            out int face,
+            out int turn,
+            out int atk,
+            out int def)
+        {
+            uniqueId = DuelDll.CampaignCpu_GetCardUniqueId(player, position, index);
+            cardId = uniqueId > 0
+                ? DuelDll.CampaignCpu_GetCardIdByUniqueId(uniqueId)
+                : 0;
+            face = DuelDll.CampaignCpu_GetCardFace(player, position, index);
+            turn = DuelDll.CampaignCpu_GetCardTurn(player, position, index);
+            DuelDll.CampaignCpu_GetCardAttackDefense(
+                player, position, index, out atk, out def);
+            return uniqueId > 0;
+        }
+
+        public bool TryReadCardBasicStats(
+            int player,
+            int position,
+            int index,
+            out int level,
+            out int atk,
+            out int def)
+        {
+            level = DuelDll.CampaignCpu_GetCardLevel(
+                player, position, index);
+            DuelDll.CampaignCpu_GetCardAttackDefense(
+                player, position, index, out atk, out def);
+            return true;
         }
 
         public int GetHandCardOpen(int player, int index)

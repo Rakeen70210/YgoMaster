@@ -131,5 +131,25 @@ namespace YgoMasterClient
             }
             obs.SelfHandCardIds = hand;
         }
+
+        public static void FillTacticalState(
+            ICampaignCpuTacticalQuery query,
+            CampaignCpuObservation observation,
+            CampaignCpuPackPolicy policy)
+        {
+            CampaignCpuTacticalSnapshotBuilder.PopulateObservation(
+                query,
+                observation,
+                policy);
+        }
+
+        public static void FillLegalActionBasicStats(
+            ICampaignCpuCardBasicStatsQuery query,
+            CampaignCpuObservation observation)
+        {
+            CampaignCpuLegalActionBasicStatsBuilder.Populate(
+                query,
+                observation);
+        }
     }
 }

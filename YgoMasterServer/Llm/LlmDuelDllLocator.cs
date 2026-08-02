@@ -9,7 +9,7 @@ namespace YgoMaster
     /// </summary>
     public static class LlmDuelDllLocator
     {
-        public const long ExpectedMasterDuelDuelDllBytes = 19118592;
+        public const long ExpectedMasterDuelDuelDllBytes = 19443200;
 
         public static string ResolveAuthoritativeDuelDllPath()
         {

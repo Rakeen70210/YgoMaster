@@ -658,6 +658,37 @@ class PrepareLlmRuntimeTests(unittest.TestCase):
             stderr.getvalue(),
         )
 
+    def test_campaign_cpu_native_trace_toggle_migrates_and_flips_runtime_setting(self):
+        original = (
+            "{\n"
+            '    "LlmDecisionLogEnabled": false,\n'
+            '    "LlmBrokerEnabled": false,\n'
+            '    "LlmBrokerUrl": "http://127.0.0.1:4991/decide",\n'
+            '    "LlmBrokerTimeoutMs": 2000,\n'
+            '    "LlmBrokerControlPlayer": -1,\n'
+            '    "PvpLogToFile": false,\n'
+            "}\n"
+        )
+
+        enabled = prep.update_settings_text(
+            original, {"CampaignCpuNativeTraceEnabled": True}
+        )
+        self.assertEqual(
+            prep.read_settings_values(enabled)["CampaignCpuNativeTraceEnabled"], True
+        )
+        self.assertEqual(
+            prep.count_setting_keys(enabled, "CampaignCpuNativeTraceEnabled"), 1
+        )
+        disabled = prep.update_settings_text(
+            enabled, {"CampaignCpuNativeTraceEnabled": False}
+        )
+        self.assertEqual(
+            prep.read_settings_values(disabled)["CampaignCpuNativeTraceEnabled"], False
+        )
+        self.assertEqual(
+            prep.count_setting_keys(disabled, "CampaignCpuNativeTraceEnabled"), 1
+        )
+
     def test_search_limit_defaults_migration_and_broker_does_not_imply(self):
         original = (
             "{\n"

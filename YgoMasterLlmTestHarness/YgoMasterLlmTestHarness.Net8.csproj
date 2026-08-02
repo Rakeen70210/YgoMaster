@@ -21,15 +21,22 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuCommandAliases.cs" Link="CampaignCpu\CampaignCpuCommandAliases.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRulePack.cs" Link="CampaignCpu\CampaignCpuRulePack.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuMatchers.cs" Link="CampaignCpu\CampaignCpuMatchers.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuPositionSafety.cs" Link="CampaignCpu\CampaignCpuPositionSafety.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuOpeningSetSafety.cs" Link="CampaignCpu\CampaignCpuOpeningSetSafety.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRecapture.cs" Link="CampaignCpu\CampaignCpuRecapture.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuTacticalSnapshot.cs" Link="CampaignCpu\CampaignCpuTacticalSnapshot.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuScorer.cs" Link="CampaignCpu\CampaignCpuScorer.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuActingPlayerResolver.cs" Link="CampaignCpu\CampaignCpuActingPlayerResolver.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuControlPolicy.cs" Link="CampaignCpu\CampaignCpuControlPolicy.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\SoloTemporaryCpuStateMachine.cs" Link="CampaignCpu\SoloTemporaryCpuStateMachine.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs" Link="CampaignCpu\CampaignCpuAuditSerializer.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditFile.cs" Link="CampaignCpu\CampaignCpuAuditFile.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeTrace.cs" Link="CampaignCpu\CampaignCpuNativeTrace.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs" Link="CampaignCpu\CampaignCpuRunEffectContract.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeCommit.cs" Link="CampaignCpu\CampaignCpuNativeCommit.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuSelStand.cs" Link="CampaignCpu\CampaignCpuSelStand.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuLocation.cs" Link="CampaignCpu\CampaignCpuLocation.cs" />
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuSummonSafety.cs" Link="CampaignCpu\CampaignCpuSummonSafety.cs" />
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuFieldDiff.cs" Link="CampaignCpu\CampaignCpuFieldDiff.cs" />
     <Compile Include="Llm004\Llm004Slice0Tests.cs" />
     <Compile Include="Llm004\Llm004Slice2Tests.cs" />

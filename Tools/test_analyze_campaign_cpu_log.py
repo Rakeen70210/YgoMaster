@@ -529,6 +529,375 @@ class CampaignCpuLogAnalyzerTests(unittest.TestCase):
             summary, require_zero_human_seat_commits=True, min_commits=1
         ))
 
+    def test_s10_rejects_non_owned_actor_even_when_not_my_id(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+                self.production_decision_row(
+                    acting_player=2,
+                    owned_seat=1,
+                    my_id=0,
+                    duel_generation=2,
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(
+            1, summary["aggregate"].get("non_owned_rule_commits", 0)
+        )
+        errors = analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True
+        )
+        self.assertTrue(any("non_owned_rule_commits" in e for e in errors))
+
+    def test_s10_rejects_collapsed_owned_and_my_id_seats(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 1,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+                self.production_decision_row(
+                    acting_player=1,
+                    owned_seat=1,
+                    my_id=1,
+                    duel_generation=2,
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(
+            1,
+            summary["aggregate"].get(
+                "ownership_context_invalid_rule_commits", 0
+            ),
+        )
+        errors = analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True
+        )
+        self.assertTrue(
+            any("ownership_context_invalid_rule_commits" in e for e in errors)
+        )
+
+    def test_s10_rejects_row_ownership_that_contradicts_pack_segment(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 2,
+                },
+                self.production_decision_row(
+                    acting_player=0,
+                    owned_seat=0,
+                    my_id=1,
+                    duel_generation=2,
+                ),
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(
+            1,
+            summary["aggregate"].get(
+                "ownership_context_invalid_rule_commits", 0
+            ),
+        )
+        errors = analyzer.validate_requirements(
+            summary, require_zero_human_seat_commits=True
+        )
+        self.assertTrue(
+            any("ownership_context_invalid_rule_commits" in e for e in errors)
+        )
+
+    def test_successive_main_lineage_counts_candidate_attempt_confirm(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 3,
+                },
+                {
+                    "event": "owned_main_boundary_probe",
+                    "candidate": True,
+                    "candidate_reason": "eligible",
+                    "lease_origin_classification": "ScriptedResponseContinuation",
+                    "turn": 3,
+                    "view_seq": 20,
+                },
+                {
+                    "event": "same_main_recapture_attempt",
+                    "boundary": "pre_sysact_stable_owned_main",
+                    "origin_view_seq": 10,
+                    "view_seq": 20,
+                    "turn": 3,
+                    "recapture_attempts": 1,
+                    "lease_origin_classification": "ScriptedResponseContinuation",
+                    "duel_generation": 3,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+                {
+                    "event": "same_main_recapture_confirmed",
+                    "origin_view_seq": 10,
+                    "view_seq": 22,
+                    "turn": 3,
+                    "acting_player": 1,
+                    "duel_generation": 3,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        agg = summary["aggregate"]
+        self.assertEqual(1, agg["recapture_candidates"])
+        self.assertEqual(1, agg["recapture_attempts"])
+        self.assertEqual(1, agg["stable_main_boundary_attempts"])
+        self.assertEqual(0, agg["legacy_cpu_thinking_recapture_attempts"])
+        self.assertEqual(1, agg["recapture_confirmed"])
+        self.assertEqual(1, agg["max_recaptures_per_turn"])
+        self.assertEqual([], analyzer.validate_requirements(
+            summary, require_successive_main_safety=True
+        ))
+
+    def test_stable_main_direct_commit_counts_without_human_handoff(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 4,
+                },
+                {
+                    "event": "same_main_direct_commit_attempt",
+                    "boundary": "pre_sysact_stable_owned_main_direct_commit",
+                    "origin_view_seq": 10,
+                    "view_seq": 20,
+                    "turn": 3,
+                    "recapture_attempts": 1,
+                    "lease_origin_classification":
+                        "ScriptedResponseContinuation",
+                    "commit_outcome": "Applied",
+                    "ownership_transition_attempted": False,
+                    "owned_is_human_readback": 0,
+                    "my_is_human_readback": 1,
+                    "duel_generation": 4,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+                {
+                    "event": "same_main_direct_commit_applied",
+                    "view_seq": 20,
+                    "turn": 3,
+                    "action": "Command|Summon|4747|13|0|",
+                    "rule_id": "prefer-summon",
+                    "owned_is_human_readback": 0,
+                    "duel_generation": 4,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        agg = summary["aggregate"]
+        self.assertEqual(1, agg["recapture_attempts"])
+        self.assertEqual(1, agg["stable_main_boundary_attempts"])
+        self.assertEqual(1, agg["stable_main_direct_commit_attempts"])
+        self.assertEqual(1, agg["stable_main_direct_commits_applied"])
+        self.assertEqual(0, agg["legacy_cpu_thinking_recapture_attempts"])
+        self.assertEqual(0, agg["recapture_confirmed"])
+        self.assertEqual(1, agg["max_recaptures_per_turn"])
+        self.assertEqual([], analyzer.validate_requirements(
+            summary, require_successive_main_safety=True
+        ))
+
+    def test_stable_main_direct_commit_rejects_ownership_transition(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 5,
+                },
+                {
+                    "event": "same_main_direct_commit_attempt",
+                    "boundary": "pre_sysact_stable_owned_main_direct_commit",
+                    "turn": 2,
+                    "lease_origin_classification":
+                        "ScriptedResponseContinuation",
+                    "ownership_transition_attempted": True,
+                    "owned_is_human_readback": 1,
+                    "my_is_human_readback": 1,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        self.assertEqual(
+            1,
+            summary["aggregate"]["stable_main_direct_ownership_violations"],
+        )
+        errors = analyzer.validate_requirements(
+            summary, require_successive_main_safety=True
+        )
+        self.assertTrue(
+            any(
+                "stable_main_direct_ownership_violations" in error
+                for error in errors
+            )
+        )
+
+    def test_successive_main_safety_rejects_unsafe_attempt_and_dominated_commit(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 3,
+                },
+                {
+                    "event": "same_main_recapture_attempt",
+                    "forward_order": "cpu_before_human_transition",
+                    "origin_view_seq": 10,
+                    "view_seq": 20,
+                    "turn": 3,
+                    "recapture_attempts": 1,
+                    "lease_origin_classification": "UnsafeContinuation",
+                    "duel_generation": 3,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+                {
+                    "event": "player_type_transition_failed",
+                    "path": "stable_main_pre_sysact_recapture",
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "route": "RuleCommit",
+                    "shadow_only": False,
+                    "action_identity": "Command|TurnDef|4007|2|0|",
+                    "tactical_filter_reason": "dominated_turn_defense",
+                    "tactical_filtered_action_identities": [
+                        "Command|TurnDef|4007|2|0|"
+                    ],
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 3,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        agg = summary["aggregate"]
+        self.assertEqual(1, agg["unsafe_lineage_recapture_attempts"])
+        self.assertEqual(1, agg["legacy_cpu_thinking_recapture_attempts"])
+        self.assertEqual(1, agg["recapture_transition_failures"])
+        self.assertEqual(1, agg["dominated_position_commits"])
+        errors = analyzer.validate_requirements(
+            summary, require_successive_main_safety=True
+        )
+        self.assertTrue(
+            any("unsafe_lineage_recapture_attempts" in error for error in errors)
+        )
+        self.assertTrue(
+            any("dominated_position_commits" in error for error in errors)
+        )
+        self.assertTrue(
+            any(
+                "legacy_cpu_thinking_recapture_attempts" in error
+                for error in errors
+            )
+        )
+
+    def test_dominated_filter_counts_shadow_decisions_without_flagging_commit(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_shadow",
+                    "log_only": True,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 3,
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "route": "Shadow",
+                    "shadow_only": True,
+                    "action_identity": "Phase|Battle|0|0|0|",
+                    "tactical_filter_reason": "dominated_turn_defense",
+                    "tactical_filtered_action_identities": [
+                        "Command|TurnDef|4007|2|0|"
+                    ],
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 3,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        agg = summary["aggregate"]
+        self.assertEqual(1, agg["dominated_position_filtered"])
+        self.assertEqual(0, agg["dominated_position_commits"])
+
     def test_inherit_my_id_from_pack_loaded_when_decision_omits_it(self):
         """Legacy decision rows without my_id still evaluate via pack_loaded segment."""
         temp_dir, path = self.write_log(
@@ -628,6 +997,655 @@ class CampaignCpuLogAnalyzerTests(unittest.TestCase):
         gens = [d.get("duel_generation") for d in summary["duels"]]
         self.assertIn(1, gens)
         self.assertIn(2, gens)
+
+    def test_offline_replay_report_is_deterministic_and_focuses_on_risks(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 9,
+                },
+                {
+                    "event": "same_main_recapture_attempt",
+                    "origin_view_seq": 10,
+                    "view_seq": 20,
+                    "turn": 3,
+                    "recapture_attempts": 1,
+                    "lease_origin_classification": "UnsafeContinuation",
+                    "duel_generation": 9,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                },
+                {
+                    "event": "same_main_recapture_abandoned",
+                    "origin_view_seq": 10,
+                    "view_seq": 20,
+                    "reason": "timeout",
+                    "duel_generation": 9,
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "route": "RuleCommit",
+                    "shadow_only": False,
+                    "action_identity": "Command|TurnDef|4007|2|0|",
+                    "tactical_filtered_action_identities": [
+                        "Command|TurnDef|4007|2|0|"
+                    ],
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 9,
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        report1 = analyzer.build_offline_replay_report(summary)
+        report2 = analyzer.build_offline_replay_report(summary)
+
+        self.assertEqual(report1, report2)
+        self.assertEqual(
+            [
+                "recapture_timeouts",
+                "unsafe_lineage_recapture_attempts",
+                "dominated_position_commits",
+            ],
+            report1["tactical_issues"],
+        )
+        self.assertEqual(1, report1["recapture"]["attempts"])
+        self.assertEqual(1, report1["safety"]["dominated_position_commits"])
+        self.assertEqual(1, report1["duels"][0]["dominated_position_commits"])
+
+        rc = analyzer.main(
+            [
+                str(path),
+                "--offline-replay-report",
+            ]
+        )
+        self.assertEqual(1, rc)
+
+    def test_offline_replay_report_replays_safety_and_tactical_policy(self):
+        temp_dir, path = self.write_log(
+            [
+                {
+                    "event": "pack_loaded",
+                    "chapter_id": 11010078,
+                    "mode": "pr4b_scripted",
+                    "log_only": False,
+                    "deck_hash": analyzer.DEFAULT_DECK_PIN,
+                    "my_id": 0,
+                    "owned_seat": 1,
+                    "duel_generation": 4,
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "view_seq": 10,
+                    "route": "RuleCommit",
+                    "shadow_only": False,
+                    "rule_id": "prefer-action",
+                    "action_identity": "Command|Action|12489|3|0|effect_defined",
+                    "command": "Action",
+                    "card_id": 12489,
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 4,
+                    "turn": 2,
+                    "turn_player": 1,
+                    "phase": 2,
+                    "self_hand_card_ids": [12489, 4007],
+                    "self_field_face_up_card_ids": [4007],
+                    "opp_field_face_up_card_ids": [12522],
+                    "legal_actions": [
+                        {
+                            "identity": "Command|Action|12489|3|0|effect_defined",
+                            "kind": "Command",
+                            "command": "Action",
+                            "card_id": 12489,
+                            "position": 3,
+                            "index": 0,
+                        },
+                        {
+                            "identity": "MovePhase|End|0|0|5|",
+                            "kind": "MovePhase",
+                            "command": "Attack",
+                            "phase": "End",
+                            "card_id": 0,
+                            "position": 0,
+                            "index": 0,
+                        },
+                    ],
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "view_seq": 20,
+                    "route": "RuleCommit",
+                    "shadow_only": False,
+                    "rule_id": "fallback",
+                    "action_identity": "Command|TurnDef|4007|2|0|",
+                    "command": "TurnDef",
+                    "card_id": 4007,
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 4,
+                    "turn": 4,
+                    "turn_player": 1,
+                    "phase": 2,
+                    "self_hand_card_ids": [4007],
+                    "self_field_face_up_card_ids": [4007],
+                    "opp_field_face_up_card_ids": [12522],
+                    "legal_actions": [
+                        {
+                            "identity": "Command|TurnDef|4007|2|0|",
+                            "kind": "Command",
+                            "command": "TurnDef",
+                            "card_id": 4007,
+                            "position": 2,
+                            "index": 0,
+                        },
+                        {
+                            "identity": "MovePhase|Battle|0|0|3|",
+                            "kind": "MovePhase",
+                            "command": "Attack",
+                            "phase": "Battle",
+                            "card_id": 0,
+                            "position": 0,
+                            "index": 0,
+                        },
+                        {
+                            "identity": "MovePhase|End|0|0|5|",
+                            "kind": "MovePhase",
+                            "command": "Attack",
+                            "phase": "End",
+                            "card_id": 0,
+                            "position": 0,
+                            "index": 0,
+                        },
+                    ],
+                    "tactical_monsters": [
+                        {
+                            "player": 1,
+                            "position": 2,
+                            "index": 0,
+                            "card_id": 4007,
+                            "face_known": True,
+                            "face_up": True,
+                            "turn_known": True,
+                            "turn_raw": 0,
+                            "is_attack": True,
+                            "is_defense": False,
+                            "atk": 3000,
+                            "def": 2500,
+                        },
+                        {
+                            "player": 0,
+                            "position": 2,
+                            "index": 0,
+                            "card_id": 12522,
+                            "face_known": True,
+                            "face_up": True,
+                            "turn_known": True,
+                            "turn_raw": 0,
+                            "is_attack": True,
+                            "is_defense": False,
+                            "atk": 3000,
+                            "def": 2500,
+                        },
+                    ],
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "view_seq": 30,
+                    "route": "RuleCommit",
+                    "shadow_only": False,
+                    "rule_id": "prefer-summon",
+                    "action_identity": "Command|Summon|4007|13|0|",
+                    "command": "Summon",
+                    "card_id": 4007,
+                    "acting_player": 1,
+                    "owned_seat": 1,
+                    "my_id": 0,
+                    "duel_generation": 4,
+                    "turn": 6,
+                    "turn_player": 1,
+                    "phase": 2,
+                    "self_hand_card_ids": [4007],
+                    "legal_actions": [
+                        {
+                            "identity": "Command|Summon|4007|13|0|",
+                            "kind": "Command",
+                            "command": "Summon",
+                            "card_id": 4007,
+                            "position": 13,
+                            "index": 0,
+                        },
+                        {
+                            "identity": "MovePhase|End|0|0|5|",
+                            "kind": "MovePhase",
+                            "command": "Attack",
+                            "phase": "End",
+                            "card_id": 0,
+                            "position": 0,
+                            "index": 0,
+                        },
+                    ],
+                },
+                {
+                    "event": "campaign_cpu_decision",
+                    "view_seq": 31,
+                    "route": "MechanicalAuto",
+                    "shadow_only": False,
+                    "rule_id": "mechanical_location_default",
+                    "action_identity": "Command|Decide|4007|0|0|default_location",
+                    "command": "Decide",
+                    "legal_actions": [],
+                },
+            ]
+        )
+        self.addCleanup(temp_dir.cleanup)
+
+        summary = analyzer.analyze_paths([str(path)])
+        report = analyzer.build_offline_replay_report(summary)
+
+        self.assertEqual(4, report["corpus"]["decision_rows"])
+        self.assertEqual(2, report["corpus"]["replayable_rows"])
+        self.assertEqual(1, report["classification_counts"]["materially_changed"])
+        self.assertEqual(1, report["classification_counts"]["safety_deferred"])
+        self.assertEqual(2, report["classification_counts"]["unscorable"])
+
+        action_row = report["decisions"][0]
+        self.assertEqual("FallbackNative", action_row["candidate"]["route"])
+        self.assertEqual(
+            "unsupported_scripted_continuation",
+            action_row["candidate"]["reason"],
+        )
+        self.assertEqual("safety_deferred", action_row["classification"])
+        self.assertTrue(action_row["invariants"]["unsafe_continuation"])
+        self.assertEqual([12489, 4007], action_row["controlled_hand"])
+
+        position_row = report["decisions"][1]
+        self.assertEqual(
+            "MovePhase|Battle|0|0|3|",
+            position_row["candidate"]["action_identity"],
+        )
+        self.assertEqual(
+            "dominated_turn_defense",
+            position_row["candidate"]["reason"],
+        )
+        self.assertIn(
+            "Command|TurnDef|4007|2|0|",
+            position_row["tactical"]["filtered_action_identities"],
+        )
+        self.assertTrue(position_row["invariants"]["legality"])
+
+        unknown_level_row = report["decisions"][2]
+        self.assertEqual(
+            "Unscorable",
+            unknown_level_row["candidate"]["route"],
+        )
+        self.assertEqual(
+            "normal_summon_level_unknown",
+            unknown_level_row["candidate"]["reason"],
+        )
+        self.assertFalse(unknown_level_row["replayable"])
+        self.assertEqual("unscorable", unknown_level_row["classification"])
+        self.assertTrue(report["admission"]["meaningful_decision_delta"])
+        self.assertTrue(report["admission"]["offline_replay_gate_passed"])
+        self.assertFalse(report["admission"]["ready_for_live_proof"])
+        self.assertIn(
+            "different_engine_boundary_not_proven",
+            report["admission"]["blocking_reasons"],
+        )
+        self.assertTrue(report["invariants"]["all_passed"])
+
+    def test_offline_replay_native_fallback_without_identity_is_unscorable(self):
+        replay = analyzer._replay_decision_row(
+            {},
+            {
+                "route": "FallbackNative",
+                "legal_actions": [
+                    {
+                        "identity": "MovePhase|End|0|0|5|",
+                        "kind": "MovePhase",
+                        "command": "End",
+                        "phase": "End",
+                    }
+                ],
+            },
+        )
+
+        self.assertFalse(replay["replayable"])
+        self.assertEqual("unscorable", replay["classification"])
+        self.assertEqual("Unscorable", replay["candidate"]["route"])
+
+    def test_offline_replay_candidate_commit_validates_ownership_and_generation(self):
+        replay = analyzer._replay_decision_row(
+            {},
+            {
+                "route": "FallbackNative",
+                "action_identity": "Command|TurnDef|4007|2|0|",
+                "acting_player": 0,
+                "owned_seat": 1,
+                "my_id": 0,
+                "self_hand_card_ids": [4007],
+                "legal_actions": [
+                    {
+                        "identity": "Command|TurnDef|4007|2|0|",
+                        "kind": "Command",
+                        "command": "TurnDef",
+                        "card_id": 4007,
+                        "position": 2,
+                        "index": 0,
+                    },
+                    {
+                        "identity": "MovePhase|End|0|0|5|",
+                        "kind": "MovePhase",
+                        "command": "End",
+                        "phase": "End",
+                    },
+                ],
+                "tactical_monsters": [
+                    {
+                        "player": 1,
+                        "position": 2,
+                        "index": 0,
+                        "card_id": 4007,
+                        "face_known": True,
+                        "face_up": True,
+                        "turn_known": True,
+                        "is_attack": True,
+                        "is_defense": False,
+                        "has_atk": True,
+                        "has_def": True,
+                        "atk": 3000,
+                        "def": 2500,
+                    },
+                    {
+                        "player": 0,
+                        "position": 2,
+                        "index": 0,
+                        "card_id": 12522,
+                        "face_known": True,
+                        "face_up": True,
+                        "turn_known": True,
+                        "is_attack": True,
+                        "is_defense": False,
+                        "has_atk": True,
+                        "atk": 3000,
+                        "def": 2500,
+                    },
+                ],
+            },
+        )
+
+        self.assertEqual("RuleCommit", replay["candidate"]["route"])
+        self.assertFalse(replay["invariants"]["ownership"])
+        self.assertFalse(replay["invariants"]["generation_context"])
+
+    def test_offline_replay_infers_stance_from_legal_turn_command_for_native_fallback(self):
+        replay = analyzer._replay_decision_row(
+            {},
+            {
+                "route": "FallbackNative",
+                "acting_player": 1,
+                "owned_seat": 1,
+                "my_id": 0,
+                "duel_generation": 4,
+                "_segment_duel_generation": 4,
+                "self_hand_card_ids": [4007],
+                "legal_actions": [
+                    {
+                        "identity": "Command|TurnDef|12485|2|0|",
+                        "kind": "Command",
+                        "command": "TurnDef",
+                        "card_id": 12485,
+                        "position": 2,
+                        "index": 0,
+                    },
+                    {
+                        "identity": "MovePhase|Battle|0|0|3|",
+                        "kind": "MovePhase",
+                        "command": "Attack",
+                        "phase": "Battle",
+                    },
+                    {
+                        "identity": "MovePhase|End|0|0|5|",
+                        "kind": "MovePhase",
+                        "command": "End",
+                        "phase": "End",
+                    },
+                ],
+                "tactical_monsters": [
+                    {
+                        "player": 1,
+                        "position": 2,
+                        "index": 0,
+                        "card_id": 12485,
+                        "face_known": True,
+                        "face_up": True,
+                        "turn_known": False,
+                        "atk": 1900,
+                        "def": 1200,
+                    },
+                    {
+                        "player": 0,
+                        "position": 2,
+                        "index": 0,
+                        "card_id": 12483,
+                        "face_known": True,
+                        "face_up": True,
+                        "turn_known": False,
+                        "atk": 1600,
+                        "def": 1600,
+                    },
+                ],
+            },
+        )
+
+        self.assertTrue(replay["replayable"])
+        self.assertEqual("materially_changed", replay["classification"])
+        self.assertEqual("RuleCommit", replay["candidate"]["route"])
+        self.assertEqual(
+            "MovePhase|Battle|0|0|3|",
+            replay["candidate"]["action_identity"],
+        )
+        self.assertEqual(
+            "dominated_turn_defense",
+            replay["candidate"]["reason"],
+        )
+        self.assertEqual(
+            ["Command|TurnDef|12485|2|0|"],
+            replay["tactical"]["filtered_action_identities"],
+        )
+        self.assertTrue(replay["invariants"]["legality"])
+
+    def test_offline_replay_applies_allowlisted_opening_defensive_set(self):
+        duel = {
+            "_opening_set_safety_enabled": True,
+            "_opening_set_safety_card_ids": [12293],
+        }
+        row = {
+                "route": "RuleCommit",
+                "reason": "fallback",
+                "rule_id": "prefer-summon",
+                "action_identity": "Command|Summon|12293|13|3|",
+                "command": "Summon",
+                "card_id": 12293,
+                "selected_card_level": 1,
+                "acting_player": 1,
+                "owned_seat": 1,
+                "my_id": 0,
+                "duel_generation": 1,
+                "_segment_duel_generation": 1,
+                "turn": 0,
+                "turn_player": 1,
+                "phase": 2,
+                "window_class": "WaitInput_MainPhase",
+                "is_main_phase_wait_input": True,
+                "self_field_face_up_card_ids": [],
+                "opp_field_face_up_card_ids": [],
+                "legal_actions": [
+                    {
+                        "identity": "Command|Summon|12293|13|3|",
+                        "kind": "Command",
+                        "command": "Summon",
+                        "card_id": 12293,
+                        "position": 13,
+                        "index": 3,
+                        "player": 1,
+                        "basic_level": 1,
+                        "basic_atk": 300,
+                        "basic_def": 1200,
+                    },
+                    {
+                        "identity": "Command|SetMonst|12293|13|3|",
+                        "kind": "Command",
+                        "command": "SetMonst",
+                        "card_id": 12293,
+                        "position": 13,
+                        "index": 3,
+                        "player": 1,
+                        "basic_level": 1,
+                        "basic_atk": 300,
+                        "basic_def": 1200,
+                    },
+                    {
+                        "identity": "MovePhase|End|0|0|5|",
+                        "kind": "MovePhase",
+                        "command": "Attack",
+                        "phase": "End",
+                    },
+                ],
+            }
+        replay = analyzer._replay_decision_row(duel, row)
+
+        self.assertTrue(replay["replayable"])
+        self.assertEqual("materially_changed", replay["classification"])
+        self.assertEqual("RuleCommit", replay["candidate"]["route"])
+        self.assertEqual(
+            "Command|SetMonst|12293|13|3|",
+            replay["candidate"]["action_identity"],
+        )
+        self.assertEqual(
+            "opening_position_safety",
+            replay["candidate"]["reason"],
+        )
+        self.assertTrue(replay["invariants"]["legality"])
+        self.assertTrue(replay["invariants"]["unsafe_continuation"])
+
+        report = analyzer.build_offline_replay_report(
+            {
+                "aggregate": {"completed_duels": 1},
+                "duel_count": 1,
+                "duels": [{"decision_rows": [row]}],
+                "pack": {
+                    "opening_set_safety_enabled": True,
+                    "opening_set_safety_card_ids": [12293],
+                },
+                "paths": ["fixture"],
+            }
+        )
+        self.assertEqual(
+            1,
+            report["replay"].get("opening_set_safety_applied", 0),
+        )
+
+    def test_offline_replay_rejects_non_allowlisted_named_opening_set(self):
+        replay = analyzer._replay_decision_row(
+            {
+                "_opening_set_safety_enabled": True,
+                "_opening_set_safety_card_ids": [12293],
+            },
+            {
+                "route": "RuleCommit",
+                "reason": "opening_position_safety",
+                "rule_id": "opening_defensive_set",
+                "action_identity": "Command|SetMonst|99999|13|0|",
+                "replaced_action_identity": "Command|Summon|99999|13|0|",
+                "command": "SetMonst",
+                "card_id": 99999,
+                "selected_card_level": 1,
+                "acting_player": 1,
+                "owned_seat": 1,
+                "my_id": 0,
+                "duel_generation": 1,
+                "_segment_duel_generation": 1,
+                "turn": 0,
+                "turn_player": 1,
+                "phase": 2,
+                "window_class": "WaitInput_MainPhase",
+                "is_main_phase_wait_input": True,
+                "legal_actions": [
+                    {
+                        "identity": "Command|Summon|99999|13|0|",
+                        "kind": "Command",
+                        "command": "Summon",
+                        "card_id": 99999,
+                        "position": 13,
+                        "index": 0,
+                        "player": 1,
+                        "basic_level": 1,
+                        "basic_atk": 100,
+                        "basic_def": 1000,
+                    },
+                    {
+                        "identity": "Command|SetMonst|99999|13|0|",
+                        "kind": "Command",
+                        "command": "SetMonst",
+                        "card_id": 99999,
+                        "position": 13,
+                        "index": 0,
+                        "player": 1,
+                        "basic_level": 1,
+                        "basic_atk": 100,
+                        "basic_def": 1000,
+                    },
+                ],
+            },
+        )
+
+        self.assertFalse(
+            replay["invariants"].get("opening_set_policy", True)
+        )
+
+    def test_analyze_paths_projects_opening_set_policy_from_pack(self):
+        temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temp_dir.cleanup)
+        root = Path(temp_dir.name)
+        log_path = root / "CampaignCpuAuditLog.jsonl"
+        pack_path = root / "11010078.json"
+        log_path.write_text("", encoding="utf-8")
+        pack_path.write_text(
+            json.dumps(
+                {
+                    "chapter_id": 11010078,
+                    "policy": {
+                        "opening_set_safety_enabled": True,
+                        "opening_set_safety_card_ids": [12293],
+                    },
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        summary = analyzer.analyze_paths(
+            [str(log_path)],
+            pack_path=str(pack_path),
+        )
+
+        self.assertTrue(summary["pack"]["opening_set_safety_enabled"])
+        self.assertEqual(
+            [12293],
+            summary["pack"]["opening_set_safety_card_ids"],
+        )
 
 
 if __name__ == "__main__":

@@ -29,6 +29,7 @@ namespace YgoMaster
     {
         public SoloTemporaryCpuState State { get; private set; }
         public SoloTemporaryCpuLease ActiveLease { get; private set; }
+        public CampaignCpuActionChain ActiveActionChain { get; private set; }
         public SoloTemporaryCpuCommittedWatch ProgressWatch { get; private set; }
         public SoloTemporaryCpuCommittedWatch QuarantineWatch { get; private set; }
         public bool ScriptingDisabledForDuel { get; private set; }
@@ -38,6 +39,7 @@ namespace YgoMaster
         {
             State = SoloTemporaryCpuState.Inactive;
             ActiveLease = null;
+            ActiveActionChain = null;
             ProgressWatch = null;
             QuarantineWatch = null;
             ScriptingDisabledForDuel = false;
@@ -48,6 +50,7 @@ namespace YgoMaster
         {
             State = SoloTemporaryCpuState.HumanOwned;
             ActiveLease = null;
+            ActiveActionChain = null;
             ProgressWatch = null;
             QuarantineWatch = null;
             ScriptingDisabledForDuel = false;
@@ -81,12 +84,94 @@ namespace YgoMaster
             State = SoloTemporaryCpuState.NativeLease;
         }
 
+        public void ArmActionChain(CampaignCpuActionChain chain)
+        {
+            ActiveActionChain = chain;
+        }
+
+        public void ClearActionChain()
+        {
+            ActiveActionChain = null;
+        }
+
+        public void AbandonActionChain(string reason)
+        {
+            if (ActiveActionChain != null)
+            {
+                ActiveActionChain.Abandoned = true;
+                ActiveActionChain.AbandonReason = reason ?? "abandoned";
+                ActiveActionChain.Eligibility =
+                    CampaignCpuContinuationEligibility.FullNativeFallback;
+            }
+        }
+
+        public void MarkNativeResponseForwarded()
+        {
+            MarkNativeResponseForwarded(null);
+        }
+
+        public void MarkNativeResponseForwarded(
+            CampaignCpuProgressToken forwardedProgress)
+        {
+            if (ActiveActionChain != null)
+            {
+                ActiveActionChain.NativeResponseSeen = true;
+                if (forwardedProgress != null)
+                {
+                    ActiveActionChain.LastProgressToken = forwardedProgress;
+                }
+            }
+        }
+
+        public bool ObserveActionChainSemanticProgress(
+            CampaignCpuProgressToken progress,
+            DateTime observedUtc)
+        {
+            CampaignCpuActionChain chain = ActiveActionChain;
+            if (chain == null
+                || chain.Abandoned
+                || progress == null
+                || !CampaignCpuProgressToken.IsFreshSemanticProgress(
+                    progress,
+                    chain.LastProgressToken))
+            {
+                return false;
+            }
+            chain.LastProgressToken = progress;
+            if (observedUtc != default(DateTime))
+            {
+                chain.LastSemanticProgressUtc = observedUtc;
+            }
+            return true;
+        }
+
         public void MarkCpuThinkingObserved()
         {
             if (ActiveLease != null)
             {
                 ActiveLease.ObservedCpuThinking = true;
             }
+            if (ActiveActionChain != null)
+            {
+                ActiveActionChain.CpuThinkingCount++;
+            }
+        }
+
+        public static bool RequiresCpuOwnership(SoloTemporaryCpuState state)
+        {
+            return state == SoloTemporaryCpuState.NativeLease;
+        }
+
+        public void RecordStableMainDirectCommitAttempt(ulong boundaryViewSeq)
+        {
+            if (State != SoloTemporaryCpuState.NativeLease
+                || ActiveActionChain == null)
+            {
+                return;
+            }
+            ActiveActionChain.RecaptureAttempts++;
+            ActiveActionChain.RecaptureAttemptsThisTurn++;
+            ActiveActionChain.LastRecaptureViewSeq = boundaryViewSeq;
         }
 
         public void ArmAwaitingProgress(
@@ -131,6 +216,7 @@ namespace YgoMaster
             ProgressWatch = null;
             ScriptingDisabledForDuel = true;
             ScriptingDisabledReason = reason ?? "commit_quarantine";
+            AbandonActionChain(ScriptingDisabledReason);
             State = SoloTemporaryCpuState.CommitQuarantine;
         }
 
@@ -138,6 +224,7 @@ namespace YgoMaster
         {
             ScriptingDisabledForDuel = true;
             ScriptingDisabledReason = reason ?? "disabled";
+            AbandonActionChain(ScriptingDisabledReason);
         }
 
         /// <summary>

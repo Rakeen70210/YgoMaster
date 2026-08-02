@@ -26,6 +26,28 @@ namespace YgoMaster
         CommitApplied,
         /// <summary>Scripted commit Indeterminate: enter quarantine, no original.</summary>
         CommitIndeterminate,
+        /// <summary>Owned SelStand mechanical handler owns the terminal effect.</summary>
+        HandleSelStand,
+        /// <summary>Owned Location mechanical handler owns the terminal effect.</summary>
+        HandleLocation,
+        /// <summary>Owned scripted window continues to extraction/scoring.</summary>
+        ContinueScriptedRouting,
+    }
+
+    /// <summary>
+    /// Real controller routing inputs after progress and NativeLease restoration handling.
+    /// The pure plan fixes branch precedence before any terminal side effect runs.
+    /// </summary>
+    struct CampaignCpuRunEffectRouteInput
+    {
+        public bool InterceptSelStand;
+        public bool InterceptLocation;
+        public bool DualHumanResponseHold;
+        public bool ActingResolved;
+        public bool ActingIsMyId;
+        public bool StaleMyIdOwnedMain;
+        public bool ActingIsOwnedSeat;
+        public bool ForceNative;
     }
 
     /// <summary>
@@ -34,6 +56,39 @@ namespace YgoMaster
     /// </summary>
     static class CampaignCpuRunEffectRouter
     {
+        /// <summary>
+        /// Production route plan after progress/quarantine and NativeLease gates:
+        /// mechanical continuations → A4 → stale MyID → pass-through → forced native
+        /// → scripted extraction.
+        /// </summary>
+        public static CampaignCpuEffectKind PlanRoute(
+            CampaignCpuRunEffectRouteInput input)
+        {
+            if (input.InterceptSelStand)
+            {
+                return CampaignCpuEffectKind.HandleSelStand;
+            }
+            if (input.InterceptLocation)
+            {
+                return CampaignCpuEffectKind.HandleLocation;
+            }
+            if (input.DualHumanResponseHold || input.StaleMyIdOwnedMain)
+            {
+                return CampaignCpuEffectKind.BeginNativeLeaseAndForward;
+            }
+            if (!input.ActingResolved
+                || input.ActingIsMyId
+                || !input.ActingIsOwnedSeat)
+            {
+                return CampaignCpuEffectKind.ForwardOriginal;
+            }
+            if (input.ForceNative)
+            {
+                return CampaignCpuEffectKind.BeginNativeLeaseAndForward;
+            }
+            return CampaignCpuEffectKind.ContinueScriptedRouting;
+        }
+
         /// <summary>
         /// Map a post-commit progress check while in AwaitingProgress / CommitQuarantine
         /// to the next controller effect. Production controller must execute this result.
@@ -56,31 +111,6 @@ namespace YgoMaster
             }
             // Not in a progress gate; callers should not use this helper.
             return CampaignCpuEffectKind.ForwardOriginal;
-        }
-
-        /// <summary>
-        /// Owned-window gate when scripting is unavailable (always-native, disabled, no pack,
-        /// seat unconfirmed, non-scripted window). Always BeginFallback.
-        /// </summary>
-        public static CampaignCpuEffectKind MapOwnedWindowForcedNative()
-        {
-            return CampaignCpuEffectKind.BeginNativeLeaseAndForward;
-        }
-
-        /// <summary>
-        /// Human-seat / non-owned / unresolved acting: single outer forward.
-        /// </summary>
-        public static CampaignCpuEffectKind MapPassThrough()
-        {
-            return CampaignCpuEffectKind.ForwardOriginal;
-        }
-
-        /// <summary>
-        /// A4 dual-Human response hold or stale MyID Main: re-lease CPU then forward once.
-        /// </summary>
-        public static CampaignCpuEffectKind MapDualHumanResponseHold()
-        {
-            return CampaignCpuEffectKind.BeginNativeLeaseAndForward;
         }
 
         /// <summary>
@@ -119,8 +149,9 @@ namespace YgoMaster
 
         /// <summary>
         /// Exact-once originalRunEffect contract for terminal effects.
-        /// CompleteAwaitingProgress / RestoreHumanThenContinue are non-terminal (0 here;
-        /// outer continues and will count its eventual terminal effect).
+        /// CompleteAwaitingProgress / RestoreHumanThenContinue / mechanical handlers /
+        /// ContinueScriptedRouting are non-terminal (0 here; the controller continues and
+        /// the eventual terminal effect owns the original-call count).
         /// </summary>
         public static int CountOriginalInvocations(CampaignCpuEffectKind effect)
         {
@@ -131,6 +162,9 @@ namespace YgoMaster
                 case CampaignCpuEffectKind.RestoreHumanThenContinue:
                 case CampaignCpuEffectKind.CommitApplied:
                 case CampaignCpuEffectKind.CommitIndeterminate:
+                case CampaignCpuEffectKind.HandleSelStand:
+                case CampaignCpuEffectKind.HandleLocation:
+                case CampaignCpuEffectKind.ContinueScriptedRouting:
                     return 0;
                 case CampaignCpuEffectKind.DisableAndBeginNativeLease:
                 case CampaignCpuEffectKind.ForwardOriginal:

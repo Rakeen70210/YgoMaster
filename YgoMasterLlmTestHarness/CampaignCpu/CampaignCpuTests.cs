@@ -20,6 +20,27 @@ namespace YgoMaster
             ScorerPriorityPicksG1TopAction();
             ScorerG2WhenTopAbsent();
             ScorerNoMatchAllZeroFallback();
+            OpeningSetSafetyChoosesAllowlistedDefensiveSet();
+            OpeningSetSafetyRequiresOwnedMainContext();
+            OpeningSetSafetyPreservesNonQualifyingFallbacks();
+            OpeningSetSafetyProjectsAndAuditsLiveBasicStats();
+            TributeNormalSummonSafetyDefersUnsafeContinuations();
+            ScriptedCommitSafetyOnlyAllowsProvenSingleStepLineage();
+            SafeContinuationSelectionSkipsUnsafeTopScoredEffect();
+            SafeContinuationSelectionAllowsTacticalPhaseExit();
+            SuccessiveMainRecapturePolicyRequiresSafeFreshProvenance();
+            SuccessiveMainRecapturePolicyFailsNativeOnUnsafeOrBoundedInputs();
+            SuccessiveMainTimeoutRefreshesOnSemanticProgress();
+            AbandonedSuccessiveMainChainBecomesSilentTerminalHold();
+            StableMainBoundaryRequiresTwoMatchingSysActSamples();
+            CpuThinkingIsNotARecaptureBoundary();
+            StableMainBoundaryDirectCommitKeepsCpuOwnership();
+            PositionSafetyRejectsDominatedBlueEyesTurnDefense();
+            PositionSafetyPreservesUnknownAndBeneficialDefense();
+            PositionSafetyDefaultsOffInScorer();
+            ExplicitPhaseExitIgnoresActionIdTieOrdering();
+            TacticalSnapshotProjectsModifiedStatsAndUnknownFaceDownThreats();
+            TacticalSnapshotPopulationFeedsPositionSafetyScorer();
             NonMainWindowIsNotScriptedG4();
             DeckFingerprintMismatchGateG5();
             ScorerDeterministicSameObservation();
@@ -54,6 +75,7 @@ namespace YgoMaster
             AlwaysNativeOwnedWindowUsesBeginFallback();
             RunEffectRouterMapsProgressGateAndCountsOriginals();
             RunEffectRouterMapsTransitionAndCommitOutcomes();
+            RunEffectPlanOrdersProductionBranches();
             ControlPolicyNeverOwnsMyId();
             PlayerTypeTransitionRequiresPositiveReadback();
             SoloCampaignModeGateAcceptsLiveSoloDuelsGameModeZero();
@@ -74,6 +96,10 @@ namespace YgoMaster
             FieldDiffDetectsSetTrapAndFaceChange();
             AuditSerializerDecisionIncludesFullLegalMenu();
             AuditSerializerDecisionEmitsMyIdAndGeneration();
+            AuditLifecycleContextIncludesOwnershipAndGeneration();
+            AuditFileStrictCapAcrossLaunches();
+            NativeCandidateTraceValidatesShapeAndCapturesWithoutMutation();
+            NativeTraceDiagnosticsClassifyActivationAndBoundInvocationProbe();
             // M5 fail-closed activation / pack / predicate hardening
             InvalidMyIdDoesNotResolveOwnedSeat();
             SeatOwnershipConfirmRequiresPositiveHumanReadback();
@@ -319,6 +345,18 @@ namespace YgoMaster
                 && pack.Priority[0].Prefer[0].HasCardId
                 && pack.Priority[0].Prefer[0].CardId == 12485,
                 "g1 top prefer is SummonSp Kaiser Vorse Raider 12485");
+            AssertTrue(
+                !pack.Policy.SuccessiveMainRecapture,
+                "successive Main remains pack-default off before live gates");
+            AssertTrue(
+                !pack.Policy.PositionSafetyEnabled,
+                "position safety remains pack-default off before live gates");
+            AssertEqual(
+                "battle_then_end",
+                pack.Policy.PhaseExitPolicy,
+                "explicit chapter phase exit policy");
+            AssertEqual(0, pack.Policy.AttackTurnRaw.Value, "calibrated Attack raw");
+            AssertEqual(1, pack.Policy.DefenseTurnRaw.Value, "calibrated Defense raw");
         }
 
         static CampaignCpuObservation ObservationFromFixtureDict(Dictionary<string, object> obsDict)
@@ -490,6 +528,51 @@ namespace YgoMaster
             };
         }
 
+        static CampaignCpuLegalAction Phase(int actionId, DuelPhase phase)
+        {
+            return new CampaignCpuLegalAction
+            {
+                ActionId = actionId,
+                Kind = LegalActionKind.MovePhase,
+                Phase = phase,
+                Label = phase + " Phase",
+            };
+        }
+
+        static CampaignCpuRulePack EmptyPack()
+        {
+            return new CampaignCpuRulePack
+            {
+                Policy = new CampaignCpuPackPolicy(),
+                Never = new List<CampaignCpuNeverRule>(),
+                Priority = new List<CampaignCpuPriorityRule>(),
+                FallbackScoring = new List<CampaignCpuFallbackRule>(),
+            };
+        }
+
+        static CampaignCpuProgressToken Tok(
+            int generation,
+            DuelViewType viewType,
+            int p1,
+            int p2,
+            int p3,
+            int acting,
+            int turn,
+            int phase,
+            string fingerprint)
+        {
+            return CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                generation,
+                viewType,
+                p1,
+                p2,
+                p3,
+                acting,
+                turn,
+                phase,
+                fingerprint);
+        }
+
         static void ScorerPriorityPicksG1TopAction()
         {
             // G1 fixture: live PR3 capture Main1 menu → SummonSp 12485 Kaiser Vorse Raider
@@ -565,6 +648,1244 @@ namespace YgoMaster
             CampaignCpuDecision d = CampaignCpuScorer.Decide(obs, pack);
             AssertEqual(CampaignCpuRoute.FallbackNative, d.Route, "G3 native");
             AssertEqual(Utils.GetValue<string>(exp, "reason"), d.Reason, "G3 reason");
+        }
+
+        static void OpeningSetSafetyChoosesAllowlistedDefensiveSet()
+        {
+            CampaignCpuRulePack pack = LoadOpeningSetSafetyPack();
+            CampaignCpuObservation obs = OpeningMasterObservation();
+
+            CampaignCpuDecision decision = CampaignCpuScorer.Decide(obs, pack);
+
+            AssertEqual(
+                DuelCommandType.SetMonst,
+                decision.Action.Command,
+                "opening Master chooses paired defensive Set");
+            AssertEqual(
+                "opening_position_safety",
+                decision.Reason,
+                "opening replacement reason");
+            AssertEqual(
+                "opening_defensive_set",
+                decision.RuleId,
+                "opening replacement rule");
+        }
+
+        static void OpeningSetSafetyRequiresOwnedMainContext()
+        {
+            CampaignCpuRulePack pack = LoadOpeningSetSafetyPack();
+
+            CampaignCpuObservation wrongActor = OpeningMasterObservation();
+            wrongActor.ActingPlayer = 0;
+            CampaignCpuDecision actorDecision =
+                CampaignCpuScorer.Decide(wrongActor, pack);
+            AssertEqual(
+                DuelCommandType.Summon,
+                actorDecision.Action.Command,
+                "non-owned actor cannot receive opening replacement");
+
+            CampaignCpuObservation wrongTurn = OpeningMasterObservation();
+            wrongTurn.TurnPlayer = 0;
+            CampaignCpuDecision turnDecision =
+                CampaignCpuScorer.Decide(wrongTurn, pack);
+            AssertEqual(
+                DuelCommandType.Summon,
+                turnDecision.Action.Command,
+                "non-owned turn cannot receive opening replacement");
+
+            CampaignCpuObservation nonMain = OpeningMasterObservation();
+            nonMain.IsMainPhaseWaitInput = false;
+            nonMain.WindowClass = "Unsupported";
+            CampaignCpuDecision nonMainDecision =
+                CampaignCpuScorer.Decide(nonMain, pack);
+            AssertEqual(
+                DuelCommandType.Summon,
+                nonMainDecision.Action.Command,
+                "non-Main observation cannot receive opening replacement");
+        }
+
+        static CampaignCpuRulePack LoadOpeningSetSafetyPack()
+        {
+            const string json = @"{
+              ""version"": 1,
+              ""chapter_id"": 11010078,
+              ""deck_hash"": ""sha256:d1ed3390a63030a78a6da913cf8436878a6e26e39f55dc1ec8e38dc7985e7835"",
+              ""policy"": {
+                ""on_no_match"": ""native_cpu"",
+                ""opening_set_safety_enabled"": true,
+                ""opening_set_safety_card_ids"": [12293]
+              },
+              ""never"": [],
+              ""priority"": [],
+              ""fallback_scoring"": [
+                {
+                  ""id"": ""prefer-summon"",
+                  ""match"": { ""command"": ""Summon"" },
+                  ""score"": 8
+                },
+                {
+                  ""id"": ""prefer-set-monst"",
+                  ""match"": { ""command"": ""SetMonst"" },
+                  ""score"": 4
+                },
+                {
+                  ""id"": ""penalize-early-end"",
+                  ""match"": { ""kind"": ""MovePhase"", ""phase"": ""End"" },
+                  ""score"": -20
+                }
+              ]
+            }";
+            return CampaignCpuRulePackLoader.LoadPackFromText(
+                json, "opening-set-safety", requireDeckHash: true);
+        }
+
+        static CampaignCpuObservation OpeningMasterObservation()
+        {
+            CampaignCpuLegalAction summon =
+                Cmd(0, DuelCommandType.Summon, 12293);
+            summon.Index = 3;
+            CampaignCpuLegalAction set =
+                Cmd(1, DuelCommandType.SetMonst, 12293);
+            set.Index = 3;
+            summon.BasicLevelKnown = true;
+            summon.BasicLevel = 1;
+            summon.BasicAtkKnown = true;
+            summon.BasicAtk = 300;
+            summon.BasicDefKnown = true;
+            summon.BasicDef = 1200;
+            set.BasicLevelKnown = true;
+            set.BasicLevel = 1;
+            set.BasicAtkKnown = true;
+            set.BasicAtk = 300;
+            set.BasicDefKnown = true;
+            set.BasicDef = 1200;
+
+            CampaignCpuObservation obs = MakeMainObs(
+                summon,
+                set,
+                Phase(2, DuelPhase.End));
+            obs.Turn = 0;
+            obs.SelfMonsterCount = 0;
+            obs.OppMonsterCount = 0;
+            obs.SelfHandCardIds.Clear();
+            obs.SelfHandCardIds.Add(12293);
+            return obs;
+        }
+
+        static void OpeningSetSafetyPreservesNonQualifyingFallbacks()
+        {
+            CampaignCpuRulePack disabled = LoadOpeningSetSafetyPack();
+            disabled.Policy.OpeningSetSafetyEnabled = false;
+            AssertOpeningPreservesSummon(
+                disabled,
+                OpeningMasterObservation(),
+                "flag off");
+
+            CampaignCpuRulePack notAllowlisted =
+                LoadOpeningSetSafetyPack();
+            notAllowlisted.Policy.OpeningSetSafetyCardIds.Clear();
+            AssertOpeningPreservesSummon(
+                notAllowlisted,
+                OpeningMasterObservation(),
+                "card not allowlisted");
+
+            CampaignCpuRulePack priority = LoadOpeningSetSafetyPack();
+            priority.Priority.Add(new CampaignCpuPriorityRule
+            {
+                Id = "explicit-face-up-plan",
+                Priority = 100,
+                ListIndex = 0,
+                Prefer = new List<CampaignCpuMatchSpec>
+                {
+                    new CampaignCpuMatchSpec
+                    {
+                        HasCommand = true,
+                        Command = DuelCommandType.Summon,
+                        HasCardId = true,
+                        CardId = 12293,
+                    },
+                },
+                ScoreBonus = 50,
+            });
+            CampaignCpuDecision explicitDecision =
+                CampaignCpuScorer.Decide(
+                    OpeningMasterObservation(),
+                    priority);
+            AssertEqual(
+                DuelCommandType.Summon,
+                explicitDecision.Action.Command,
+                "explicit priority is not overridden");
+            AssertEqual(
+                "explicit-face-up-plan",
+                explicitDecision.RuleId,
+                "explicit priority attribution retained");
+
+            CampaignCpuObservation later = OpeningMasterObservation();
+            later.Turn = 1;
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), later, "later turn");
+
+            CampaignCpuObservation occupied = OpeningMasterObservation();
+            occupied.SelfMonsterCount = 1;
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), occupied, "occupied field");
+
+            CampaignCpuObservation battle = OpeningMasterObservation();
+            battle.LegalActions.Add(Phase(3, DuelPhase.Battle));
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), battle, "Battle available");
+
+            CampaignCpuObservation unknown = OpeningMasterObservation();
+            unknown.LegalActions[0].BasicDefKnown = false;
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), unknown, "unknown DEF");
+
+            CampaignCpuObservation highLevel = OpeningMasterObservation();
+            highLevel.LegalActions[0].BasicLevel = 5;
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), highLevel, "high Level");
+
+            CampaignCpuObservation attackFavored =
+                OpeningMasterObservation();
+            attackFavored.LegalActions[0].BasicAtk = 1200;
+            attackFavored.LegalActions[0].BasicDef = 300;
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(),
+                attackFavored,
+                "ATK not below DEF");
+
+            CampaignCpuObservation noPair = OpeningMasterObservation();
+            noPair.LegalActions.RemoveAt(1);
+            AssertOpeningPreservesSummon(
+                LoadOpeningSetSafetyPack(), noPair, "paired Set absent");
+        }
+
+        static void AssertOpeningPreservesSummon(
+            CampaignCpuRulePack pack,
+            CampaignCpuObservation observation,
+            string label)
+        {
+            CampaignCpuDecision decision =
+                CampaignCpuScorer.Decide(observation, pack);
+            AssertEqual(
+                DuelCommandType.Summon,
+                decision.Action.Command,
+                label + " preserves prior Summon");
+            AssertTrue(
+                !string.Equals(
+                    decision.RuleId,
+                    "opening_defensive_set",
+                    StringComparison.Ordinal),
+                label + " has no opening override attribution");
+        }
+
+        static void OpeningSetSafetyProjectsAndAuditsLiveBasicStats()
+        {
+            CampaignCpuObservation obs = OpeningMasterObservation();
+            for (int i = 0; i < obs.LegalActions.Count; i++)
+            {
+                CampaignCpuLegalAction action = obs.LegalActions[i];
+                action.BasicLevelKnown = false;
+                action.BasicAtkKnown = false;
+                action.BasicDefKnown = false;
+            }
+            var query = new FakeCampaignCpuCardBasicStatsQuery
+            {
+                Level = 1,
+                Atk = 300,
+                Def = 1200,
+            };
+            CampaignCpuLegalActionBasicStatsBuilder.Populate(
+                query,
+                obs);
+
+            AssertTrue(
+                obs.LegalActions[0].BasicLevelKnown,
+                "Summon Level projected");
+            AssertEqual(
+                300,
+                obs.LegalActions[0].BasicAtk,
+                "Summon ATK projected");
+            AssertEqual(
+                1200,
+                obs.LegalActions[1].BasicDef,
+                "paired Set DEF projected");
+            AssertEqual(
+                2,
+                query.ReadCount,
+                "only normal Summon/Set actions query BasicVal");
+
+            CampaignCpuDecision decision = CampaignCpuScorer.Decide(
+                obs,
+                LoadOpeningSetSafetyPack());
+            string line = CampaignCpuAuditSerializer.SerializeDecision(
+                29,
+                decision,
+                obs,
+                shadowOnly: false);
+            AssertTrue(
+                line.Contains("\"basic_level\":1")
+                || line.Contains("\"basic_level\": 1"),
+                "audit emits Basic Level");
+            AssertTrue(
+                line.Contains("\"basic_atk\":300")
+                || line.Contains("\"basic_atk\": 300"),
+                "audit emits Basic ATK");
+            AssertTrue(
+                line.Contains("\"basic_def\":1200")
+                || line.Contains("\"basic_def\": 1200"),
+                "audit emits Basic DEF");
+            AssertTrue(
+                line.Contains("Command|Summon|12293|13|3|"),
+                "audit emits replaced Summon identity");
+        }
+
+        sealed class FakeCampaignCpuCardBasicStatsQuery :
+            ICampaignCpuCardBasicStatsQuery
+        {
+            public int Level;
+            public int Atk;
+            public int Def;
+            public int ReadCount;
+
+            public bool TryReadCardBasicStats(
+                int player,
+                int position,
+                int index,
+                out int level,
+                out int atk,
+                out int def)
+            {
+                ReadCount++;
+                level = Level;
+                atk = Atk;
+                def = Def;
+                return true;
+            }
+        }
+
+        static void TributeNormalSummonSafetyDefersUnsafeContinuations()
+        {
+            CampaignCpuLegalAction summon = Cmd(1, DuelCommandType.Summon, 12692);
+            bool levelSix = CampaignCpuSummonSafety.ShouldDeferToNative(
+                summon, true, 6);
+            bool levelFour = CampaignCpuSummonSafety.ShouldDeferToNative(
+                summon, true, 4);
+            bool unknownLevel = CampaignCpuSummonSafety.ShouldDeferToNative(
+                summon, false, 0);
+            CampaignCpuLegalAction setMonster = Cmd(
+                2, DuelCommandType.SetMonst, 12692);
+            bool levelSixSet = CampaignCpuSummonSafety.ShouldDeferToNative(
+                setMonster, true, 6);
+            CampaignCpuLegalAction special = Cmd(
+                3, DuelCommandType.SummonSp, 12485);
+            bool specialUnknown = CampaignCpuSummonSafety.ShouldDeferToNative(
+                special, false, 0);
+
+            AssertTrue(levelSix, "level 5+ normal summon defers to native");
+            AssertTrue(!levelFour, "level 1-4 normal summon remains scriptable");
+            AssertTrue(unknownLevel, "unknown normal summon level fails native");
+            AssertTrue(levelSixSet, "level 5+ monster set also defers to native");
+            AssertTrue(!specialUnknown, "special summon is outside tribute guard");
+        }
+
+        static void ScriptedCommitSafetyOnlyAllowsProvenSingleStepLineage()
+        {
+            CampaignCpuLegalAction pandemicDragonEffect =
+                Cmd(1, DuelCommandType.Action, 12489);
+            CampaignCpuLegalAction specialSummon =
+                Cmd(2, DuelCommandType.SummonSp, 12485);
+            CampaignCpuLegalAction turnDefense =
+                Cmd(3, DuelCommandType.TurnDef, 4007);
+            CampaignCpuLegalAction lowLevelSummon =
+                Cmd(4, DuelCommandType.Summon, 4747);
+            CampaignCpuLegalAction lowLevelSet =
+                Cmd(5, DuelCommandType.SetMonst, 4747);
+            CampaignCpuLegalAction spellTrapSet =
+                Cmd(7, DuelCommandType.Set, 12491);
+            CampaignCpuLegalAction tributeSummon =
+                Cmd(6, DuelCommandType.Summon, 12692);
+
+            AssertTrue(
+                CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    pandemicDragonEffect, false, 0),
+                "Pandemic Dragon effect selection must be native before commit");
+            AssertTrue(
+                CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    specialSummon, false, 0),
+                "special summon continuation remains native");
+            AssertTrue(
+                CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    turnDefense, false, 0),
+                "position command remains native until proven");
+            AssertTrue(
+                !CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    lowLevelSummon, true, 4),
+                "level 1-4 normal summon is proven scripted lineage");
+            AssertTrue(
+                !CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    lowLevelSet, true, 4),
+                "level 1-4 monster set is proven scripted lineage");
+            AssertTrue(
+                !CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    spellTrapSet, false, 0),
+                "single-step Spell/Trap set is proven scripted lineage");
+            AssertTrue(
+                CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    tributeSummon, true, 8),
+                "tribute summon remains native");
+        }
+
+        static void SafeContinuationSelectionSkipsUnsafeTopScoredEffect()
+        {
+            CampaignCpuRulePack pack = LoadProductPack();
+            CampaignCpuObservation obs = MakeMainObs(
+                Cmd(0, DuelCommandType.Action, 10590),
+                Cmd(1, DuelCommandType.Set, 12491));
+            obs.SelfHandCardIds.Clear();
+            obs.SelfHandCardIds.AddRange(new[] { 10590, 12491 });
+
+            CampaignCpuSafeContinuationSelection result =
+                CampaignCpuSafeContinuationSelector.Decide(
+                    obs,
+                    pack,
+                    predicateEvalFailed: false,
+                    appliedDecisionCount: 0,
+                    resolveCardLevel: action => 0);
+
+            AssertEqual(
+                CampaignCpuRoute.RuleCommit,
+                result.Decision.Route,
+                "safe lower-ranked action remains scriptable");
+            AssertEqual(
+                DuelCommandType.Set,
+                result.Decision.Action.Command,
+                "unsafe top-scored effect is skipped for proven Set");
+            AssertEqual(
+                "prefer-set",
+                result.Decision.RuleId,
+                "safe action retains scorer rule attribution");
+            AssertTrue(
+                result.ExcludedActionIdentities.Contains(
+                    obs.LegalActions[0].CanonicalIdentity),
+                "unsafe effect exclusion is auditable");
+        }
+
+        static void SuccessiveMainRecapturePolicyRequiresSafeFreshProvenance()
+        {
+            CampaignCpuLegalAction summon = Cmd(3, DuelCommandType.Summon, 4747);
+            CampaignCpuActionChain chain = CampaignCpuActionChainFactory.Create(
+                duelGeneration: 8,
+                originViewSeq: 100,
+                originTurn: 3,
+                originTurnPlayer: 1,
+                originPhase: (int)DuelPhase.Main1,
+                action: summon,
+                ruleId: "prefer-summon",
+                levelKnown: true,
+                level: 4,
+                progressToken: Tok(
+                    8, DuelViewType.WaitInput, (int)DuelMenuActType.MainPhase,
+                    0, 2, 1, 3, (int)DuelPhase.Main1, "summon-menu"),
+                startedUtc: new DateTime(2026, 7, 27, 3, 0, 0, DateTimeKind.Utc));
+            AssertEqual(
+                CampaignCpuContinuationEligibility.ScriptedResponseContinuation,
+                chain.Eligibility,
+                "simple low-level normal summon is recapturable provenance");
+            AssertEqual(
+                "summon-menu",
+                chain.OriginLegalActionFingerprint,
+                "origin menu fingerprint retained across native continuation");
+            chain.NativeResponseSeen = true;
+
+            var input = new CampaignCpuRecapturePolicyInput
+                {
+                    Enabled = true,
+                    Chain = chain,
+                    DuelGeneration = 8,
+                    CurrentViewSeq = 110,
+                    CurrentProgressToken = Tok(
+                        8, DuelViewType.WaitInput,
+                        (int)DuelMenuActType.MainPhase, 0, 0, 1, 3,
+                        (int)DuelPhase.Main1, "stable-main-menu"),
+                    IsStableMainMenuBoundary = true,
+                    OwnedIsHuman = 0,
+                    MyIsHuman = 1,
+                    DoCommandUser = 0,
+                    RunDialogUser = 0,
+                    Turn = 3,
+                    TurnPlayer = 1,
+                    Phase = (int)DuelPhase.Main1,
+                    OwnedSeat = 1,
+                    MyId = 0,
+                    ResponseWindowInFlight = false,
+                    NowUtc = new DateTime(2026, 7, 27, 3, 0, 1, DateTimeKind.Utc),
+                    MaxAttemptsPerChain = 2,
+                    MaxAttemptsPerTurn = 3,
+                    TimeoutMs = 5000,
+                };
+            CampaignCpuRecapturePolicyResult result =
+                CampaignCpuRecapturePolicy.Evaluate(input);
+
+            AssertEqual(
+                CampaignCpuRecaptureDecision.CommitStableOwnedMain,
+                result.Decision,
+                "stable owned Main menu requests pending recapture");
+            AssertEqual(
+                "stable_owned_main_menu",
+                result.Reason,
+                "positive recapture reason");
+
+            input.CurrentProgressToken = Tok(
+                8, DuelViewType.WaitInput,
+                (int)DuelMenuActType.MainPhase, 0, 0, 1, 3,
+                (int)DuelPhase.Main1, "summon-menu");
+            CampaignCpuRecapturePolicyResult staleMenu =
+                CampaignCpuRecapturePolicy.Evaluate(input);
+            AssertEqual(
+                CampaignCpuRecaptureDecision.HoldNative,
+                staleMenu.Decision,
+                "origin legal menu cannot masquerade as a new Main boundary");
+            AssertEqual(
+                "legal_menu_not_changed_from_origin",
+                staleMenu.Reason,
+                "origin-menu denial is explicit");
+        }
+
+        static void SuccessiveMainRecapturePolicyFailsNativeOnUnsafeOrBoundedInputs()
+        {
+            CampaignCpuLegalAction special = Cmd(4, DuelCommandType.SummonSp, 12485);
+            CampaignCpuActionChain unsafeChain = CampaignCpuActionChainFactory.Create(
+                8, 100, 3, 1, (int)DuelPhase.Main1, special, "prefer-special",
+                true, 4,
+                Tok(8, DuelViewType.WaitInput, 2, 0, 2, 1, 3, 2, "special"),
+                new DateTime(2026, 7, 27, 3, 0, 0, DateTimeKind.Utc));
+            AssertEqual(
+                CampaignCpuContinuationEligibility.UnsafeContinuation,
+                unsafeChain.Eligibility,
+                "special summon is unsafe provenance by default");
+
+            CampaignCpuRecapturePolicyInput input = new CampaignCpuRecapturePolicyInput
+            {
+                Enabled = true,
+                Chain = unsafeChain,
+                DuelGeneration = 8,
+                CurrentViewSeq = 110,
+                CurrentProgressToken = Tok(
+                    8, DuelViewType.CpuThinking, 1, 0, 0, 1, 3, 2, "cpu"),
+                ViewType = DuelViewType.CpuThinking,
+                Param1 = 1,
+                Turn = 3,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+                OwnedSeat = 1,
+                MyId = 0,
+                NowUtc = new DateTime(2026, 7, 27, 3, 0, 1, DateTimeKind.Utc),
+                MaxAttemptsPerChain = 2,
+                MaxAttemptsPerTurn = 3,
+                TimeoutMs = 5000,
+            };
+            CampaignCpuRecapturePolicyResult unsafeResult =
+                CampaignCpuRecapturePolicy.Evaluate(input);
+            AssertEqual(
+                CampaignCpuRecaptureDecision.AbandonRecaptureForTurn,
+                unsafeResult.Decision,
+                "unsafe lineage abandons recapture");
+            AssertEqual("unsafe_lineage", unsafeResult.Reason, "unsafe deny reason");
+
+            unsafeChain.Eligibility =
+                CampaignCpuContinuationEligibility.ScriptedResponseContinuation;
+            unsafeChain.NativeResponseSeen = true;
+            unsafeChain.RecaptureAttempts = 2;
+            CampaignCpuRecapturePolicyResult capped =
+                CampaignCpuRecapturePolicy.Evaluate(input);
+            AssertEqual(
+                CampaignCpuRecaptureDecision.AbandonRecaptureForTurn,
+                capped.Decision,
+                "per-chain cap fails native");
+            AssertEqual("chain_attempt_cap", capped.Reason, "cap deny reason");
+
+            unsafeChain.RecaptureAttempts = 0;
+            input.DuelGeneration = 9;
+            CampaignCpuRecapturePolicyResult wrongGeneration =
+                CampaignCpuRecapturePolicy.Evaluate(input);
+            AssertEqual(
+                CampaignCpuRecaptureDecision.ClearAtPhaseOrTurnBoundary,
+                wrongGeneration.Decision,
+                "generation mismatch clears lineage");
+            AssertEqual(
+                "generation_mismatch",
+                wrongGeneration.Reason,
+                "generation deny reason");
+        }
+
+        static void SuccessiveMainTimeoutRefreshesOnSemanticProgress()
+        {
+            DateTime started =
+                new DateTime(2026, 7, 29, 19, 11, 49, DateTimeKind.Utc);
+            CampaignCpuActionChain chain = CampaignCpuActionChainFactory.Create(
+                8, 427, 2, 1, (int)DuelPhase.Main1,
+                Cmd(6, DuelCommandType.Summon, 12292),
+                "g1-opening-special-or-action",
+                true,
+                1,
+                Tok(8, DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                    (int)DuelPhase.Main1, "origin"),
+                started);
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            sm.ArmActionChain(chain);
+
+            bool refreshed = sm.ObserveActionChainSemanticProgress(
+                Tok(8, DuelViewType.RunDialog, 4, 0, 0, 0, 2,
+                    (int)DuelPhase.Main1, null),
+                started.AddSeconds(6));
+            AssertTrue(refreshed, "fresh animation view refreshes chain progress");
+            chain.NativeResponseSeen = true;
+
+            CampaignCpuRecapturePolicyResult result =
+                CampaignCpuRecapturePolicy.Evaluate(
+                    new CampaignCpuRecapturePolicyInput
+                    {
+                        Enabled = true,
+                        Chain = chain,
+                        DuelGeneration = 8,
+                        CurrentViewSeq = 466,
+                        CurrentProgressToken = Tok(
+                            8, DuelViewType.WaitInput,
+                            (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                            (int)DuelPhase.Main1, "changed"),
+                        IsStableMainMenuBoundary = true,
+                        OwnedIsHuman = 0,
+                        MyIsHuman = 1,
+                        Turn = 2,
+                        TurnPlayer = 1,
+                        Phase = (int)DuelPhase.Main1,
+                        OwnedSeat = 1,
+                        MyId = 0,
+                        NowUtc = started.AddSeconds(9),
+                        TimeoutMs = 5000,
+                    });
+            AssertEqual(
+                CampaignCpuRecaptureDecision.CommitStableOwnedMain,
+                result.Decision,
+                "stable menu inside refreshed inactivity deadline commits");
+
+            result = CampaignCpuRecapturePolicy.Evaluate(
+                new CampaignCpuRecapturePolicyInput
+                {
+                    Enabled = true,
+                    Chain = chain,
+                    DuelGeneration = 8,
+                    CurrentViewSeq = 467,
+                    CurrentProgressToken = Tok(
+                        8, DuelViewType.WaitInput,
+                        (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                        (int)DuelPhase.Main1, "changed-again"),
+                    IsStableMainMenuBoundary = true,
+                    OwnedIsHuman = 0,
+                    MyIsHuman = 1,
+                    Turn = 2,
+                    TurnPlayer = 1,
+                    Phase = (int)DuelPhase.Main1,
+                    OwnedSeat = 1,
+                    MyId = 0,
+                    NowUtc = started.AddSeconds(12),
+                    TimeoutMs = 5000,
+                });
+            AssertEqual(
+                CampaignCpuRecaptureDecision.AbandonRecaptureForTurn,
+                result.Decision,
+                "true five-second semantic inactivity still times out");
+            AssertEqual("recapture_timeout", result.Reason, "inactivity timeout reason");
+        }
+
+        static void AbandonedSuccessiveMainChainBecomesSilentTerminalHold()
+        {
+            CampaignCpuActionChain chain = CampaignCpuActionChainFactory.Create(
+                8, 427, 2, 1, (int)DuelPhase.Main1,
+                Cmd(6, DuelCommandType.Summon, 12292),
+                "prefer-summon",
+                true,
+                1,
+                Tok(8, DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                    (int)DuelPhase.Main1, "origin"),
+                DateTime.UtcNow);
+            chain.Abandoned = true;
+            chain.AbandonReason = "recapture_timeout";
+
+            CampaignCpuRecapturePolicyResult result =
+                CampaignCpuRecapturePolicy.Evaluate(
+                    new CampaignCpuRecapturePolicyInput
+                    {
+                        Enabled = true,
+                        Chain = chain,
+                        DuelGeneration = 8,
+                        CurrentViewSeq = 466,
+                        Turn = 2,
+                        TurnPlayer = 1,
+                        Phase = (int)DuelPhase.Main1,
+                        OwnedSeat = 1,
+                        MyId = 0,
+                    });
+            AssertEqual(
+                CampaignCpuRecaptureDecision.HoldNative,
+                result.Decision,
+                "abandoned chain is terminal and does not re-abandon");
+            AssertEqual(
+                "already_abandoned",
+                result.Reason,
+                "terminal hold has non-error suppression reason");
+        }
+
+        static void StableMainBoundaryRequiresTwoMatchingSysActSamples()
+        {
+            var tracker = new CampaignCpuStableMainBoundaryTracker();
+            var sample = new CampaignCpuStableMainBoundarySample
+            {
+                DuelGeneration = 8,
+                Turn = 3,
+                Phase = (int)DuelPhase.Main1,
+                TurnPlayer = 1,
+                OwnedSeat = 1,
+                OwnedIsHuman = 0,
+                MyIsHuman = 1,
+                DoCommandUser = 0,
+                RunDialogUser = 0,
+                LegalActionFingerprint =
+                    "Command|Summon|4747|13|0|;MovePhase|End|0|0|5|",
+            };
+
+            AssertTrue(
+                !tracker.Observe(sample),
+                "first pre-SysAct menu sample only primes stability");
+            AssertTrue(
+                tracker.Observe(sample),
+                "second identical pre-SysAct menu sample proves stability");
+
+            sample.OwnedIsHuman = 1;
+            AssertTrue(
+                !tracker.Observe(sample),
+                "lost CPU ownership resets the candidate");
+            sample.OwnedIsHuman = 0;
+            AssertTrue(
+                !tracker.Observe(sample),
+                "restored CPU-owned sample must prime again");
+        }
+
+        static void CpuThinkingIsNotARecaptureBoundary()
+        {
+            CampaignCpuActionChain chain = CampaignCpuActionChainFactory.Create(
+                8, 100, 3, 1, (int)DuelPhase.Main1,
+                Cmd(3, DuelCommandType.Summon, 4747),
+                "prefer-summon",
+                true,
+                4,
+                Tok(8, DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase, 0, 0, 1, 3,
+                    (int)DuelPhase.Main1, "origin"),
+                new DateTime(2026, 7, 28, 3, 0, 0, DateTimeKind.Utc));
+            chain.NativeResponseSeen = true;
+            chain.CpuThinkingCount = 2;
+
+            CampaignCpuRecapturePolicyResult result =
+                CampaignCpuRecapturePolicy.Evaluate(
+                    new CampaignCpuRecapturePolicyInput
+                    {
+                        Enabled = true,
+                        Chain = chain,
+                        DuelGeneration = 8,
+                        CurrentViewSeq = 110,
+                        CurrentProgressToken = Tok(
+                            8, DuelViewType.CpuThinking, 1, 0, 0, 1, 3,
+                            (int)DuelPhase.Main1, "cpu-thinking"),
+                        ViewType = DuelViewType.CpuThinking,
+                        Param1 = 1,
+                        Turn = 3,
+                        TurnPlayer = 1,
+                        Phase = (int)DuelPhase.Main1,
+                        OwnedSeat = 1,
+                        MyId = 0,
+                        IsStableMainMenuBoundary = false,
+                        OwnedIsHuman = 0,
+                        MyIsHuman = 1,
+                        DoCommandUser = 0,
+                        RunDialogUser = 0,
+                        NowUtc = new DateTime(
+                            2026, 7, 28, 3, 0, 1, DateTimeKind.Utc),
+                    });
+
+            AssertEqual(
+                CampaignCpuRecaptureDecision.HoldNative,
+                result.Decision,
+                "CpuThinking callback remains native");
+            AssertEqual(
+                "stable_main_menu_required",
+                result.Reason,
+                "closed callback boundary is explicit");
+        }
+
+        static void StableMainBoundaryDirectCommitKeepsCpuOwnership()
+        {
+            var sm = new SoloTemporaryCpuStateMachine();
+            sm.ActivateHumanOwned();
+            sm.ArmActionChain(CampaignCpuActionChainFactory.Create(
+                4, 10, 2, 1, (int)DuelPhase.Main1,
+                Cmd(1, DuelCommandType.Summon, 4747),
+                "prefer-summon",
+                true,
+                4,
+                Tok(4, DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase, 0, 0, 1, 2,
+                    (int)DuelPhase.Main1, "origin"),
+                DateTime.UtcNow));
+            sm.BeginNativeLease(
+                "dual_human_myid_response_hold",
+                4,
+                12,
+                Tok(4, DuelViewType.RunDialog, 2, 0, 0, 0, 2,
+                    (int)DuelPhase.Main1, "dialog"),
+                1,
+                DateTime.UtcNow);
+            sm.MarkNativeResponseForwarded();
+
+            int commits = 0;
+            CampaignCpuStableMainDirectCommitResult result =
+                CampaignCpuStableMainDirectCommit.Execute(
+                    sm,
+                    boundaryViewSeq: 20,
+                    commit: () =>
+                    {
+                        commits++;
+                        AssertEqual(
+                            SoloTemporaryCpuState.NativeLease,
+                            sm.State,
+                            "direct commit occurs while CPU lease stays authoritative");
+                        return CampaignCpuCommitOutcome.Applied;
+                    });
+
+            AssertEqual(1, commits, "one direct commit");
+            AssertEqual(
+                CampaignCpuCommitOutcome.Applied,
+                result.CommitOutcome,
+                "applied result");
+            AssertTrue(result.Applied, "direct transport reports applied");
+            AssertEqual(
+                SoloTemporaryCpuState.NativeLease,
+                sm.State,
+                "next SysAct runs with CPU ownership");
+            AssertEqual(
+                1,
+                sm.ActiveActionChain.RecaptureAttempts,
+                "stable direct commit consumes one bounded attempt");
+            AssertEqual(
+                20UL,
+                sm.ActiveActionChain.LastRecaptureViewSeq,
+                "stable direct-commit boundary sequence retained");
+        }
+
+        static void PositionSafetyRejectsDominatedBlueEyesTurnDefense()
+        {
+            CampaignCpuObservation obs = TacticalObservation(
+                ownCardId: 4007,
+                ownAtk: 3000,
+                ownDef: 2500,
+                ownIsAttack: true,
+                opposingAtk: 3000);
+            CampaignCpuLegalAction turnDef = Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            CampaignCpuLegalAction battle = Phase(1, DuelPhase.Battle);
+            CampaignCpuLegalAction end = Phase(2, DuelPhase.End);
+            obs.LegalActions.Add(turnDef);
+            obs.LegalActions.Add(battle);
+            obs.LegalActions.Add(end);
+
+            CampaignCpuPositionSafetyResult result =
+                CampaignCpuPositionSafety.FilterDominatedPositionChanges(
+                    obs,
+                    obs.LegalActions,
+                    new List<int>());
+            AssertTrue(result.RemovedAnyAction, "Blue-Eyes TurnDef removed");
+            AssertEqual("dominated_turn_defense", result.Reason, "Blue-Eyes reason");
+            AssertEqual(2, result.FilteredActions.Count, "Battle and End remain");
+            AssertTrue(
+                !result.FilteredActions.Exists(a => a.Command == DuelCommandType.TurnDef),
+                "dominated TurnDef absent from filtered output");
+        }
+
+        static void SafeContinuationSelectionAllowsTacticalPhaseExit()
+        {
+            CampaignCpuObservation obs = TacticalObservation(
+                ownCardId: 4007,
+                ownAtk: 3000,
+                ownDef: 2500,
+                ownIsAttack: true,
+                opposingAtk: 3000);
+            CampaignCpuLegalAction turnDef =
+                Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            obs.LegalActions.Add(turnDef);
+            obs.LegalActions.Add(Cmd(1, DuelCommandType.Action, 8344));
+            obs.LegalActions.Add(Cmd(2, DuelCommandType.Action, 0));
+            obs.LegalActions.Add(Phase(1, DuelPhase.Battle));
+            obs.LegalActions.Add(Phase(2, DuelPhase.End));
+
+            CampaignCpuRulePack pack = EmptyPack();
+            pack.Policy.OnNoMatch = "native_cpu";
+            pack.Policy.PositionSafetyEnabled = true;
+            pack.Policy.PhaseExitPolicy = "battle_then_end";
+            pack.FallbackScoring.Add(new CampaignCpuFallbackRule
+            {
+                Id = "prefer-action",
+                Match = new CampaignCpuMatchSpec
+                {
+                    HasCommand = true,
+                    Command = DuelCommandType.Action,
+                },
+                Score = 10,
+            });
+
+            CampaignCpuSafeContinuationSelection selection =
+                CampaignCpuSafeContinuationSelector.Decide(
+                    obs,
+                    pack,
+                    predicateEvalFailed: false,
+                    appliedDecisionCount: 0,
+                    resolveCardLevel: action => 0);
+
+            AssertEqual(
+                CampaignCpuRoute.RuleCommit,
+                selection.Decision.Route,
+                "tactical phase exit remains directly committable");
+            AssertEqual(
+                DuelPhase.Battle,
+                selection.Decision.Action.Phase,
+                "known attacker exits to Battle after dominated TurnDef");
+            AssertEqual(
+                "dominated_turn_defense",
+                selection.Decision.TacticalFilterReason,
+                "direct selection retains dominated-position audit");
+            AssertTrue(
+                selection.SelectedTerminalPhaseExit,
+                "selector marks the phase exit safe for terminal direct commit");
+        }
+
+        static void PositionSafetyPreservesUnknownAndBeneficialDefense()
+        {
+            CampaignCpuObservation beneficial = TacticalObservation(
+                ownCardId: 4007,
+                ownAtk: 2000,
+                ownDef: 3000,
+                ownIsAttack: true,
+                opposingAtk: 2500);
+            CampaignCpuLegalAction turnDef = Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            beneficial.LegalActions.Add(turnDef);
+            CampaignCpuPositionSafetyResult allowed =
+                CampaignCpuPositionSafety.FilterDominatedPositionChanges(
+                    beneficial, beneficial.LegalActions, new List<int>());
+            AssertTrue(!allowed.RemovedAnyAction, "beneficial Defense remains legal");
+
+            beneficial.TacticalMonsters[0].HasDef = false;
+            CampaignCpuPositionSafetyResult unknown =
+                CampaignCpuPositionSafety.FilterDominatedPositionChanges(
+                    beneficial, beneficial.LegalActions, new List<int>());
+            AssertTrue(!unknown.RemovedAnyAction, "unknown DEF cannot prove domination");
+
+            beneficial.TacticalMonsters[0].HasDef = true;
+            beneficial.TacticalMonsters[0].Def = 1000;
+            CampaignCpuPositionSafetyResult excepted =
+                CampaignCpuPositionSafety.FilterDominatedPositionChanges(
+                    beneficial, beneficial.LegalActions, new List<int> { 4007 });
+            AssertTrue(!excepted.RemovedAnyAction, "pack card exception overrides guard");
+        }
+
+        static void PositionSafetyDefaultsOffInScorer()
+        {
+            CampaignCpuObservation obs = TacticalObservation(
+                ownCardId: 4007,
+                ownAtk: 3000,
+                ownDef: 2500,
+                ownIsAttack: true,
+                opposingAtk: 3000);
+            CampaignCpuLegalAction turnDef =
+                Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            obs.LegalActions.Add(turnDef);
+            obs.LegalActions.Add(Phase(1, DuelPhase.End));
+
+            CampaignCpuRulePack pack = EmptyPack();
+            pack.Policy.OnNoMatch = "first_legal";
+            pack.Policy.PhaseExitPolicy = "battle_then_end";
+            CampaignCpuDecision decision = CampaignCpuScorer.Decide(obs, pack);
+            AssertEqual(
+                turnDef.CanonicalIdentity,
+                decision.Action.CanonicalIdentity,
+                "default-off tactical switch preserves legacy scorer behavior");
+            AssertEqual(
+                0,
+                decision.TacticalFilteredActionIdentities.Count,
+                "default-off tactical switch audits no behavior filter");
+        }
+
+        static void ExplicitPhaseExitIgnoresActionIdTieOrdering()
+        {
+            CampaignCpuObservation obs = TacticalObservation(
+                ownCardId: 4007,
+                ownAtk: 3000,
+                ownDef: 2500,
+                ownIsAttack: true,
+                opposingAtk: 3000);
+            CampaignCpuLegalAction turnDef = Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            obs.LegalActions.Add(turnDef);
+            obs.LegalActions.Add(Phase(99, DuelPhase.Battle));
+            obs.LegalActions.Add(Phase(1, DuelPhase.End));
+            CampaignCpuRulePack pack = EmptyPack();
+            pack.Policy.OnNoMatch = "native_cpu";
+            pack.Policy.PositionSafetyEnabled = true;
+            pack.Policy.PhaseExitPolicy = "battle_then_end";
+
+            CampaignCpuDecision battle = CampaignCpuScorer.Decide(obs, pack);
+            AssertEqual(CampaignCpuRoute.RuleCommit, battle.Route, "explicit phase commit");
+            AssertEqual(DuelPhase.Battle, battle.Action.Phase, "known attacker chooses Battle");
+            AssertEqual("phase_exit_battle", battle.RuleId, "named Battle fallback");
+
+            obs.LegalActions.RemoveAll(
+                a => a.Kind == LegalActionKind.MovePhase && a.Phase == DuelPhase.Battle);
+            CampaignCpuDecision end = CampaignCpuScorer.Decide(obs, pack);
+            AssertEqual(DuelPhase.End, end.Action.Phase, "Battle unavailable chooses End");
+            AssertEqual("phase_exit_end", end.RuleId, "named End fallback");
+        }
+
+        static CampaignCpuObservation TacticalObservation(
+            int ownCardId,
+            int ownAtk,
+            int ownDef,
+            bool ownIsAttack,
+            int opposingAtk)
+        {
+            var obs = new CampaignCpuObservation
+            {
+                OwnedSeat = 1,
+                MyId = 0,
+                ActingPlayer = 1,
+                Turn = 3,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+                IsMainPhaseWaitInput = true,
+            };
+            obs.TacticalMonsters.Add(new CampaignCpuMonsterTacticalState
+            {
+                Player = 1,
+                Position = 2,
+                Index = 0,
+                CardId = ownCardId,
+                FaceKnown = true,
+                FaceUp = true,
+                TurnKnown = true,
+                IsAttack = ownIsAttack,
+                IsDefense = !ownIsAttack,
+                HasAtk = true,
+                Atk = ownAtk,
+                HasDef = true,
+                Def = ownDef,
+            });
+            obs.TacticalMonsters.Add(new CampaignCpuMonsterTacticalState
+            {
+                Player = 0,
+                Position = 2,
+                Index = 0,
+                CardId = 9999,
+                FaceKnown = true,
+                FaceUp = true,
+                HasAtk = true,
+                Atk = opposingAtk,
+            });
+            return obs;
+        }
+
+        static void TacticalSnapshotProjectsModifiedStatsAndUnknownFaceDownThreats()
+        {
+            var query = new FakeCampaignCpuTacticalQuery();
+            query.Add(1, 2, 0, 41, 4007, face: 1, turn: 11, atk: 3200, def: 2500);
+            query.Add(0, 2, 0, 42, 9999, face: 1, turn: 11, atk: 3000, def: 3000);
+            query.Add(0, 3, 0, 43, 8888, face: 0, turn: 22, atk: 5000, def: 5000);
+
+            List<CampaignCpuMonsterTacticalState> states =
+                CampaignCpuTacticalSnapshotBuilder.Build(
+                    query,
+                    ownedSeat: 1,
+                    attackTurnRaw: 11,
+                    defenseTurnRaw: 22);
+            AssertEqual(3, states.Count, "all monster-zone rows projected");
+            CampaignCpuMonsterTacticalState own =
+                states.Find(m => m.Player == 1 && m.CardId == 4007);
+            AssertTrue(own != null, "owned Blue-Eyes projected");
+            AssertEqual(3200, own.Atk, "live modified ATK retained");
+            AssertEqual(2500, own.Def, "live modified DEF retained");
+            AssertTrue(own.TurnKnown && own.IsAttack, "configured raw stance mapped");
+
+            CampaignCpuMonsterTacticalState hidden =
+                states.Find(m => m.Player == 0 && m.CardId == 8888);
+            AssertTrue(hidden != null && hidden.FaceKnown && !hidden.FaceUp, "face-down retained");
+            AssertTrue(
+                !hidden.HasAtk && !hidden.HasDef,
+                "face-down opponent stats not invented from local privileged reads");
+
+            states = CampaignCpuTacticalSnapshotBuilder.Build(
+                query,
+                ownedSeat: 1,
+                attackTurnRaw: null,
+                defenseTurnRaw: null);
+            own = states.Find(m => m.Player == 1 && m.CardId == 4007);
+            AssertTrue(!own.TurnKnown, "uncalibrated raw stance remains unknown");
+            AssertEqual(11, own.TurnRaw, "raw stance still audited");
+        }
+
+        static void TacticalSnapshotPopulationFeedsPositionSafetyScorer()
+        {
+            var query = new FakeCampaignCpuTacticalQuery();
+            query.Add(1, 2, 0, 41, 4007, face: 1, turn: 0, atk: 3000, def: 2500);
+            query.Add(0, 2, 0, 42, 9999, face: 1, turn: 0, atk: 3000, def: 3000);
+
+            var observation = new CampaignCpuObservation
+            {
+                OwnedSeat = 1,
+                ActingPlayer = 1,
+                TurnPlayer = 1,
+                Phase = (int)DuelPhase.Main1,
+                IsMainPhaseWaitInput = true,
+            };
+            CampaignCpuLegalAction turnDef =
+                Cmd(0, DuelCommandType.TurnDef, 4007);
+            turnDef.Player = 1;
+            turnDef.Position = 2;
+            turnDef.Index = 0;
+            observation.LegalActions.Add(turnDef);
+            observation.LegalActions.Add(Phase(1, DuelPhase.End));
+
+            CampaignCpuRulePack pack = EmptyPack();
+            pack.Policy.OnNoMatch = "first_legal";
+            pack.Policy.PositionSafetyEnabled = true;
+            pack.Policy.PhaseExitPolicy = "battle_then_end";
+            pack.Policy.AttackTurnRaw = 0;
+            pack.Policy.DefenseTurnRaw = 1;
+
+            CampaignCpuTacticalSnapshotBuilder.PopulateObservation(
+                query,
+                observation,
+                pack.Policy);
+            CampaignCpuDecision decision =
+                CampaignCpuScorer.Decide(observation, pack);
+
+            AssertEqual(
+                "dominated_turn_defense",
+                decision.TacticalFilterReason,
+                "stable-menu tactical population drives position guard");
+            AssertEqual(
+                DuelPhase.End,
+                decision.Action.Phase,
+                "dominated Blue-Eyes defense yields explicit phase exit");
+        }
+
+        sealed class FakeCampaignCpuTacticalQuery : ICampaignCpuTacticalQuery
+        {
+            sealed class Row
+            {
+                public int Player;
+                public int Position;
+                public int Index;
+                public int UniqueId;
+                public int CardId;
+                public int Face;
+                public int Turn;
+                public int Atk;
+                public int Def;
+            }
+
+            readonly List<Row> rows = new List<Row>();
+
+            public void Add(
+                int player,
+                int position,
+                int index,
+                int uniqueId,
+                int cardId,
+                int face,
+                int turn,
+                int atk,
+                int def)
+            {
+                rows.Add(new Row
+                {
+                    Player = player,
+                    Position = position,
+                    Index = index,
+                    UniqueId = uniqueId,
+                    CardId = cardId,
+                    Face = face,
+                    Turn = turn,
+                    Atk = atk,
+                    Def = def,
+                });
+            }
+
+            public int GetMonsterCount(int player, int position)
+            {
+                int count = 0;
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    if (rows[i].Player == player && rows[i].Position == position)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            public bool TryReadMonster(
+                int player,
+                int position,
+                int index,
+                out int uniqueId,
+                out int cardId,
+                out int face,
+                out int turn,
+                out int atk,
+                out int def)
+            {
+                for (int i = 0; i < rows.Count; i++)
+                {
+                    Row row = rows[i];
+                    if (row.Player == player
+                        && row.Position == position
+                        && row.Index == index)
+                    {
+                        uniqueId = row.UniqueId;
+                        cardId = row.CardId;
+                        face = row.Face;
+                        turn = row.Turn;
+                        atk = row.Atk;
+                        def = row.Def;
+                        return true;
+                    }
+                }
+                uniqueId = cardId = face = turn = atk = def = 0;
+                return false;
+            }
         }
 
         static void NonMainWindowIsNotScriptedG4()
@@ -2131,14 +3452,6 @@ namespace YgoMaster
                 CampaignCpuRunEffectContract.OuterAction.ForwardOriginalOnce,
                 CampaignCpuRunEffectContract.DecidePassThrough(),
                 "pass-through forwards once");
-            AssertEqual(
-                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
-                CampaignCpuRunEffectRouter.MapOwnedWindowForcedNative(),
-                "router always-native");
-            AssertEqual(
-                CampaignCpuEffectKind.ForwardOriginal,
-                CampaignCpuRunEffectRouter.MapPassThrough(),
-                "router pass-through");
         }
 
         static void RunEffectRouterMapsProgressGateAndCountsOriginals()
@@ -2168,10 +3481,6 @@ namespace YgoMaster
                 CampaignCpuRunEffectRouter.CountOriginalInvocations(
                     CampaignCpuEffectKind.ForwardOriginal, () => 7),
                 "counting forward");
-            AssertEqual(
-                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
-                CampaignCpuRunEffectRouter.MapDualHumanResponseHold(),
-                "A4 response hold");
         }
 
         static void RunEffectRouterMapsTransitionAndCommitOutcomes()
@@ -2208,6 +3517,86 @@ namespace YgoMaster
                 CampaignCpuEffectKind.BeginNativeLeaseAndForward,
                 CampaignCpuRunEffectRouter.MapCommitOutcome(CampaignCpuCommitOutcome.NotStarted),
                 "not started → fallback");
+        }
+
+        static void RunEffectPlanOrdersProductionBranches()
+        {
+            var input = new CampaignCpuRunEffectRouteInput
+            {
+                InterceptSelStand = true,
+                InterceptLocation = true,
+                DualHumanResponseHold = true,
+                ActingResolved = true,
+                ActingIsMyId = true,
+                StaleMyIdOwnedMain = true,
+                ActingIsOwnedSeat = false,
+                ForceNative = true,
+            };
+            AssertEqual(
+                CampaignCpuEffectKind.HandleSelStand,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "SelStand precedes Location/A4/pass-through");
+
+            input.InterceptSelStand = false;
+            AssertEqual(
+                CampaignCpuEffectKind.HandleLocation,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "Location precedes A4/pass-through");
+
+            input.InterceptLocation = false;
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "A4 precedes stale MyID and pass-through");
+
+            input.DualHumanResponseHold = false;
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "stale MyID Main re-leases before MyID pass-through");
+
+            input.StaleMyIdOwnedMain = false;
+            AssertEqual(
+                CampaignCpuEffectKind.ForwardOriginal,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "MyID pass-through precedes forced-owned path");
+
+            input.ActingIsMyId = false;
+            input.ActingResolved = false;
+            AssertEqual(
+                CampaignCpuEffectKind.ForwardOriginal,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "unresolved actor forwards once");
+
+            input.ActingResolved = true;
+            input.ActingIsOwnedSeat = false;
+            AssertEqual(
+                CampaignCpuEffectKind.ForwardOriginal,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "non-owned actor forwards once");
+
+            input.ActingIsOwnedSeat = true;
+            AssertEqual(
+                CampaignCpuEffectKind.BeginNativeLeaseAndForward,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "owned forced-native begins lease");
+
+            input.ForceNative = false;
+            AssertEqual(
+                CampaignCpuEffectKind.ContinueScriptedRouting,
+                CampaignCpuRunEffectRouter.PlanRoute(input),
+                "owned scripted window continues to scoring");
+
+            AssertEqual(
+                0,
+                CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                    CampaignCpuEffectKind.HandleSelStand),
+                "mechanical SelStand owns terminal handling");
+            AssertEqual(
+                0,
+                CampaignCpuRunEffectRouter.CountOriginalInvocations(
+                    CampaignCpuEffectKind.HandleLocation),
+                "mechanical Location owns terminal handling");
         }
 
         static void PlayerTypeTransitionRequiresPositiveReadback()
@@ -2477,6 +3866,14 @@ namespace YgoMaster
             AssertPackLoadThrows(
                 MinimalPackJson(policy: badView),
                 "unsupported scripted_views");
+            string malformedOpeningAllowlist = @"{
+              ""on_no_match"": ""native_cpu"",
+              ""opening_set_safety_enabled"": false,
+              ""opening_set_safety_card_ids"": ""12293""
+            }";
+            AssertPackLoadThrows(
+                MinimalPackJson(policy: malformedOpeningAllowlist),
+                "malformed opening set allowlist");
         }
 
         static void ScorerDecisionCapReturnsNative()
@@ -2666,13 +4063,12 @@ namespace YgoMaster
                 WindowClass = "WaitInput_MainPhase",
                 ActingPlayer = 1,
                 OwnedSeat = 1,
-                MyId = 0,
-                DuelGeneration = 7,
                 Turn = 4,
                 TurnPlayer = 1,
                 Phase = (int)DuelPhase.Main1,
                 IsMainPhaseWaitInput = true,
             };
+            CampaignCpuObservationContext.Stamp(obs, myId: 0, duelGeneration: 7);
             obs.LegalActions.Add(Cmd(1, DuelCommandType.Summon, 7850));
             CampaignCpuDecision decision = CampaignCpuDecision.Commit(
                 CampaignCpuRoute.RuleCommit,
@@ -2739,6 +4135,443 @@ namespace YgoMaster
             AssertTrue(
                 mechLine.Contains("\"turn\":1") || mechLine.Contains("\"turn\": 1"),
                 "mech turn");
+        }
+
+        static void AuditLifecycleContextIncludesOwnershipAndGeneration()
+        {
+            Dictionary<string, object> fields =
+                CampaignCpuAuditSerializer.CreateLifecycleContext(
+                    myId: 0,
+                    ownedSeat: 1,
+                    duelGeneration: 7);
+            AssertEqual(0, Convert.ToInt32(fields["my_id"]), "lifecycle my_id");
+            AssertEqual(1, Convert.ToInt32(fields["owned_seat"]), "lifecycle owned_seat");
+            AssertEqual(
+                7L,
+                Convert.ToInt64(fields["duel_generation"]),
+                "lifecycle generation");
+        }
+
+        static void AuditFileStrictCapAcrossLaunches()
+        {
+            string dir = Path.Combine(
+                Path.GetTempPath(),
+                "ygomaster-campaign-audit-" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(dir);
+            string path = Path.Combine(dir, "audit.jsonl");
+            try
+            {
+                string[] legacy = new string[10];
+                for (int i = 0; i < legacy.Length; i++)
+                {
+                    legacy[i] = "{\"event\":\"old\",\"n\":" + i + "}";
+                }
+                File.WriteAllLines(path, legacy);
+
+                int processLineCount = -1;
+                AssertTrue(
+                    CampaignCpuAuditFile.TryAppendLine(
+                        path,
+                        "{\"event\":\"new\",\"n\":10}",
+                        maxLines: 3,
+                        ref processLineCount),
+                    "oversized legacy append succeeds");
+                string[] lines = File.ReadAllLines(path);
+                AssertEqual(3, lines.Length, "oversized legacy file capped");
+                AssertTrue(lines[0].Contains("\"n\":8"), "newest legacy row 8 retained");
+                AssertTrue(lines[1].Contains("\"n\":9"), "newest legacy row 9 retained");
+                AssertTrue(lines[2].Contains("\"n\":10"), "new row appended");
+
+                // Simulate a new process: unknown cached line count must be read from disk.
+                processLineCount = -1;
+                AssertTrue(
+                    CampaignCpuAuditFile.TryAppendLine(
+                        path,
+                        "{\"event\":\"new\",\"n\":11}",
+                        maxLines: 3,
+                        ref processLineCount),
+                    "cross-launch append succeeds");
+                lines = File.ReadAllLines(path);
+                AssertEqual(3, lines.Length, "cross-launch strict cap");
+                AssertTrue(lines[2].Contains("\"n\":11"), "cross-launch newest row appended");
+
+                processLineCount = -1;
+                AssertTrue(
+                    CampaignCpuAuditFile.TryAppendLine(
+                        path,
+                        "{\"event\":\"only\",\"n\":12}",
+                        maxLines: 1,
+                        ref processLineCount),
+                    "max one append succeeds");
+                lines = File.ReadAllLines(path);
+                AssertEqual(1, lines.Length, "max one remains strict");
+                AssertTrue(lines[0].Contains("\"n\":12"), "max one keeps newest append");
+
+                File.WriteAllLines(
+                    path,
+                    new[]
+                    {
+                        "{\"event\":\"old\",\"n\":20}",
+                        "{\"event\":\"truncated\"",
+                        "{\"event\":\"old\",\"n\":21}",
+                    });
+                processLineCount = -1;
+                AssertTrue(
+                    CampaignCpuAuditFile.TryAppendLine(
+                        path,
+                        "{\"event\":\"new\",\"n\":22}",
+                        maxLines: 3,
+                        ref processLineCount),
+                    "truncated legacy row cleanup succeeds");
+                lines = File.ReadAllLines(path);
+                AssertEqual(3, lines.Length, "only complete JSONL rows retained");
+                AssertTrue(lines[0].Contains("\"n\":20"), "valid row 20 retained");
+                AssertTrue(lines[1].Contains("\"n\":21"), "valid row 21 retained");
+                AssertTrue(lines[2].Contains("\"n\":22"), "valid row 22 appended");
+            }
+            finally
+            {
+                try
+                {
+                    Directory.Delete(dir, true);
+                }
+                catch
+                {
+                }
+            }
+        }
+
+        static void NativeCandidateTraceValidatesShapeAndCapturesWithoutMutation()
+        {
+            Type captureType = typeof(CampaignCpuTests).Assembly.GetType(
+                "YgoMaster.CampaignCpuNativeTraceCapture");
+            AssertTrue(captureType != null, "native trace capture type exists");
+
+            System.Reflection.MethodInfo isSupportedHash = captureType.GetMethod(
+                "IsSupportedBinaryHash",
+                System.Reflection.BindingFlags.Public
+                    | System.Reflection.BindingFlags.Static);
+            AssertTrue(isSupportedHash != null, "native trace hash gate exists");
+            AssertTrue(
+                (bool)isSupportedHash.Invoke(
+                    null,
+                    new object[]
+                    {
+                        "97BD4D136E39B0872E4A8A9171632F1F0BD9BB04D69AF08E836C56E684D43C44",
+                    }),
+                "authoritative duel.dll hash accepted case-insensitively");
+            AssertTrue(
+                !(bool)isSupportedHash.Invoke(
+                    null,
+                    new object[]
+                    {
+                        "0000000000000000000000000000000000000000000000000000000000000000",
+                    }),
+                "unknown duel.dll hash rejected");
+
+            System.Reflection.MethodInfo tryCreate = captureType.GetMethod(
+                "TryCreate",
+                System.Reflection.BindingFlags.Public
+                    | System.Reflection.BindingFlags.Static);
+            AssertTrue(tryCreate != null, "native trace TryCreate exists");
+
+            byte[] candidateWork = new byte[0x974];
+            WriteUInt16(candidateWork, 0x08, 1);
+            WriteUInt16(candidateWork, 0x0a, 3);
+            WriteUInt32(candidateWork, 0x18, 0x11223344u);
+            WriteUInt32(candidateWork, 0x1c, 0x55667788u);
+            WriteUInt32(candidateWork, 0x20, 0x99aabbccu);
+            WriteUInt32(candidateWork, 0x4c8, 0x01020304u);
+            WriteUInt32(candidateWork, 0x4cc, 0x05060708u);
+            WriteUInt32(candidateWork, 0x4d0, 0x090a0b0cu);
+            byte[] original = (byte[])candidateWork.Clone();
+
+            object[] args =
+            {
+                candidateWork,
+                0x1c,
+                1,
+                0,
+                7,
+                4,
+                1,
+                2,
+                null,
+                null,
+            };
+            bool accepted = (bool)tryCreate.Invoke(null, args);
+            AssertTrue(accepted, "valid native candidate shape accepted");
+            AssertEqual(null, args[9], "valid shape rejection reason");
+            AssertTrue(
+                ByteArraysEqual(candidateWork, original),
+                "capture does not mutate native snapshot bytes");
+
+            object trace = args[8];
+            Type traceType = trace.GetType();
+            AssertEqual(
+                3,
+                Convert.ToInt32(traceType.GetField("CandidateCount").GetValue(trace)),
+                "candidate count");
+            AssertEqual(
+                1,
+                Convert.ToInt32(traceType.GetField("SelectedIndex").GetValue(trace)),
+                "selected index");
+            AssertEqual(
+                0x55667788u,
+                Convert.ToUInt32(
+                    traceType.GetField("SelectedRaw").GetValue(trace)),
+                "selected compact identity");
+            AssertEqual(
+                false,
+                Convert.ToBoolean(
+                    traceType.GetField("NativeScoresAvailable").GetValue(trace)),
+                "unproven native scores remain unavailable");
+
+            object candidates = traceType.GetField("Candidates").GetValue(trace);
+            System.Collections.IList list = (System.Collections.IList)candidates;
+            AssertEqual(3, list.Count, "all alternatives captured");
+            Type candidateType = list[1].GetType();
+            AssertEqual(
+                0x55667788u,
+                Convert.ToUInt32(candidateType.GetField("Raw").GetValue(list[1])),
+                "chosen candidate raw");
+            AssertEqual(
+                0x05060708u,
+                Convert.ToUInt32(candidateType.GetField("AuxiliaryRaw").GetValue(list[1])),
+                "paired auxiliary raw");
+
+            System.Reflection.MethodInfo toAuditFields = traceType.GetMethod(
+                "ToAuditFields",
+                System.Reflection.BindingFlags.Public
+                    | System.Reflection.BindingFlags.Instance);
+            AssertTrue(toAuditFields != null, "native trace audit projection exists");
+            var auditFields =
+                (Dictionary<string, object>)toAuditFields.Invoke(trace, null);
+            AssertEqual(
+                1,
+                Convert.ToInt32(auditFields["owned_seat"]),
+                "audit owned seat");
+            AssertEqual(
+                7,
+                Convert.ToInt32(auditFields["duel_generation"]),
+                "audit generation");
+            AssertEqual(
+                0x55667788u,
+                Convert.ToUInt32(auditFields["native_chosen_raw"]),
+                "audit chosen identity");
+            AssertEqual(
+                false,
+                Convert.ToBoolean(auditFields["native_scores_available"]),
+                "audit score availability");
+            AssertTrue(
+                !auditFields.ContainsKey("native_score"),
+                "unproven score field is omitted");
+            AssertEqual(
+                3,
+                ((System.Collections.IList)auditFields["candidates"]).Count,
+                "audit alternatives");
+
+            object[] wrongPointerArgs = (object[])args.Clone();
+            wrongPointerArgs[1] = 0x20;
+            wrongPointerArgs[8] = null;
+            wrongPointerArgs[9] = null;
+            AssertTrue(
+                !(bool)tryCreate.Invoke(null, wrongPointerArgs),
+                "selected pointer mismatch fails closed");
+            AssertEqual(
+                "selected_pointer_mismatch",
+                Convert.ToString(wrongPointerArgs[9]),
+                "selected pointer rejection reason");
+
+            byte[] invalidCount = (byte[])candidateWork.Clone();
+            WriteUInt16(invalidCount, 0x0a, 300);
+            object[] invalidCountArgs = (object[])args.Clone();
+            invalidCountArgs[0] = invalidCount;
+            invalidCountArgs[8] = null;
+            invalidCountArgs[9] = null;
+            AssertTrue(
+                !(bool)tryCreate.Invoke(null, invalidCountArgs),
+                "over-capacity count fails closed");
+            AssertEqual(
+                "candidate_count_out_of_range",
+                Convert.ToString(invalidCountArgs[9]),
+                "candidate count rejection reason");
+
+            object[] wrongSeatArgs = (object[])args.Clone();
+            wrongSeatArgs[3] = 1;
+            wrongSeatArgs[8] = null;
+            wrongSeatArgs[9] = null;
+            AssertTrue(
+                !(bool)tryCreate.Invoke(null, wrongSeatArgs),
+                "MyID candidate selection fails closed");
+            AssertEqual(
+                "player_is_my_id",
+                Convert.ToString(wrongSeatArgs[9]),
+                "MyID rejection reason");
+        }
+
+        static void NativeTraceDiagnosticsClassifyActivationAndBoundInvocationProbe()
+        {
+            Type diagnosticsType = typeof(CampaignCpuTests).Assembly.GetType(
+                "YgoMaster.CampaignCpuNativeTraceDiagnostics");
+            AssertTrue(
+                diagnosticsType != null,
+                "native trace diagnostics type exists");
+
+            System.Reflection.MethodInfo evaluateActivation =
+                diagnosticsType.GetMethod(
+                    "EvaluateActivation",
+                    new Type[]
+                    {
+                        typeof(bool),
+                        typeof(bool),
+                        typeof(int),
+                        typeof(bool),
+                        typeof(bool),
+                    });
+            AssertTrue(
+                evaluateActivation != null,
+                "native trace activation accepts raw game mode");
+
+            object normal = evaluateActivation.Invoke(
+                null,
+                new object[] { true, true, 0, false, false });
+            Type resultType = normal.GetType();
+            AssertEqual(
+                true,
+                Convert.ToBoolean(resultType.GetField("Active").GetValue(normal)),
+                "eligible Normal duel activates trace");
+            AssertEqual(
+                "active",
+                Convert.ToString(resultType.GetField("Reason").GetValue(normal)),
+                "eligible duel activation reason");
+
+            foreach (int eligibleMode in new int[] { 2, 9 })
+            {
+                object eligible = evaluateActivation.Invoke(
+                    null,
+                    new object[] { true, true, eligibleMode, false, false });
+                AssertEqual(
+                    true,
+                    Convert.ToBoolean(
+                        resultType.GetField("Active").GetValue(eligible)),
+                    "eligible Solo mode activates trace: " + eligibleMode);
+            }
+
+            foreach (int rejectedMode in new int[] { 6, 7, 10 })
+            {
+                object rejected = evaluateActivation.Invoke(
+                    null,
+                    new object[] { true, true, rejectedMode, false, false });
+                AssertEqual(
+                    false,
+                    Convert.ToBoolean(
+                        resultType.GetField("Active").GetValue(rejected)),
+                    "non-Solo mode remains inactive: " + rejectedMode);
+                AssertEqual(
+                    "game_mode_not_eligible_solo",
+                    Convert.ToString(
+                        resultType.GetField("Reason").GetValue(rejected)),
+                    "non-Solo diagnostic reason: " + rejectedMode);
+            }
+
+            object pvp = evaluateActivation.Invoke(
+                null,
+                new object[] { true, true, 0, true, false });
+            AssertEqual(
+                "pvp_duel",
+                Convert.ToString(resultType.GetField("Reason").GetValue(pvp)),
+                "PvP duel diagnostic reason");
+
+            object spectator = evaluateActivation.Invoke(
+                null,
+                new object[] { true, true, 0, false, true });
+            AssertEqual(
+                "pvp_spectator",
+                Convert.ToString(
+                    resultType.GetField("Reason").GetValue(spectator)),
+                "PvP spectator diagnostic reason");
+
+            object noHook = evaluateActivation.Invoke(
+                null,
+                new object[] { true, false, 0, false, false });
+            AssertEqual(
+                "hook_not_installed",
+                Convert.ToString(resultType.GetField("Reason").GetValue(noHook)),
+                "missing hook diagnostic reason");
+
+            System.Reflection.MethodInfo shouldAttemptCandidateCapture =
+                diagnosticsType.GetMethod(
+                    "ShouldAttemptCandidateCapture",
+                    new Type[] { typeof(int), typeof(int) });
+            AssertTrue(
+                shouldAttemptCandidateCapture != null,
+                "native trace candidate capture admission exists");
+            AssertTrue(
+                (bool)shouldAttemptCandidateCapture.Invoke(
+                    null, new object[] { 1, 0 }),
+                "opponent candidate proceeds to snapshot validation");
+            AssertTrue(
+                !(bool)shouldAttemptCandidateCapture.Invoke(
+                    null, new object[] { 0, 0 }),
+                "local candidate is silently skipped");
+            AssertTrue(
+                (bool)shouldAttemptCandidateCapture.Invoke(
+                    null, new object[] { 2, 0 }),
+                "invalid player proceeds to fail-closed validation");
+            AssertTrue(
+                (bool)shouldAttemptCandidateCapture.Invoke(
+                    null, new object[] { 0, 2 }),
+                "invalid MyID proceeds to fail-closed validation");
+
+            System.Reflection.MethodInfo tryClaimInvocationProbe =
+                diagnosticsType.GetMethod(
+                    "TryClaimInvocationProbe",
+                    System.Reflection.BindingFlags.Public
+                        | System.Reflection.BindingFlags.Static);
+            AssertTrue(
+                tryClaimInvocationProbe != null,
+                "native trace bounded invocation probe exists");
+            int probeState = 0;
+            object[] firstClaim = { probeState };
+            AssertTrue(
+                (bool)tryClaimInvocationProbe.Invoke(null, firstClaim),
+                "first hook invocation is logged");
+            probeState = Convert.ToInt32(firstClaim[0]);
+            object[] secondClaim = { probeState };
+            AssertTrue(
+                !(bool)tryClaimInvocationProbe.Invoke(null, secondClaim),
+                "repeated hook invocation is suppressed");
+        }
+
+        static void WriteUInt16(byte[] buffer, int offset, ushort value)
+        {
+            buffer[offset] = (byte)value;
+            buffer[offset + 1] = (byte)(value >> 8);
+        }
+
+        static void WriteUInt32(byte[] buffer, int offset, uint value)
+        {
+            buffer[offset] = (byte)value;
+            buffer[offset + 1] = (byte)(value >> 8);
+            buffer[offset + 2] = (byte)(value >> 16);
+            buffer[offset + 3] = (byte)(value >> 24);
+        }
+
+        static bool ByteArraysEqual(byte[] left, byte[] right)
+        {
+            if (left == null || right == null || left.Length != right.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < left.Length; i++)
+            {
+                if (left[i] != right[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         static void AssertTrue(bool value, string message)

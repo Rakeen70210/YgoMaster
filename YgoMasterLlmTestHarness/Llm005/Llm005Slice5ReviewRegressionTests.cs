@@ -13,7 +13,7 @@ namespace YgoMaster
     /// </summary>
     static class Llm005Slice5ReviewRegressionTests
     {
-        const long ExpectedDuelDllBytes = 19118592;
+        const long ExpectedDuelDllBytes = 19443200;
 
         public static void RunAll()
         {
@@ -35,7 +35,7 @@ namespace YgoMaster
                 "must resolve real duel.dll (repo parent masterduel_Data/Plugins/x86_64/duel.dll)");
             long len = new FileInfo(path).Length;
             AssertEqual(ExpectedDuelDllBytes, len,
-                "resolved duel.dll size must match Master Duel plugin (19118592)");
+                "resolved duel.dll size must match Master Duel plugin (19443200)");
             AssertTrue(
                 path.Replace('\\', '/').IndexOf("masterduel_Data/Plugins/x86_64/duel.dll",
                     StringComparison.OrdinalIgnoreCase) >= 0

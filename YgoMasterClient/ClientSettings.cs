@@ -91,6 +91,11 @@ namespace YgoMasterClient
         /// RunDialog, and RunList (PR2b checklist evidence).
         /// </summary>
         public static bool CampaignCpuProbeLogging = true;
+        /// <summary>
+        /// NS2 default-off, hash-gated read-only trace of native CPU alternatives and
+        /// the native chosen compact candidate. Does not enable CampaignCpu control.
+        /// </summary>
+        public static bool CampaignCpuNativeTraceEnabled;
         /// <summary>0 = use built-in CampaignCpuDefaults.DoCommandUserOffset.</summary>
         public static int CampaignCpuEngineWorkDoCommandUserOffset;
         /// <summary>0 = use built-in CampaignCpuDefaults.RunDialogUserOffset.</summary>
@@ -259,6 +264,8 @@ namespace YgoMasterClient
             CampaignCpuLogOnly = Utils.GetValue<bool>(data, "CampaignCpuLogOnly");
             CampaignCpuAllowScriptedCommits = Utils.GetValue<bool>(data, "CampaignCpuAllowScriptedCommits");
             CampaignCpuProbeLogging = Utils.GetValue<bool>(data, "CampaignCpuProbeLogging", true);
+            CampaignCpuNativeTraceEnabled =
+                Utils.GetValue<bool>(data, "CampaignCpuNativeTraceEnabled");
             CampaignCpuEngineWorkDoCommandUserOffset =
                 Utils.GetValue<int>(data, "CampaignCpuEngineWorkDoCommandUserOffset", 0);
             CampaignCpuEngineWorkRunDialogUserOffset =

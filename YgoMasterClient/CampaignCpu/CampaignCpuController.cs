@@ -40,6 +40,10 @@ namespace YgoMasterClient
         /// <summary>Last owned-seat field snapshot for probe play-delta logging.</summary>
         static List<CampaignCpuZoneCard> LastOwnedFieldSnapshot;
         static string LastOwnedFieldFingerprint;
+        static List<CampaignCpuMonsterTacticalState> LastTacticalSnapshot;
+        static readonly CampaignCpuStableMainBoundaryTracker
+            StableMainBoundaryTracker =
+                new CampaignCpuStableMainBoundaryTracker();
 
         public static bool IsGateActiveForDuel
         {
@@ -287,6 +291,8 @@ namespace YgoMasterClient
             DecisionCount = 0;
             LastOwnedFieldSnapshot = null;
             LastOwnedFieldFingerprint = null;
+            LastTacticalSnapshot = null;
+            StableMainBoundaryTracker.Reset();
             StateMachine.Reset();
         }
 
@@ -540,6 +546,9 @@ namespace YgoMasterClient
             TryCompleteSeatOwnershipAssert("run_effect");
 
             ViewSeq++;
+            // A stable pre-SysAct boundary requires consecutive engine ticks with no
+            // intervening RunEffect callback. Any callback invalidates the sample pair.
+            StableMainBoundaryTracker.Reset();
             DuelViewType viewType = (DuelViewType)id;
 
             // Belt-and-suspenders: re-assert Human ownership at DuelStart (PR2b).
@@ -609,29 +618,17 @@ namespace YgoMasterClient
                 // Record real CpuThinking before the boundary probe line for this view.
                 StateMachine.MarkCpuThinkingObserved();
             }
-            if (ClientSettings.CampaignCpuProbeLogging
-                && StateMachine.State == SoloTemporaryCpuState.NativeLease
-                && CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(viewType, param1))
-            {
-                WriteOwnedMainBoundaryProbe(
-                    viewType,
-                    param1,
-                    param2,
-                    param3,
-                    doCommandUser,
-                    runDialogUser,
-                    turnPlayer,
-                    turn,
-                    phase,
-                    actingResolved,
-                    actingPlayer);
-            }
-
             // Probe: log owned-seat field cards (incl. face-down ST + is_trap) when plays move.
             if (ClientSettings.CampaignCpuProbeLogging
                 && CampaignCpuFieldDiff.IsFieldProbeView(viewType, param1))
             {
                 TryWriteOwnedFieldProbe(
+                    viewType,
+                    param1,
+                    turn,
+                    turnPlayer,
+                    phase);
+                TryWriteOwnedStanceProbe(
                     viewType,
                     param1,
                     turn,
@@ -650,6 +647,33 @@ namespace YgoMasterClient
                 actingResolved,
                 turn,
                 phase);
+            if (StateMachine.State == SoloTemporaryCpuState.NativeLease)
+            {
+                StateMachine.ObserveActionChainSemanticProgress(
+                    progress,
+                    DateTime.UtcNow);
+            }
+
+            if (ClientSettings.CampaignCpuProbeLogging
+                && StateMachine.State == SoloTemporaryCpuState.NativeLease
+                && CampaignCpuWindowClassifier.IsNativeLeaseBoundaryProbeView(
+                    viewType,
+                    param1))
+            {
+                WriteOwnedMainBoundaryProbe(
+                    viewType,
+                    param1,
+                    param2,
+                    param3,
+                    doCommandUser,
+                    runDialogUser,
+                    turnPlayer,
+                    turn,
+                    phase,
+                    actingResolved,
+                    actingPlayer,
+                    progress);
+            }
 
             // CommitQuarantine
             if (StateMachine.State == SoloTemporaryCpuState.CommitQuarantine)
@@ -720,9 +744,9 @@ namespace YgoMasterClient
             // NativeLease restore handshake
             if (StateMachine.State == SoloTemporaryCpuState.NativeLease)
             {
-                // Prefer real CpuThinking; keep WaitFrame/CursorSet heuristic as secondary evidence.
-                if (viewType == DuelViewType.CpuThinking
-                    || viewType == DuelViewType.WaitFrame
+                // Retain CpuThinking counts as historical telemetry only. These callbacks
+                // are explicitly ineligible for recapture after both live handoffs stalled.
+                if (viewType == DuelViewType.WaitFrame
                     || viewType == DuelViewType.CursorSet)
                 {
                     StateMachine.MarkCpuThinkingObserved();
@@ -730,6 +754,101 @@ namespace YgoMasterClient
 
                 string deny;
                 bool requireCpuThinking = false; // PR4a spike may enable
+                CampaignCpuPackPolicy recapturePolicy =
+                    ActivePack != null ? ActivePack.Policy : null;
+                CampaignCpuRecapturePolicyResult recapture =
+                    CampaignCpuRecapturePolicy.Evaluate(
+                        new CampaignCpuRecapturePolicyInput
+                        {
+                            Enabled = recapturePolicy != null
+                                && recapturePolicy.SuccessiveMainRecapture,
+                            Chain = StateMachine.ActiveActionChain,
+                            DuelGeneration = DuelGeneration,
+                            CurrentViewSeq = ViewSeq,
+                            CurrentProgressToken = progress,
+                            ViewType = viewType,
+                            Param1 = param1,
+                            Turn = turn,
+                            TurnPlayer = turnPlayer,
+                            Phase = phase,
+                            OwnedSeat = OwnedSeat,
+                            MyId = MyId,
+                            IsStableMainMenuBoundary = false,
+                            OwnedIsHuman = TryReadIsHuman(OwnedSeat),
+                            MyIsHuman = TryReadIsHuman(MyId),
+                            DoCommandUser = doCommandUser,
+                            RunDialogUser = runDialogUser,
+                            ResponseWindowInFlight =
+                                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                                    viewType,
+                                    param1),
+                            ScriptingDisabled =
+                                StateMachine.ScriptingDisabledForDuel,
+                            NowUtc = DateTime.UtcNow,
+                            MaxAttemptsPerChain = recapturePolicy != null
+                                ? recapturePolicy.MaxRecapturesPerChain
+                                : CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerChain,
+                            MaxAttemptsPerTurn = recapturePolicy != null
+                                ? recapturePolicy.MaxRecapturesPerTurn
+                                : CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerTurn,
+                            TimeoutMs = recapturePolicy != null
+                                ? recapturePolicy.RecaptureTimeoutMs
+                                : CampaignCpuRecapturePolicy.DefaultTimeoutMs,
+                        });
+                if (recapture.Decision
+                    == CampaignCpuRecaptureDecision.ClearAtPhaseOrTurnBoundary)
+                {
+                    CampaignCpuActionChain cleared =
+                        StateMachine.ActiveActionChain;
+                    StateMachine.ClearActionChain();
+                    if (cleared != null)
+                    {
+                        CampaignCpuAuditLog.Write(
+                            "same_main_recapture_cleared",
+                            new Dictionary<string, object>
+                            {
+                                { "reason", recapture.Reason },
+                                { "view_seq", ViewSeq },
+                                { "origin_view_seq", cleared.OriginViewSeq },
+                                { "turn", turn },
+                                { "turn_player", turnPlayer },
+                                { "phase", phase },
+                                { "duel_generation", DuelGeneration },
+                            });
+                    }
+                }
+                else if (recapture.Decision
+                    == CampaignCpuRecaptureDecision.AbandonRecaptureForTurn)
+                {
+                    CampaignCpuActionChain abandoned =
+                        StateMachine.ActiveActionChain;
+                    bool alreadyAbandoned =
+                        abandoned != null && abandoned.Abandoned;
+                    string originalClassification = abandoned != null
+                        ? abandoned.Eligibility.ToString()
+                        : CampaignCpuContinuationEligibility
+                            .FullNativeFallback.ToString();
+                    StateMachine.AbandonActionChain(recapture.Reason);
+                    if (abandoned != null && !alreadyAbandoned)
+                    {
+                        CampaignCpuAuditLog.Write(
+                            "same_main_recapture_abandoned",
+                            new Dictionary<string, object>
+                            {
+                                { "reason", recapture.Reason },
+                                { "view_seq", ViewSeq },
+                                { "origin_view_seq", abandoned.OriginViewSeq },
+                                { "recapture_attempts",
+                                    abandoned.RecaptureAttempts },
+                                { "lease_origin_classification",
+                                    originalClassification },
+                                { "turn", turn },
+                                { "turn_player", turnPlayer },
+                                { "phase", phase },
+                                { "duel_generation", DuelGeneration },
+                            });
+                    }
+                }
 
                 // A5: restore Human on owned-turn PhaseChange → Main1/Main2 *before*
                 // forwarding. Live M3: param2 is the new phase; GetCurrentPhase is still old;
@@ -860,11 +979,7 @@ namespace YgoMasterClient
                 return originalRunEffect(id, param1, param2, param3);
             }
 
-            // Commit-on multi-step: owned-turn SelStand after scripted summon. Dual-Human
-            // attributes RunDialog/SelStand to MyId; A4 TemporaryCpu cannot answer and
-            // originalRunEffect paints ATK/DEF on the human. Auto DlgSetResult before A4.
-            // LogOnly keeps A4/native (no intercept). Fail closed → A4 BeginFallback.
-            if (CampaignCpuSelStand.ShouldIntercept(
+            bool interceptSelStand = CampaignCpuSelStand.ShouldIntercept(
                 ClientSettings.CampaignCpuLogOnly,
                 ClientSettings.CampaignCpuAllowScriptedCommits,
                 SeatOwnershipConfirmed,
@@ -874,117 +989,88 @@ namespace YgoMasterClient
                 param1,
                 turnPlayer,
                 OwnedSeat,
-                MyId))
+                MyId);
+            bool interceptLocation = CampaignCpuLocation.ShouldIntercept(
+                ClientSettings.CampaignCpuLogOnly,
+                ClientSettings.CampaignCpuAllowScriptedCommits,
+                SeatOwnershipConfirmed,
+                StateMachine.ScriptingDisabledForDuel,
+                StateMachine.State,
+                viewType,
+                param1,
+                turnPlayer,
+                OwnedSeat,
+                MyId);
+            bool dualHumanResponseHold =
+                CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
+                    StateMachine.State, viewType, param1);
+            bool staleMyIdOwnedMain =
+                CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
+                    viewType,
+                    param1,
+                    actingResolved,
+                    actingPlayer,
+                    turnPlayer,
+                    OwnedSeat,
+                    MyId);
+            bool actingIsOwnedSeat = actingResolved
+                && CampaignCpuControlPolicy.IsOwnedOpponentSeat(
+                    actingPlayer,
+                    OwnedSeat,
+                    MyId);
+            bool forceNative = actingIsOwnedSeat
+                && (StateMachine.ScriptingDisabledForDuel
+                    || ForceAlwaysNativeLease
+                    || ActivePack == null
+                    || !SeatOwnershipConfirmed
+                    || !CampaignCpuWindowClassifier.IsScriptedWindow(
+                        viewType,
+                        param1,
+                        ActivePack));
+            CampaignCpuEffectKind routeEffect =
+                CampaignCpuRunEffectRouter.PlanRoute(
+                    new CampaignCpuRunEffectRouteInput
+                    {
+                        InterceptSelStand = interceptSelStand,
+                        InterceptLocation = interceptLocation,
+                        DualHumanResponseHold = dualHumanResponseHold,
+                        ActingResolved = actingResolved,
+                        ActingIsMyId = actingResolved && actingPlayer == MyId,
+                        StaleMyIdOwnedMain = staleMyIdOwnedMain,
+                        ActingIsOwnedSeat = actingIsOwnedSeat,
+                        ForceNative = forceNative,
+                    });
+
+            // Production-used route plan fixes the terminal branch order:
+            // SelStand → Location → A4/stale hold → pass-through → native → scripted.
+            if (routeEffect == CampaignCpuEffectKind.HandleSelStand)
             {
                 return HandleOwnedTurnSelStand(
                     id, param1, param2, param3, progress, actingPlayer,
                     turn, turnPlayer, phase, originalRunEffect);
             }
-
-            // Commit-on multi-step: owned-turn WaitInput/Location after scripted
-            // Activate/Set/Summon. Dual-Human attributes zone select to MyId; A4 cannot
-            // answer and originalRunEffect paints "Select position for …" on the human
-            // (live Future Fusion 2026-07-23). Auto Decide@PosSelect before A4/pass_through.
-            // LogOnly keeps native (no intercept). Fail closed → BeginFallback.
-            if (CampaignCpuLocation.ShouldIntercept(
-                ClientSettings.CampaignCpuLogOnly,
-                ClientSettings.CampaignCpuAllowScriptedCommits,
-                SeatOwnershipConfirmed,
-                StateMachine.ScriptingDisabledForDuel,
-                StateMachine.State,
-                viewType,
-                param1,
-                turnPlayer,
-                OwnedSeat,
-                MyId))
+            if (routeEffect == CampaignCpuEffectKind.HandleLocation)
             {
                 return HandleOwnedTurnLocation(
                     id, param1, param2, param3, progress, actingPlayer,
                     turn, turnPlayer, phase, originalRunEffect);
             }
-
-            // A4 dual-Human residual (live 2026-07-22): under dual-Human, MD attributes
-            // opponent trap/chain RunDialog + CheckChain to MyId (run_dialog_user=0).
-            // Re-lease OwnedSeat→CPU for every response-class window while HumanOwned,
-            // before pass_through_myid — independent of acting resolution.
-            // Response leases never one-shot restore (A5 does not weaken this).
-            // Location is not response-class — mechanical path above answers it.
-            if (CampaignCpuWindowClassifier.ShouldReLeaseDualHumanResponseWindow(
-                StateMachine.State, viewType, param1))
-            {
-                // Production-used A4 seam (MapDualHumanResponseHold → BeginNativeLeaseAndForward).
-                CampaignCpuEffectKind a4Effect = CampaignCpuRunEffectRouter.MapDualHumanResponseHold();
-                if (a4Effect != CampaignCpuEffectKind.BeginNativeLeaseAndForward)
-                {
-                    return originalRunEffect(id, param1, param2, param3);
-                }
-                string holdReason = CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
-                    actingResolved,
-                    actingPlayer,
-                    OwnedSeat,
-                    MyId);
-                return BeginFallback(
-                    id, param1, param2, param3, progress, holdReason, originalRunEffect);
-            }
-
-            if (!actingResolved)
-            {
-                CampaignCpuAuditLog.Write("acting_player_unknown", new Dictionary<string, object>
-                {
-                    { "view", viewType.ToString() },
-                    { "param1", param1 },
-                    { "do_command_user", doCommandUser },
-                    { "run_dialog_user", runDialogUser },
-                    { "turn_player", turnPlayer },
-                });
-                return originalRunEffect(id, param1, param2, param3);
-            }
-
-            if (actingPlayer == MyId)
-            {
-                // A5 fail-closed: MyId sample on owned-turn Main is stale dual-Human
-                // residual — never pass-through as human Main; never score/commit. Re-lease.
-                if (CampaignCpuWindowClassifier.IsStaleMyIdOwnedMainWaitInput(
-                    viewType, param1, actingResolved, actingPlayer, turnPlayer, OwnedSeat, MyId))
-                {
-                    return BeginFallback(
-                        id, param1, param2, param3, progress,
-                        "stale_myid_owned_main", originalRunEffect);
-                }
-
-                // Human seat: never CampaignCpu commit (PR2b pass criterion).
-                // Response-class windows already re-leased above (A4).
-                CampaignCpuEffectKind passEffect = CampaignCpuRunEffectRouter.MapPassThrough();
-                if (ClientSettings.CampaignCpuProbeLogging
-                    && IsProbeInterestingView(viewType, param1))
-                {
-                    CampaignCpuAuditLog.Write("pass_through_myid", new Dictionary<string, object>
-                    {
-                        { "view_seq", ViewSeq },
-                        { "my_id", MyId },
-                        { "duel_generation", DuelGeneration },
-                        { "window_class",
-                            CampaignCpuWindowClassifier.ClassifyWindow(viewType, param1) },
-                        { "effect", passEffect.ToString() },
-                    });
-                }
-                return originalRunEffect(id, param1, param2, param3);
-            }
-
-            if (!CampaignCpuControlPolicy.IsOwnedOpponentSeat(actingPlayer, OwnedSeat, MyId))
-            {
-                return originalRunEffect(id, param1, param2, param3);
-            }
-
-            // Owned opponent decision window
-            if (StateMachine.ScriptingDisabledForDuel
-                || ForceAlwaysNativeLease
-                || ActivePack == null
-                || !SeatOwnershipConfirmed
-                || !CampaignCpuWindowClassifier.IsScriptedWindow(viewType, param1, ActivePack))
+            if (routeEffect == CampaignCpuEffectKind.BeginNativeLeaseAndForward)
             {
                 string reason;
-                if (ForceAlwaysNativeLease)
+                if (dualHumanResponseHold)
+                {
+                    reason = CampaignCpuWindowClassifier.DualHumanResponseHoldReason(
+                        actingResolved,
+                        actingPlayer,
+                        OwnedSeat,
+                        MyId);
+                }
+                else if (staleMyIdOwnedMain)
+                {
+                    reason = "stale_myid_owned_main";
+                }
+                else if (ForceAlwaysNativeLease)
                 {
                     reason = "always_native_lease";
                 }
@@ -1000,17 +1086,51 @@ namespace YgoMasterClient
                 }
                 else
                 {
-                    // Response-class already handled in A4 HumanOwned gate above.
                     reason = "v1_non_main_phase";
-                }
-                // Production-used forced-native seam (always-native / disabled / non-scripted).
-                CampaignCpuEffectKind forced = CampaignCpuRunEffectRouter.MapOwnedWindowForcedNative();
-                if (forced != CampaignCpuEffectKind.BeginNativeLeaseAndForward)
-                {
-                    return originalRunEffect(id, param1, param2, param3);
                 }
                 return BeginFallback(
                     id, param1, param2, param3, progress, reason, originalRunEffect);
+            }
+            if (routeEffect == CampaignCpuEffectKind.ForwardOriginal)
+            {
+                if (!actingResolved)
+                {
+                    CampaignCpuAuditLog.Write(
+                        "acting_player_unknown",
+                        new Dictionary<string, object>
+                        {
+                            { "view", viewType.ToString() },
+                            { "param1", param1 },
+                            { "do_command_user", doCommandUser },
+                            { "run_dialog_user", runDialogUser },
+                            { "turn_player", turnPlayer },
+                        });
+                }
+                else if (actingPlayer == MyId
+                    && ClientSettings.CampaignCpuProbeLogging
+                    && IsProbeInterestingView(viewType, param1))
+                {
+                    CampaignCpuAuditLog.Write(
+                        "pass_through_myid",
+                        new Dictionary<string, object>
+                        {
+                            { "view_seq", ViewSeq },
+                            { "my_id", MyId },
+                            { "duel_generation", DuelGeneration },
+                            { "window_class",
+                                CampaignCpuWindowClassifier.ClassifyWindow(
+                                    viewType,
+                                    param1) },
+                            { "effect", routeEffect.ToString() },
+                        });
+                }
+                return originalRunEffect(id, param1, param2, param3);
+            }
+            if (routeEffect != CampaignCpuEffectKind.ContinueScriptedRouting)
+            {
+                // PlanRoute currently exhausts every input shape above. Fail closed if
+                // a future effect is added without a controller executor.
+                return originalRunEffect(id, param1, param2, param3);
             }
 
             // Scripted Main Phase path (PR4b)
@@ -1031,9 +1151,18 @@ namespace YgoMasterClient
                     ChapterId,
                     out automatic,
                     out multiSelect);
+                CampaignCpuObservationBuilder.FillTacticalState(
+                    query,
+                    obs,
+                    ActivePack != null ? ActivePack.Policy : null);
+                CampaignCpuObservationBuilder.FillLegalActionBasicStats(
+                    query,
+                    obs);
                 // Production decision rows must carry ownership + generation for S10/analyzer.
-                obs.MyId = MyId;
-                obs.DuelGeneration = DuelGeneration;
+                CampaignCpuObservationContext.Stamp(
+                    obs,
+                    MyId,
+                    DuelGeneration);
 
                 progress = CampaignCpuProgressToken.CreateWithLegalFingerprint(
                     DuelGeneration,
@@ -1060,6 +1189,7 @@ namespace YgoMasterClient
                 }
 
                 CampaignCpuDecision decision;
+                CampaignCpuSafeContinuationSelection safeSelection = null;
                 if (automatic != null)
                 {
                     decision = CampaignCpuDecision.Commit(
@@ -1072,11 +1202,132 @@ namespace YgoMasterClient
                 }
                 else
                 {
-                    decision = CampaignCpuScorer.Decide(
+                    safeSelection = CampaignCpuSafeContinuationSelector.Decide(
                         obs,
                         ActivePack,
                         predicateEvalFailed: obs.PredicateQueryFailed,
-                        appliedDecisionCount: DecisionCount);
+                        appliedDecisionCount: DecisionCount,
+                        resolveCardLevel: action =>
+                            DuelDll.CampaignCpu_GetCardLevel(
+                                action.Player,
+                                action.Position,
+                                action.Index));
+                    decision = safeSelection.Decision;
+                }
+
+                // V1 fail-native guard: a normal Summon/Set of level 5+ can open a
+                // tribute confirmation/material continuation that was stamped to MyID
+                // while OwnedSeat was Human for Main-menu extraction. A later CPU flip
+                // cannot retarget that already-created prompt (live 12692, 2026-07-26).
+                // Unknown/invalid level is also unsafe; native CPU owns the whole action.
+                CampaignCpuLegalAction deferredAction = decision != null
+                    ? decision.Action
+                    : null;
+                int selectedCardLevel = safeSelection != null
+                    ? safeSelection.SelectedCardLevel
+                    : 0;
+                bool selectedCardLevelKnown = safeSelection != null
+                    && safeSelection.SelectedCardLevelKnown;
+                if (safeSelection != null
+                    && safeSelection.ExcludedActionIdentities.Count > 0)
+                {
+                    CampaignCpuAuditLog.Write(
+                        "scripted_continuation_filter",
+                        new Dictionary<string, object>
+                        {
+                            { "view_seq", ViewSeq },
+                            { "excluded_action_identities",
+                                safeSelection.ExcludedActionIdentities },
+                            { "selected_action", deferredAction != null
+                                ? deferredAction.CanonicalIdentity
+                                : null },
+                            { "selected_rule_id", decision != null
+                                ? decision.RuleId
+                                : null },
+                            { "my_id", MyId },
+                            { "owned_seat", OwnedSeat },
+                            { "duel_generation", DuelGeneration },
+                            { "turn", obs.Turn },
+                            { "turn_player", obs.TurnPlayer },
+                            { "phase", obs.Phase },
+                        });
+                }
+                if (decision != null
+                    && decision.Route == CampaignCpuRoute.RuleCommit
+                    && CampaignCpuSummonSafety.IsNormalSummonOrSet(deferredAction))
+                {
+                    if (CampaignCpuSummonSafety.ShouldDeferToNative(
+                        deferredAction,
+                        selectedCardLevelKnown,
+                        selectedCardLevel))
+                    {
+                        CampaignCpuAuditLog.Write(
+                            "scripted_action_deferred_native",
+                            new Dictionary<string, object>
+                            {
+                                { "reason", "unsupported_normal_summon_continuation" },
+                                { "view_seq", ViewSeq },
+                                { "candidate_action", deferredAction.CanonicalIdentity },
+                                { "candidate_rule_id", decision.RuleId },
+                                { "card_id", deferredAction.CardId },
+                                { "card_level", selectedCardLevelKnown
+                                    ? (object)selectedCardLevel
+                                    : null },
+                                { "level_known", selectedCardLevelKnown },
+                                { "my_id", MyId },
+                                { "owned_seat", OwnedSeat },
+                                { "duel_generation", DuelGeneration },
+                                { "turn", obs.Turn },
+                                { "turn_player", obs.TurnPlayer },
+                                { "phase", obs.Phase },
+                            });
+                        decision = CampaignCpuDecision.Native(
+                            "unsupported_normal_summon_continuation");
+                    }
+                }
+
+                // M3 safety boundary: only proven single-step lineage (level 1-4
+                // Normal Summon/monster Set or Spell/Trap Set) may be committed while
+                // OwnedSeat is temporarily Human.
+                // Effect/list/target/special-summon continuations can be stamped to
+                // MyId before their RunDialog callback; flipping to CPU there is too late.
+                if (decision != null
+                    && decision.Route == CampaignCpuRoute.RuleCommit
+                    && (safeSelection == null
+                        || !safeSelection.SelectedTerminalPhaseExit)
+                    && CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                        deferredAction,
+                        selectedCardLevelKnown,
+                        selectedCardLevel))
+                {
+                    CampaignCpuContinuationEligibility continuation =
+                        CampaignCpuActionChainFactory.Classify(
+                            deferredAction,
+                            selectedCardLevelKnown,
+                            selectedCardLevel);
+                    CampaignCpuAuditLog.Write(
+                        "scripted_action_deferred_native",
+                        new Dictionary<string, object>
+                        {
+                            { "reason", "unsupported_scripted_continuation" },
+                            { "view_seq", ViewSeq },
+                            { "candidate_action", deferredAction != null
+                                ? deferredAction.CanonicalIdentity
+                                : null },
+                            { "candidate_rule_id", decision.RuleId },
+                            { "card_id", deferredAction != null
+                                ? deferredAction.CardId
+                                : 0 },
+                            { "continuation_classification", continuation.ToString() },
+                            { "my_id", MyId },
+                            { "owned_seat", OwnedSeat },
+                            { "duel_generation", DuelGeneration },
+                            { "turn", obs.Turn },
+                            { "turn_player", obs.TurnPlayer },
+                            { "phase", obs.Phase },
+                        });
+                    decision = CampaignCpuDecision.Native(
+                        "unsupported_scripted_continuation");
                 }
 
                 // Always audit the scored decision + full legal menu (PR3 capture / PR4b).
@@ -1109,6 +1360,30 @@ namespace YgoMasterClient
                     if (commitEffect == CampaignCpuEffectKind.CommitApplied)
                     {
                         DecisionCount++;
+                        if (decision.Route == CampaignCpuRoute.RuleCommit)
+                        {
+                            if (safeSelection != null
+                                && safeSelection.SelectedTerminalPhaseExit)
+                            {
+                                StateMachine.ClearActionChain();
+                            }
+                            else
+                            {
+                                StateMachine.ArmActionChain(
+                                    CampaignCpuActionChainFactory.Create(
+                                        DuelGeneration,
+                                        ViewSeq,
+                                        obs.Turn,
+                                        obs.TurnPlayer,
+                                        obs.Phase,
+                                        decision.Action,
+                                        decision.RuleId,
+                                        selectedCardLevelKnown,
+                                        selectedCardLevel,
+                                        progress,
+                                        DateTime.UtcNow));
+                            }
+                        }
                         StateMachine.ArmAwaitingProgress(
                             ViewSeq,
                             progress,
@@ -1513,7 +1788,24 @@ namespace YgoMasterClient
             string reason,
             OriginalRunEffectDelegate originalRunEffect)
         {
-            string windowClass = CampaignCpuWindowClassifier.ClassifyWindow((DuelViewType)id, p1);
+            DuelViewType viewType = (DuelViewType)id;
+            string windowClass = CampaignCpuWindowClassifier.ClassifyWindow(viewType, p1);
+            bool responseWindow =
+                CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                    viewType,
+                    p1);
+            CampaignCpuActionChain chainBeforeLease =
+                StateMachine.ActiveActionChain;
+            bool preserveSafeLineage = responseWindow
+                && chainBeforeLease != null
+                && chainBeforeLease.Eligibility
+                    == CampaignCpuContinuationEligibility.ScriptedResponseContinuation
+                && !chainBeforeLease.Abandoned;
+            if (!preserveSafeLineage && chainBeforeLease != null)
+            {
+                StateMachine.AbandonActionChain(
+                    "full_native_fallback:" + (reason ?? "native"));
+            }
 
             // Confirm CPU ownership before claiming NativeLease. A failed/unknown flip must
             // never proceed as if native CPU owns the window (M5).
@@ -1556,6 +1848,11 @@ namespace YgoMasterClient
             }
             // Exact-once: this is the sole originalRunEffect call on the BeginFallback path.
             int ret = originalRunEffect(id, p1, p2, p3);
+            if (responseWindow)
+            {
+                StateMachine.MarkNativeResponseForwarded(progress);
+            }
+            CampaignCpuActionChain activeChain = StateMachine.ActiveActionChain;
             CampaignCpuAuditLog.Write("temporary_cpu_begin", new Dictionary<string, object>
             {
                 { "reason", reason },
@@ -1568,6 +1865,18 @@ namespace YgoMasterClient
                 { "my_is_human_readback", TryReadIsHuman(MyId) },
                 { "transition_confirmed", true },
                 { "exact_once_forward", true },
+                { "lease_origin_classification",
+                    activeChain != null
+                        ? activeChain.Eligibility.ToString()
+                        : CampaignCpuContinuationEligibility.FullNativeFallback.ToString() },
+                { "action_chain_origin_view_seq",
+                    activeChain != null ? activeChain.OriginViewSeq : 0UL },
+                { "action_chain_action",
+                    activeChain != null ? activeChain.AppliedActionIdentity : null },
+                { "action_chain_rule_id",
+                    activeChain != null ? activeChain.RuleId : null },
+                { "native_response_seen",
+                    activeChain != null && activeChain.NativeResponseSeen },
             });
 
             // Under AllowScriptedCommits, one-shot Human restore only after pure DrawPhase.
@@ -1584,7 +1893,12 @@ namespace YgoMasterClient
                 int humanRb;
                 CampaignCpuPlayerTypeTransitionResult humanTr = TryTransitionPlayerType(
                     OwnedSeat, (int)DuelPlayerType.Human, out humanRb);
-                if (!CampaignCpuControlPolicy.IsTransitionConfirmed(humanTr))
+                CampaignCpuEffectKind oneShotEffect =
+                    CampaignCpuRunEffectRouter.MapTransitionResult(
+                        humanTr,
+                        restoreHumanPath: true);
+                if (oneShotEffect
+                    == CampaignCpuEffectKind.TransitionFailedForwardOriginal)
                 {
                     // Stay NativeLease rather than claiming HumanOwned without proof.
                     AuditPlayerTypeTransitionFailure(
@@ -1596,19 +1910,488 @@ namespace YgoMasterClient
                     return ret;
                 }
                 StateMachine.RestoreHumanOwned();
-                CampaignCpuAuditLog.Write("temporary_cpu_oneshot_restore", new Dictionary<string, object>
-                {
-                    { "reason", reason },
-                    { "view_seq", ViewSeq },
-                    { "window_class", windowClass },
-                    { "oneshot_policy", "draw_phase_only" },
-                    { "owned_is_human_readback", humanRb },
-                    { "my_is_human_readback", TryReadIsHuman(MyId) },
-                    { "transition_confirmed", true },
-                    { "note", "AllowScriptedCommits: restore Human after DrawPhase so Main menus can be extracted" },
-                });
+                Dictionary<string, object> oneShotFields =
+                    CampaignCpuAuditSerializer.CreateLifecycleContext(
+                        MyId,
+                        OwnedSeat,
+                        DuelGeneration);
+                oneShotFields["reason"] = reason;
+                oneShotFields["view_seq"] = ViewSeq;
+                oneShotFields["window_class"] = windowClass;
+                oneShotFields["oneshot_policy"] = "draw_phase_only";
+                oneShotFields["owned_is_human_readback"] = humanRb;
+                oneShotFields["my_is_human_readback"] = TryReadIsHuman(MyId);
+                oneShotFields["transition_confirmed"] = true;
+                oneShotFields["effect"] = oneShotEffect.ToString();
+                oneShotFields["note"] =
+                    "AllowScriptedCommits: restore Human after DrawPhase so Main menus can be extracted";
+                CampaignCpuAuditLog.Write(
+                    "temporary_cpu_oneshot_restore",
+                    oneShotFields);
             }
             return ret;
+        }
+
+        static bool TryCommitStableMainDirect()
+        {
+            CampaignCpuPackPolicy policy = ActivePack != null
+                ? ActivePack.Policy
+                : null;
+            if (StateMachine.State != SoloTemporaryCpuState.NativeLease
+                || StateMachine.ActiveActionChain == null
+                || StateMachine.ActiveActionChain.Abandoned
+                || policy == null
+                || !policy.SuccessiveMainRecapture
+                || StateMachine.ScriptingDisabledForDuel
+                || !IsEngineWorkReady())
+            {
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+
+            int turn;
+            int turnPlayer;
+            int phase;
+            int doCommandUser;
+            int runDialogUser;
+            try
+            {
+                turn = DuelDll.CampaignCpu_GetTurnNum();
+                turnPlayer = DuelDll.CampaignCpu_GetTurnPlayer();
+                phase = DuelDll.CampaignCpu_GetCurrentPhase();
+            }
+            catch
+            {
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+            if (!CampaignCpuEngineWorkSeats.TryReadSeats(
+                out doCommandUser,
+                out runDialogUser))
+            {
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+            int ownedIsHuman = TryReadIsHuman(OwnedSeat);
+            int myIsHuman = TryReadIsHuman(MyId);
+
+            CampaignCpuObservation observation;
+            try
+            {
+                var query = new LiveDllLegalActionQuery();
+                LegalAction automatic;
+                bool multiSelect;
+                observation = CampaignCpuObservationBuilder.Build(
+                    query,
+                    ViewSeq,
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase,
+                    0,
+                    0,
+                    OwnedSeat,
+                    OwnedSeat,
+                    ChapterId,
+                    out automatic,
+                    out multiSelect);
+                CampaignCpuObservationBuilder.FillTacticalState(
+                    query,
+                    observation,
+                    policy);
+                CampaignCpuObservationBuilder.FillLegalActionBasicStats(
+                    query,
+                    observation);
+                CampaignCpuObservationContext.Stamp(
+                    observation,
+                    MyId,
+                    DuelGeneration);
+            }
+            catch
+            {
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+
+            string legalFingerprint =
+                CampaignCpuObservation.FingerprintLegalActions(
+                    observation != null ? observation.LegalActions : null);
+            bool stable = StableMainBoundaryTracker.Observe(
+                new CampaignCpuStableMainBoundarySample
+                {
+                    DuelGeneration = DuelGeneration,
+                    Turn = turn,
+                    Phase = phase,
+                    TurnPlayer = turnPlayer,
+                    OwnedSeat = OwnedSeat,
+                    OwnedIsHuman = ownedIsHuman,
+                    MyIsHuman = myIsHuman,
+                    DoCommandUser = doCommandUser,
+                    RunDialogUser = runDialogUser,
+                    LegalActionFingerprint = legalFingerprint,
+                });
+            if (!stable)
+            {
+                return false;
+            }
+
+            CampaignCpuProgressToken progress =
+                CampaignCpuProgressToken.CreateWithLegalFingerprint(
+                    DuelGeneration,
+                    DuelViewType.WaitInput,
+                    (int)DuelMenuActType.MainPhase,
+                    0,
+                    0,
+                    OwnedSeat,
+                    turn,
+                    phase,
+                    legalFingerprint);
+            CampaignCpuRecapturePolicyResult recapture =
+                CampaignCpuRecapturePolicy.Evaluate(
+                    new CampaignCpuRecapturePolicyInput
+                    {
+                        Enabled = true,
+                        Chain = StateMachine.ActiveActionChain,
+                        DuelGeneration = DuelGeneration,
+                        CurrentViewSeq = ViewSeq,
+                        CurrentProgressToken = progress,
+                        ViewType = DuelViewType.WaitInput,
+                        Param1 = (int)DuelMenuActType.MainPhase,
+                        Turn = turn,
+                        TurnPlayer = turnPlayer,
+                        Phase = phase,
+                        OwnedSeat = OwnedSeat,
+                        MyId = MyId,
+                        IsStableMainMenuBoundary = true,
+                        OwnedIsHuman = ownedIsHuman,
+                        MyIsHuman = myIsHuman,
+                        DoCommandUser = doCommandUser,
+                        RunDialogUser = runDialogUser,
+                        ResponseWindowInFlight = false,
+                        ScriptingDisabled =
+                            StateMachine.ScriptingDisabledForDuel,
+                        NowUtc = DateTime.UtcNow,
+                        MaxAttemptsPerChain =
+                            policy.MaxRecapturesPerChain,
+                        MaxAttemptsPerTurn =
+                            policy.MaxRecapturesPerTurn,
+                        TimeoutMs = policy.RecaptureTimeoutMs,
+                    });
+            if (recapture.Decision
+                != CampaignCpuRecaptureDecision.CommitStableOwnedMain)
+            {
+                if (recapture.Decision
+                    == CampaignCpuRecaptureDecision
+                        .ClearAtPhaseOrTurnBoundary)
+                {
+                    StateMachine.ClearActionChain();
+                }
+                else if (recapture.Decision
+                    == CampaignCpuRecaptureDecision
+                        .AbandonRecaptureForTurn)
+                {
+                    StateMachine.AbandonActionChain(recapture.Reason);
+                }
+                CampaignCpuAuditLog.Write(
+                    "stable_main_boundary_denied",
+                    new Dictionary<string, object>
+                    {
+                        { "reason", recapture.Reason },
+                        { "view_seq", ViewSeq },
+                        { "turn", turn },
+                        { "phase", phase },
+                        { "do_command_user", doCommandUser },
+                        { "run_dialog_user", runDialogUser },
+                        { "owned_is_human_readback", ownedIsHuman },
+                        { "my_is_human_readback", myIsHuman },
+                        { "legal_fingerprint", legalFingerprint },
+                        { "duel_generation", DuelGeneration },
+                    });
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+
+            CampaignCpuSafeContinuationSelection safeSelection =
+                CampaignCpuSafeContinuationSelector.Decide(
+                observation,
+                ActivePack,
+                predicateEvalFailed: observation.PredicateQueryFailed,
+                appliedDecisionCount: DecisionCount,
+                resolveCardLevel: action =>
+                    DuelDll.CampaignCpu_GetCardLevel(
+                        action.Player,
+                        action.Position,
+                        action.Index));
+            CampaignCpuDecision decision = safeSelection.Decision;
+            CampaignCpuLegalAction candidate = decision != null
+                ? decision.Action
+                : null;
+            string candidateRuleId = decision != null
+                ? decision.RuleId
+                : null;
+            int selectedCardLevel = safeSelection.SelectedCardLevel;
+            bool selectedCardLevelKnown =
+                safeSelection.SelectedCardLevelKnown;
+            if (safeSelection.ExcludedActionIdentities.Count > 0)
+            {
+                CampaignCpuAuditLog.Write(
+                    "stable_main_direct_continuation_filter",
+                    new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "excluded_action_identities",
+                            safeSelection.ExcludedActionIdentities },
+                        { "selected_action", candidate != null
+                            ? candidate.CanonicalIdentity
+                            : null },
+                        { "selected_rule_id", candidateRuleId },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
+                        { "turn", turn },
+                        { "turn_player", turnPlayer },
+                        { "phase", phase },
+                    });
+            }
+            bool unsafeCandidate =
+                decision != null
+                && decision.Route == CampaignCpuRoute.RuleCommit
+                && !safeSelection.SelectedTerminalPhaseExit
+                && CampaignCpuActionChainFactory.ShouldDeferScriptedCommit(
+                    candidate,
+                    selectedCardLevelKnown,
+                    selectedCardLevel);
+            if (unsafeCandidate)
+            {
+                decision = CampaignCpuDecision.Native(
+                    "unsupported_scripted_continuation");
+            }
+
+            CampaignCpuAuditLog.WriteRaw(
+                CampaignCpuAuditSerializer.SerializeDecision(
+                    ViewSeq,
+                    decision,
+                    observation,
+                    shadowOnly: ClientSettings.CampaignCpuLogOnly));
+
+            if (decision == null
+                || decision.Route != CampaignCpuRoute.RuleCommit
+                || candidate == null
+                || ClientSettings.CampaignCpuLogOnly
+                || CampaignCpuScorer.IsDecisionCapReached(
+                    policy,
+                    DecisionCount))
+            {
+                string reason = decision != null
+                    ? decision.Reason
+                    : "null_decision";
+                StateMachine.AbandonActionChain(
+                    "stable_main_direct_commit_deferred");
+                CampaignCpuAuditLog.Write(
+                    "stable_main_direct_commit_deferred",
+                    new Dictionary<string, object>
+                    {
+                        { "reason", reason },
+                        { "view_seq", ViewSeq },
+                        { "candidate_action", candidate != null
+                            ? candidate.CanonicalIdentity
+                            : null },
+                        { "candidate_rule_id", candidateRuleId },
+                        { "card_id", candidate != null
+                            ? candidate.CardId
+                            : 0 },
+                        { "card_level", selectedCardLevelKnown
+                            ? (object)selectedCardLevel
+                            : null },
+                        { "level_known", selectedCardLevelKnown },
+                        { "continuation_classification",
+                            CampaignCpuActionChainFactory.Classify(
+                                candidate,
+                                selectedCardLevelKnown,
+                                selectedCardLevel).ToString() },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
+                        { "turn", turn },
+                        { "turn_player", turnPlayer },
+                        { "phase", phase },
+                    });
+                StableMainBoundaryTracker.Reset();
+                return false;
+            }
+
+            CampaignCpuActionChain priorChain =
+                StateMachine.ActiveActionChain;
+            CampaignCpuStableMainDirectCommitResult directCommit =
+                CampaignCpuStableMainDirectCommit.Execute(
+                    StateMachine,
+                    ViewSeq,
+                    () => CampaignCpuCommit.TryApplyLive(candidate));
+            StableMainBoundaryTracker.Reset();
+
+            CampaignCpuAuditLog.Write(
+                "same_main_direct_commit_attempt",
+                new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "reason", recapture.Reason },
+                    { "boundary", "pre_sysact_stable_owned_main_direct_commit" },
+                    { "origin_view_seq",
+                        priorChain != null ? priorChain.OriginViewSeq : 0UL },
+                    { "action",
+                        candidate.CanonicalIdentity },
+                    { "rule_id", decision.RuleId },
+                    { "lease_origin_classification",
+                        priorChain != null
+                            ? priorChain.Eligibility.ToString()
+                            : CampaignCpuContinuationEligibility
+                                .FullNativeFallback.ToString() },
+                    { "recapture_attempts",
+                        priorChain != null
+                            ? priorChain.RecaptureAttempts
+                            : 0 },
+                    { "turn", turn },
+                    { "turn_player", turnPlayer },
+                    { "phase", phase },
+                    { "my_id", MyId },
+                    { "owned_seat", OwnedSeat },
+                    { "duel_generation", DuelGeneration },
+                    { "do_command_user", doCommandUser },
+                    { "run_dialog_user", runDialogUser },
+                    { "legal_fingerprint", legalFingerprint },
+                    { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
+                    { "my_is_human_readback", TryReadIsHuman(MyId) },
+                    { "commit_outcome", directCommit.CommitOutcome.ToString() },
+                    { "ownership_transition_attempted", false },
+                });
+
+            if (directCommit.Applied)
+            {
+                DecisionCount++;
+                if (safeSelection.SelectedTerminalPhaseExit)
+                {
+                    StateMachine.ClearActionChain();
+                }
+                else
+                {
+                    CampaignCpuActionChain successor =
+                        CampaignCpuActionChainFactory.Create(
+                            DuelGeneration,
+                            ViewSeq,
+                            turn,
+                            turnPlayer,
+                            phase,
+                            candidate,
+                            decision.RuleId,
+                            selectedCardLevelKnown,
+                            selectedCardLevel,
+                            progress,
+                            DateTime.UtcNow);
+                    if (priorChain != null)
+                    {
+                        successor.RecaptureAttemptsThisTurn =
+                            priorChain.RecaptureAttemptsThisTurn;
+                    }
+                    StateMachine.ArmActionChain(successor);
+                }
+                StateMachine.BeginNativeLease(
+                    safeSelection.SelectedTerminalPhaseExit
+                        ? "stable_main_tactical_phase_exit"
+                        : "stable_main_direct_commit",
+                    DuelGeneration,
+                    ViewSeq,
+                    progress,
+                    OwnedSeat,
+                    DateTime.UtcNow);
+                CampaignCpuAuditLog.Write(
+                    "same_main_direct_commit_applied",
+                    new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "action", candidate.CanonicalIdentity },
+                        { "rule_id", decision.RuleId },
+                        { "decision_count", DecisionCount },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
+                        { "turn", turn },
+                        { "turn_player", turnPlayer },
+                        { "phase", phase },
+                        { "owned_is_human_readback",
+                            TryReadIsHuman(OwnedSeat) },
+                    });
+                CampaignCpuAuditLog.Write(
+                    "commit_applied",
+                    new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "rule_id", decision.RuleId },
+                        { "action", candidate.CanonicalIdentity },
+                        { "decision_count", DecisionCount },
+                        { "transport",
+                            "pre_sysact_stable_owned_main_direct_commit" },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
+                        { "turn", turn },
+                        { "turn_player", turnPlayer },
+                        { "phase", phase },
+                    });
+                return true;
+            }
+
+            string failureReason =
+                directCommit.CommitOutcome
+                    == CampaignCpuCommitOutcome.NotStarted
+                    ? "stable_main_direct_commit_not_started"
+                    : "stable_main_direct_commit_indeterminate";
+            if (directCommit.CommitOutcome
+                == CampaignCpuCommitOutcome.Indeterminate)
+            {
+                StateMachine.DisableScripting(failureReason);
+            }
+            else
+            {
+                StateMachine.AbandonActionChain(failureReason);
+            }
+            StateMachine.BeginNativeLease(
+                failureReason,
+                DuelGeneration,
+                ViewSeq,
+                progress,
+                OwnedSeat,
+                DateTime.UtcNow);
+            CampaignCpuAuditLog.Write(
+                failureReason,
+                new Dictionary<string, object>
+                {
+                    { "view_seq", ViewSeq },
+                    { "action", candidate.CanonicalIdentity },
+                    { "rule_id", decision.RuleId },
+                    { "my_id", MyId },
+                    { "owned_seat", OwnedSeat },
+                    { "duel_generation", DuelGeneration },
+                    { "turn", turn },
+                    { "turn_player", turnPlayer },
+                    { "phase", phase },
+                });
+            if (directCommit.CommitOutcome
+                == CampaignCpuCommitOutcome.Indeterminate)
+            {
+                CampaignCpuAuditLog.Write(
+                    "commit_indeterminate",
+                    new Dictionary<string, object>
+                    {
+                        { "view_seq", ViewSeq },
+                        { "action", candidate.CanonicalIdentity },
+                        { "rule_id", decision.RuleId },
+                        { "transport",
+                            "pre_sysact_stable_owned_main_direct_commit" },
+                        { "my_id", MyId },
+                        { "owned_seat", OwnedSeat },
+                        { "duel_generation", DuelGeneration },
+                    });
+            }
+            return directCommit.CommitOutcome
+                == CampaignCpuCommitOutcome.Indeterminate;
         }
 
         public static void OnSoloSysActTick()
@@ -1618,6 +2401,10 @@ namespace YgoMasterClient
                 return;
             }
             TryCompleteSeatOwnershipAssert("sysact");
+            if (TryCommitStableMainDirect())
+            {
+                return;
+            }
             // PR4a always-native: AwaitingProgress only arms after scripted commits (PR4b).
             if (StateMachine.State != SoloTemporaryCpuState.AwaitingProgress)
             {
@@ -1663,7 +2450,8 @@ namespace YgoMasterClient
             {
                 return type;
             }
-            int coerced = StateMachine.State == SoloTemporaryCpuState.NativeLease
+            int coerced = SoloTemporaryCpuStateMachine.RequiresCpuOwnership(
+                StateMachine.State)
                 ? (int)DuelPlayerType.CPU
                 : (int)DuelPlayerType.Human;
             if (coerced != type && ClientSettings.CampaignCpuProbeLogging)
@@ -1714,9 +2502,48 @@ namespace YgoMasterClient
             int turn,
             int phase,
             bool actingResolved,
-            int actingPlayer)
+            int actingPlayer,
+            CampaignCpuProgressToken progress)
         {
             var lease = StateMachine.ActiveLease;
+            CampaignCpuActionChain chain = StateMachine.ActiveActionChain;
+            CampaignCpuPackPolicy policy = ActivePack != null
+                ? ActivePack.Policy
+                : null;
+            CampaignCpuRecapturePolicyResult probeResult =
+                CampaignCpuRecapturePolicy.Evaluate(
+                    new CampaignCpuRecapturePolicyInput
+                    {
+                        // Probe asks whether the boundary would be eligible. The actual
+                        // policy switch is audited separately and remains default-off.
+                        Enabled = true,
+                        Chain = chain,
+                        DuelGeneration = DuelGeneration,
+                        CurrentViewSeq = ViewSeq,
+                        CurrentProgressToken = progress,
+                        ViewType = viewType,
+                        Param1 = param1,
+                        Turn = turn,
+                        TurnPlayer = turnPlayer,
+                        Phase = phase,
+                        OwnedSeat = OwnedSeat,
+                        MyId = MyId,
+                        ResponseWindowInFlight =
+                            CampaignCpuWindowClassifier.IsOwnedResponseNativeWindow(
+                                viewType,
+                                param1),
+                        ScriptingDisabled = StateMachine.ScriptingDisabledForDuel,
+                        NowUtc = DateTime.UtcNow,
+                        MaxAttemptsPerChain = policy != null
+                            ? policy.MaxRecapturesPerChain
+                            : CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerChain,
+                        MaxAttemptsPerTurn = policy != null
+                            ? policy.MaxRecapturesPerTurn
+                            : CampaignCpuRecapturePolicy.DefaultMaxAttemptsPerTurn,
+                        TimeoutMs = policy != null
+                            ? policy.RecaptureTimeoutMs
+                            : CampaignCpuRecapturePolicy.DefaultTimeoutMs,
+                    });
             int phaseMain1 = (int)DuelPhase.Main1;
             int phaseMain2 = (int)DuelPhase.Main2;
             CampaignCpuAuditLog.Write("owned_main_boundary_probe", new Dictionary<string, object>
@@ -1748,6 +2575,24 @@ namespace YgoMasterClient
                 { "owned_is_human_readback", TryReadIsHuman(OwnedSeat) },
                 { "my_is_human_readback", TryReadIsHuman(MyId) },
                 { "observed_cpu_thinking", lease != null && lease.ObservedCpuThinking },
+                { "action_chain_origin_view_seq",
+                    chain != null ? chain.OriginViewSeq : 0UL },
+                { "action_chain_action",
+                    chain != null ? chain.AppliedActionIdentity : null },
+                { "action_chain_rule_id", chain != null ? chain.RuleId : null },
+                { "lease_origin_classification",
+                    chain != null ? chain.Eligibility.ToString()
+                        : CampaignCpuContinuationEligibility.FullNativeFallback.ToString() },
+                { "native_response_seen", chain != null && chain.NativeResponseSeen },
+                { "cpu_thinking_count", chain != null ? chain.CpuThinkingCount : 0 },
+                { "recapture_attempts", chain != null ? chain.RecaptureAttempts : 0 },
+                { "successive_main_policy_enabled",
+                    policy != null && policy.SuccessiveMainRecapture },
+                { "candidate",
+                    probeResult.Decision
+                        == CampaignCpuRecaptureDecision.CommitStableOwnedMain },
+                { "candidate_decision", probeResult.Decision.ToString() },
+                { "candidate_reason", probeResult.Reason },
             });
         }
 
@@ -1854,6 +2699,130 @@ namespace YgoMasterClient
 
             LastOwnedFieldSnapshot = current;
             LastOwnedFieldFingerprint = fp;
+        }
+
+        static void TryWriteOwnedStanceProbe(
+            DuelViewType viewType,
+            int param1,
+            int turn,
+            int turnPlayer,
+            int phase)
+        {
+            List<CampaignCpuMonsterTacticalState> current;
+            try
+            {
+                CampaignCpuPackPolicy policy = ActivePack != null
+                    ? ActivePack.Policy
+                    : null;
+                current = CampaignCpuTacticalSnapshotBuilder.Build(
+                    new LiveDllLegalActionQuery(),
+                    OwnedSeat,
+                    policy != null ? policy.AttackTurnRaw : null,
+                    policy != null ? policy.DefenseTurnRaw : null);
+            }
+            catch
+            {
+                return;
+            }
+
+            if (LastTacticalSnapshot != null)
+            {
+                int opposingMaxAtk = 0;
+                bool opposingMaxKnown = false;
+                for (int i = 0; i < current.Count; i++)
+                {
+                    CampaignCpuMonsterTacticalState threat = current[i];
+                    if (threat != null
+                        && threat.Player != OwnedSeat
+                        && threat.FaceKnown
+                        && threat.FaceUp
+                        && threat.HasAtk)
+                    {
+                        if (!opposingMaxKnown || threat.Atk > opposingMaxAtk)
+                        {
+                            opposingMaxAtk = threat.Atk;
+                        }
+                        opposingMaxKnown = true;
+                    }
+                }
+
+                for (int i = 0; i < current.Count; i++)
+                {
+                    CampaignCpuMonsterTacticalState after = current[i];
+                    if (after == null
+                        || after.Player != OwnedSeat
+                        || after.UniqueId <= 0)
+                    {
+                        continue;
+                    }
+                    CampaignCpuMonsterTacticalState before = null;
+                    for (int b = 0; b < LastTacticalSnapshot.Count; b++)
+                    {
+                        CampaignCpuMonsterTacticalState candidate =
+                            LastTacticalSnapshot[b];
+                        if (candidate != null
+                            && candidate.Player == after.Player
+                            && candidate.UniqueId == after.UniqueId)
+                        {
+                            before = candidate;
+                            break;
+                        }
+                    }
+                    if (before == null || before.TurnRaw == after.TurnRaw)
+                    {
+                        continue;
+                    }
+
+                    CampaignCpuActionChain chain =
+                        StateMachine.ActiveActionChain;
+                    CampaignCpuAuditLog.Write(
+                        "owned_monster_stance_changed",
+                        new Dictionary<string, object>
+                        {
+                            { "duel_generation", DuelGeneration },
+                            { "view_seq", ViewSeq },
+                            { "view", viewType.ToString() },
+                            { "param1", param1 },
+                            { "turn", turn },
+                            { "turn_player", turnPlayer },
+                            { "phase", phase },
+                            { "player", after.Player },
+                            { "position", after.Position },
+                            { "index", after.Index },
+                            { "unique_id", after.UniqueId },
+                            { "card_id", after.CardId },
+                            { "before_turn_raw", before.TurnRaw },
+                            { "after_turn_raw", after.TurnRaw },
+                            { "before_turn_known", before.TurnKnown },
+                            { "after_turn_known", after.TurnKnown },
+                            { "after_is_attack",
+                                after.TurnKnown ? (object)after.IsAttack : null },
+                            { "after_is_defense",
+                                after.TurnKnown ? (object)after.IsDefense : null },
+                            { "atk", after.HasAtk ? (object)after.Atk : null },
+                            { "def", after.HasDef ? (object)after.Def : null },
+                            { "max_opponent_face_up_atk",
+                                opposingMaxKnown
+                                    ? (object)opposingMaxAtk
+                                    : null },
+                            { "state", StateMachine.State.ToString() },
+                            { "lease_reason",
+                                StateMachine.ActiveLease != null
+                                    ? StateMachine.ActiveLease.Reason
+                                    : null },
+                            { "lease_origin_classification",
+                                chain != null
+                                    ? chain.Eligibility.ToString()
+                                    : CampaignCpuContinuationEligibility
+                                        .FullNativeFallback.ToString() },
+                            { "action_chain_origin",
+                                chain != null
+                                    ? chain.AppliedActionIdentity
+                                    : null },
+                        });
+                }
+            }
+            LastTacticalSnapshot = current;
         }
 
         static List<CampaignCpuZoneCard> SnapshotOwnedFieldZones(int player)

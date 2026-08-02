@@ -173,13 +173,19 @@ namespace YgoMasterClient
             hookSetGuideEnable = new Hook<Del_SetGuideEnable>(SetGuideEnable, fieldEffectClassInfo.GetMethod("SetGuideEnable"));
             methodSwitchGuide = fieldEffectClassInfo.GetMethod("SwitchGuide");
 
-            IntPtr lib = PInvoke.LoadLibrary(Path.Combine("masterduel_Data", "Plugins", "x86_64", "duel.dll"));
+            string duelDllPath = Path.Combine(
+                "masterduel_Data",
+                "Plugins",
+                "x86_64",
+                "duel.dll");
+            IntPtr lib = PInvoke.LoadLibrary(duelDllPath);
             if (lib == IntPtr.Zero)
             {
                 throw new Exception("Failed to load duel.dll");
             }
 
             InitProxyFunctions(lib);
+            InitNativeCpuCandidateTrace(lib, duelDllPath);
 
             hookDLL_SetEffectDelegate = new Hook<Del_DLL_SetEffectDelegate>(DLL_SetEffectDelegate, PInvoke.GetProcAddress(lib, "DLL_SetEffectDelegate"));
             hookDLL_DuelSysAct = new Hook<Del_DLL_DuelSysAct>(DLL_DuelSysAct, PInvoke.GetProcAddress(lib, "DLL_DuelSysAct"));
@@ -2210,6 +2216,7 @@ namespace YgoMasterClient
             }
 
             DuelTapSync.ClearState();
+            NativeCpuTraceOnDuelBegin(gameMode);
             // CampaignCpu: SoloSingle only; independent of Llm* (Track B).
             CampaignCpuController.OnDuelBegin(gameMode);
         }
@@ -2228,6 +2235,7 @@ namespace YgoMasterClient
             ResetLlmSummonInteractionState();
             // History must not survive duel end (plan reset invariant).
             ResetLlmDuelHistoryForNewDuel();
+            NativeCpuTraceOnDuelEnd();
             CampaignCpuController.OnDuelEnd();
         }
 

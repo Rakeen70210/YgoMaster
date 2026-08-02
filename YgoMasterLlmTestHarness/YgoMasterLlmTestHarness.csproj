@@ -64,6 +64,18 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuMatchers.cs">
       <Link>CampaignCpu\CampaignCpuMatchers.cs</Link>
     </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuPositionSafety.cs">
+      <Link>CampaignCpu\CampaignCpuPositionSafety.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuOpeningSetSafety.cs">
+      <Link>CampaignCpu\CampaignCpuOpeningSetSafety.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRecapture.cs">
+      <Link>CampaignCpu\CampaignCpuRecapture.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuTacticalSnapshot.cs">
+      <Link>CampaignCpu\CampaignCpuTacticalSnapshot.cs</Link>
+    </Compile>
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuScorer.cs">
       <Link>CampaignCpu\CampaignCpuScorer.cs</Link>
     </Compile>
@@ -79,6 +91,12 @@
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditSerializer.cs">
       <Link>CampaignCpu\CampaignCpuAuditSerializer.cs</Link>
     </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuAuditFile.cs">
+      <Link>CampaignCpu\CampaignCpuAuditFile.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuNativeTrace.cs">
+      <Link>CampaignCpu\CampaignCpuNativeTrace.cs</Link>
+    </Compile>
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuRunEffectContract.cs">
       <Link>CampaignCpu\CampaignCpuRunEffectContract.cs</Link>
     </Compile>
@@ -90,6 +108,9 @@
     </Compile>
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuLocation.cs">
       <Link>CampaignCpu\CampaignCpuLocation.cs</Link>
+    </Compile>
+    <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuSummonSafety.cs">
+      <Link>CampaignCpu\CampaignCpuSummonSafety.cs</Link>
     </Compile>
     <Compile Include="..\YgoMasterServer\CampaignCpu\CampaignCpuFieldDiff.cs">
       <Link>CampaignCpu\CampaignCpuFieldDiff.cs</Link>

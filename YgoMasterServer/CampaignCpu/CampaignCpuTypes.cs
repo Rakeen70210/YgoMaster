@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace YgoMaster
 {
@@ -68,6 +69,16 @@ namespace YgoMaster
         public bool IsMechanical;
         public string TargetScope;
         public int Player;
+        /// <summary>
+        /// Optional live BasicVal for a card at this legal action's current engine
+        /// location. Unknown values must never be synthesized by policy code.
+        /// </summary>
+        public bool BasicLevelKnown;
+        public int BasicLevel;
+        public bool BasicAtkKnown;
+        public int BasicAtk;
+        public bool BasicDefKnown;
+        public int BasicDef;
 
         /// <summary>Stable identity for golden fixtures (not transient ActionId).</summary>
         public string CanonicalIdentity
@@ -94,6 +105,10 @@ namespace YgoMaster
         public string RuleId;
         public int Score;
         public bool Matched;
+        public string TacticalFilterReason;
+        public List<string> TacticalFilteredActionIdentities;
+        public string LegalAfterTacticalFingerprint;
+        public string ReplacedActionIdentity;
 
         public static CampaignCpuDecision Native(string reason)
         {

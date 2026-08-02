@@ -1,0 +1,63 @@
+{
+  "schema": "ygomaster.native_cpu_semantic_evidence.v1",
+  "manifest_id": "ns4-pinned-duel-dll-20260802",
+  "binary": {
+    "path_hint": "../masterduel_Data/Plugins/x86_64/duel.dll",
+    "sha256": "97bd4d136e39b0872e4a8a9171632f1f0bd9bb04d69af08e836c56e684d43c44",
+    "size": 19443200,
+    "image_base": 6442450944
+  },
+  "requirements": [
+    {
+      "id": "action_family",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "action_family_missing_two_source_proof"
+    },
+    {
+      "id": "attacker_instance_id",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "attacker_instance_id_missing_two_source_proof"
+    },
+    {
+      "id": "battle_position",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "battle_position_missing_two_source_proof"
+    },
+    {
+      "id": "boundary_timing",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "boundary_timing_missing_two_source_proof"
+    },
+    {
+      "id": "public_state_apis",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "public_state_apis_missing_two_source_proof"
+    },
+    {
+      "id": "target_or_direct",
+      "status": "unproven",
+      "supported_values": [],
+      "proof_refs": [],
+      "failure_reason": "target_or_direct_missing_two_source_proof"
+    }
+  ],
+  "proofs": [],
+  "decoder_spec": null,
+  "authority": {
+    "production_evidence": false,
+    "deployment_authorized": false,
+    "trace_enablement_authorized": false,
+    "duel_required_next": false,
+    "rerank_authorized": false
+  }
+}

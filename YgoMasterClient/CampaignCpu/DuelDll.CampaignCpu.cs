@@ -34,6 +34,31 @@ namespace YgoMasterClient
             return DLL_DuelGetCardUniqueID(player, position, index);
         }
 
+        public static int CampaignCpu_GetCardLevel(int player, int position, int index)
+        {
+            PvpBasicVal basic = default(PvpBasicVal);
+            DLL_DuelGetCardBasicVal(player, position, index, ref basic);
+            return basic.Level;
+        }
+
+        public static void CampaignCpu_GetCardAttackDefense(
+            int player,
+            int position,
+            int index,
+            out int atk,
+            out int def)
+        {
+            PvpBasicVal basic = default(PvpBasicVal);
+            DLL_DuelGetCardBasicVal(player, position, index, ref basic);
+            atk = basic.Atk;
+            def = basic.Def;
+        }
+
+        public static int CampaignCpu_GetCardTurn(int player, int position, int index)
+        {
+            return DLL_DuelGetCardTurn(player, position, index);
+        }
+
         public static int CampaignCpu_GetHandCardOpen(int player, int index)
         {
             return DLL_DuelGetHandCardOpen(player, index) ? 1 : 0;
